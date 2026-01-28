@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my page</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 10px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 8px; }
+        button { padding: 8px 15px; cursor: pointer; background: #0070f3; color: white; border: none; border-radius: 5px; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f4f4f4; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <h1>ようこそ　モンチ！！</h1>
+
+    <div class="input-group">
+        <input type="text" id="memo" placeholder="例：ベンチプレス 60kg">
+        <button onclick="addLog()">記録！</button>
+    </div>
+
+    <ul id="logList"></ul>
+
+    <script>
+        // 1. ページを開いた時に、保存されているデータを表示する
+        window.onload = () => {
+            const savedLogs = JSON.parse(localStorage.getItem('myLogs')) || [];
+            savedLogs.forEach(log => appendToList(log));
+        };
+
+        // 2. 記録ボタンを押した時の処理
+        function addLog() {
+            const input = document.getElementById('memo');
+            if (!input.value) return;
+
+            // リストに表示
+            appendToList(input.value);
+
+            // 保存（LocalStorage）
+            const savedLogs = JSON.parse(localStorage.getItem('myLogs')) || [];
+            savedLogs.push(input.value);
+            localStorage.setItem('myLogs', JSON.stringify(savedLogs));
+
+            input.value = ''; // 入力欄を空にする
+        }
+
+        // 3. 画面にリストを追加する関数
+        function appendToList(text) {
+            const li = document.createElement('li');
+            li.textContent = text;
+            document.getElementById('logList').appendChild(li);
+        }
+    </script>
+</body>
+</html>
