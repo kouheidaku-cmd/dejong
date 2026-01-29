@@ -1,58 +1,64 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja"><!--HTML文書が日本語で作成されていることをブラウザや検索エンジンに伝えるためのタグ-->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>my page</title>
-    <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 10px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 8px; }
-        button { padding: 8px 15px; cursor: pointer; background: #0070f3; color: white; border: none; border-radius: 5px; }
-        ul { list-style: none; padding: 0; }
-        li { background: #f4f4f4; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
-    </style>
+    <meta charset="UTF-8"><!--文字コードの指定-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--スマホやタブレットでウェブサイトをきれいに表示させるための魔法のコード-->
+    <title>Login page</title><!--なんかweb検索したときとかに出てくるらしい-->
 </head>
+
+<!--stileタグの中はCSS-->
+<style>
+    body { /*自動で<body>タグに適応される*/
+        font-family: sans-serif; 
+        max-width: 500px; 
+        margin: 20px auto; 
+        padding: 10px; 
+    }
+    .input-group { /*特定のスタイルをまとめてinput-groupクラスとして命名して自分で作った、.を前につけなくてはならない、クラスセレクタ*/
+        display: flex; 
+        gap: 10px; 
+        margin-bottom: 20px; 
+    }
+    input { 
+        flex: 1; 
+        padding: 8px; 
+    }
+    button { 
+        padding: 8px 15px; 
+        cursor: pointer; 
+        background: #0070f3; 
+        color: white; 
+        border: none; 
+        border-radius: 5px; 
+    }
+    ul { list-style: none; padding: 0; }
+    li { background: #f4f4f4; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; }
+</style>
+
 <body>
-
-    <h1>ようこそ　モンチ！！</h1>
-
-    <div class="input-group">
-        <input type="text" id="memo" placeholder="例：ベンチプレス 60kg">
-        <button onclick="addLog()">記録！</button>
+    <h1>観覧ありがとうございます！</h1>
+    <h5>About me :<br>情報系の学生です。自作したプログラム等をここに挙げてます。</h5>
+    <div class="input-group"><!--divはdivisionの略-->
+        <input type="text" id="username" placeholder="username"><!--inputタグにより入力欄を作成、その際この入力欄のidをmemoとする-->
+        <input type="text" id="password" placeholder="password">
+        <button onclick="Login()">ログイン</button>
     </div>
 
-    <ul id="logList"></ul>
-
+    <ul id="todoList"></ul><!--ulタグ：箇条書き、id=todoListのものを一覧表示-->
+    
+    <!--scriptタグの中はjavascript言語-->
     <script>
-        // 1. ページを開いた時に、保存されているデータを表示する
-        window.onload = () => {
-            const savedLogs = JSON.parse(localStorage.getItem('myLogs')) || [];
-            savedLogs.forEach(log => appendToList(log));
-        };
-
-        // 2. 記録ボタンを押した時の処理
-        function addLog() {
-            const input = document.getElementById('memo');
-            if (!input.value) return;
-
-            // リストに表示
-            appendToList(input.value);
-
-            // 保存（LocalStorage）
-            const savedLogs = JSON.parse(localStorage.getItem('myLogs')) || [];
-            savedLogs.push(input.value);
-            localStorage.setItem('myLogs', JSON.stringify(savedLogs));
-
-            input.value = ''; // 入力欄を空にする
+        function Login(){
+            const usernameInput=document.getElementById('username');//constは再代入不可能な変数の宣言,javascriptはデータの型を宣言時に指定する必要はない
+            const passwordInput=document.getElementById('password');//documentというのはページの全データが入った巨大なオブジェクト
+            if (usernameInput.value=="monchi" && passwordInput.value=="1224") {
+                window.location.href='mypage.html';//window：ブラウザのウィンドウ全体 
+            }else {
+                alert("ユーザー名かパスワードが違います")
+            }
         }
 
-        // 3. 画面にリストを追加する関数
-        function appendToList(text) {
-            const li = document.createElement('li');
-            li.textContent = text;
-            document.getElementById('logList').appendChild(li);
-        }
+
     </script>
 </body>
 </html>

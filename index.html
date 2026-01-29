@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"><!--文字コードの指定-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--スマホやタブレットでウェブサイトをきれいに表示させるための魔法のコード-->
-    <title>Login page</title><!--なんかweb検索したときとかに出てくるらしい-->
+    <title>monchi homepage</title><!--なんかweb検索したときとかに出てくるらしい-->
 </head>
 
 <!--stileタグの中はCSS-->
@@ -36,29 +36,9 @@
 </style>
 
 <body>
-    <h1>HELLO</h1>
-    <h3>ログイン情報を入力してください</h3>
-    <div class="input-group"><!--divはdivisionの略-->
-        <input type="text" id="username" placeholder="username"><!--inputタグにより入力欄を作成、その際この入力欄のidをmemoとする-->
-        <input type="text" id="password" placeholder="password">
-        <button onclick="Login()">ログイン</button>
-    </div>
-
-    <ul id="todoList"></ul><!--ulタグ：箇条書き、id=todoListのものを一覧表示-->
+    <h1>観覧ありがとうございます！</h1>
+    <h5>About me :<br>情報系の学生です。自作したプログラム等をここに挙げてます。</h5>
     
-    <!--scriptタグの中はjavascript言語-->
-    <script>
-        function Login(){
-            const usernameInput=document.getElementById('username');//constは再代入不可能な変数の宣言,javascriptはデータの型を宣言時に指定する必要はない
-            const passwordInput=document.getElementById('password');//documentというのはページの全データが入った巨大なオブジェクト
-            if (usernameInput.value=="monchi" && passwordInput.value=="1224") {
-                window.location.href='mypage.html';//window：ブラウザのウィンドウ全体 
-            }else {
-                alert("ユーザー名かパスワードが違います")
-            }
-        }
-
-
-    </script>
+    <a href="tetris.html">テトリスプログラム</a>
 </body>
 </html>

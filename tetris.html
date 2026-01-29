@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja"><!--HTML文書が日本語で作成されていることをブラウザや検索エンジンに伝えるためのタグ-->
+<head>
+    <meta charset="UTF-8"><!--文字コードの指定-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--スマホやタブレットでウェブサイトをきれいに表示させるための魔法のコード-->
+    <title>tetoris</title><!--なんかweb検索したときとかに出てくるらしい-->
+</head>
+
+<body>
+    <div style="text-align: center;">
+        <h2>Tetris Game</h2>
+        <canvas id="tetrisCanvas" width="350" height="700" style="border: 2px solid #fff; background: #000;"></canvas><!--Canvasはhtml上でjavascriptを使って図を描く仕様-->
+        <div id="scoreDisplay" style="color: #0070f3; font-size: 24px;">Score: 0</div>
+    </div>
+</body>
+
+<script src="tetris.js" ></script>
