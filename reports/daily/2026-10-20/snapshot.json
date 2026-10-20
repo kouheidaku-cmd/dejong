@@ -1,0 +1,348 @@
+{
+  "date": "2026-10-20",
+  "broker": "manual",
+  "latest_bar_date": {
+    "JPY": "2026-10-20",
+    "USD": "2026-10-19"
+  },
+  "fx": {
+    "JPY": 1.0,
+    "USD": 158.04800415039062
+  },
+  "stopped": false,
+  "account": {
+    "cash": 452,
+    "equity": 443861,
+    "other_assets": 20410,
+    "total_assets": 464271,
+    "peak_equity": 443861,
+    "drawdown": 0.0,
+    "cash_pct": 0.001
+  },
+  "positions": [
+    {
+      "ticker": "8035.T",
+      "qty": 15,
+      "currency": "JPY",
+      "avg_cost": 11342.26,
+      "close": 10085.0,
+      "value_base": 151275,
+      "weight": 0.3408,
+      "unrealized_pct": -0.1108,
+      "indicators": {
+        "date": "2026-10-20",
+        "close": 10085.0,
+        "ret_1d": -0.0256,
+        "ret_5d": -0.1272,
+        "ret_20d": -0.0245,
+        "ret_60d": -0.2425,
+        "sma20": 11454.9,
+        "sma50": 11189.64,
+        "sma200": 10292.09,
+        "rsi14": 37.1294,
+        "atr14_pct": 0.0561,
+        "vol20_annual": 0.63,
+        "gap_from_52w_high": -0.3601,
+        "volume_ratio": 0.7114
+      }
+    },
+    {
+      "ticker": "9434.T",
+      "qty": 200,
+      "currency": "JPY",
+      "avg_cost": 223.5,
+      "close": 247.1999969482422,
+      "value_base": 49440,
+      "weight": 0.1114,
+      "unrealized_pct": 0.106,
+      "indicators": {
+        "date": "2026-10-20",
+        "close": 247.2,
+        "ret_1d": 0.0037,
+        "ret_5d": 0.0173,
+        "ret_20d": -0.0064,
+        "ret_60d": 0.113,
+        "sma20": 243.15,
+        "sma50": 239.838,
+        "sma200": 221.957,
+        "rsi14": 62.1049,
+        "atr14_pct": 0.0149,
+        "vol20_annual": 0.1327,
+        "gap_from_52w_high": -0.0175,
+        "volume_ratio": 0.8715
+      }
+    },
+    {
+      "ticker": "AMZN",
+      "qty": 1,
+      "currency": "USD",
+      "avg_cost": 242.99,
+      "close": 262.45001220703125,
+      "value_base": 41480,
+      "weight": 0.0935,
+      "unrealized_pct": 0.0801,
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 262.45,
+        "ret_1d": 0.0498,
+        "ret_5d": 0.0113,
+        "ret_20d": 0.0155,
+        "ret_60d": 0.1307,
+        "sma20": 253.426,
+        "sma50": 256.8354,
+        "sma200": 242.8862,
+        "rsi14": 57.2601,
+        "atr14_pct": 0.0252,
+        "vol20_annual": 0.296,
+        "gap_from_52w_high": -0.0759,
+        "volume_ratio": 1.5378
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "qty": 2,
+      "currency": "USD",
+      "avg_cost": 386.75,
+      "close": 533.52001953125,
+      "value_base": 168644,
+      "weight": 0.3799,
+      "unrealized_pct": 0.3795,
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 533.52,
+        "ret_1d": 0.0084,
+        "ret_5d": -0.0141,
+        "ret_20d": 0.0636,
+        "ret_60d": 0.3977,
+        "sma20": 521.816,
+        "sma50": 506.203,
+        "sma200": 435.5015,
+        "rsi14": 59.551,
+        "atr14_pct": 0.0215,
+        "vol20_annual": 0.2195,
+        "gap_from_52w_high": -0.0183,
+        "volume_ratio": 0.8242
+      }
+    },
+    {
+      "ticker": "VRT",
+      "qty": 1,
+      "currency": "USD",
+      "avg_cost": 273.23,
+      "close": 206.0800018310547,
+      "value_base": 32571,
+      "weight": 0.0734,
+      "unrealized_pct": -0.2458,
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 206.08,
+        "ret_1d": -0.0016,
+        "ret_5d": -0.139,
+        "ret_20d": -0.1785,
+        "ret_60d": -0.2903,
+        "sma20": 239.965,
+        "sma50": 254.1346,
+        "sma200": 268.5254,
+        "rsi14": 27.2062,
+        "atr14_pct": 0.051,
+        "vol20_annual": 0.3823,
+        "gap_from_52w_high": -0.4522,
+        "volume_ratio": 1.0063
+      }
+    }
+  ],
+  "settled_orders": [],
+  "pending_orders": [],
+  "watchlist": [
+    {
+      "ticker": "8035.T",
+      "name": "東京エレクトロン",
+      "thesis": "既存の保有銘柄。最初の週次リサーチで仮説を書く",
+      "risks": "",
+      "added": "2026-10-20",
+      "held": 15,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-10-20",
+        "close": 10085.0,
+        "ret_1d": -0.0256,
+        "ret_5d": -0.1272,
+        "ret_20d": -0.0245,
+        "ret_60d": -0.2425,
+        "sma20": 11454.9,
+        "sma50": 11189.64,
+        "sma200": 10292.09,
+        "rsi14": 37.1294,
+        "atr14_pct": 0.0561,
+        "vol20_annual": 0.63,
+        "gap_from_52w_high": -0.3601,
+        "volume_ratio": 0.7114
+      }
+    },
+    {
+      "ticker": "9434.T",
+      "name": "ソフトバンク",
+      "thesis": "既存の保有銘柄。最初の週次リサーチで仮説を書く",
+      "risks": "",
+      "added": "2026-10-20",
+      "held": 200,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-10-20",
+        "close": 247.2,
+        "ret_1d": 0.0037,
+        "ret_5d": 0.0173,
+        "ret_20d": -0.0064,
+        "ret_60d": 0.113,
+        "sma20": 243.15,
+        "sma50": 239.838,
+        "sma200": 221.957,
+        "rsi14": 62.1049,
+        "atr14_pct": 0.0149,
+        "vol20_annual": 0.1327,
+        "gap_from_52w_high": -0.0175,
+        "volume_ratio": 0.8715
+      }
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.com",
+      "thesis": "既存の保有銘柄。最初の週次リサーチで仮説を書く",
+      "risks": "",
+      "added": "2026-10-20",
+      "held": 1,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 262.45,
+        "ret_1d": 0.0498,
+        "ret_5d": 0.0113,
+        "ret_20d": 0.0155,
+        "ret_60d": 0.1307,
+        "sma20": 253.426,
+        "sma50": 256.8354,
+        "sma200": 242.8862,
+        "rsi14": 57.2601,
+        "atr14_pct": 0.0252,
+        "vol20_annual": 0.296,
+        "gap_from_52w_high": -0.0759,
+        "volume_ratio": 1.5378
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "thesis": "既存の保有銘柄。最初の週次リサーチで仮説を書く",
+      "risks": "",
+      "added": "2026-10-20",
+      "held": 2,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 533.52,
+        "ret_1d": 0.0084,
+        "ret_5d": -0.0141,
+        "ret_20d": 0.0636,
+        "ret_60d": 0.3977,
+        "sma20": 521.816,
+        "sma50": 506.203,
+        "sma200": 435.5015,
+        "rsi14": 59.551,
+        "atr14_pct": 0.0215,
+        "vol20_annual": 0.2195,
+        "gap_from_52w_high": -0.0183,
+        "volume_ratio": 0.8242
+      }
+    },
+    {
+      "ticker": "VRT",
+      "name": "Vertiv Holdings",
+      "thesis": "既存の保有銘柄。最初の週次リサーチで仮説を書く",
+      "risks": "",
+      "added": "2026-10-20",
+      "held": 1,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-10-19",
+        "close": 206.08,
+        "ret_1d": -0.0016,
+        "ret_5d": -0.139,
+        "ret_20d": -0.1785,
+        "ret_60d": -0.2903,
+        "sma20": 239.965,
+        "sma50": 254.1346,
+        "sma200": 268.5254,
+        "rsi14": 27.2062,
+        "atr14_pct": 0.051,
+        "vol20_annual": 0.3823,
+        "gap_from_52w_high": -0.4522,
+        "volume_ratio": 1.0063
+      }
+    }
+  ],
+  "rule_signals": {
+    "rules_version": 1,
+    "open_slots": 2,
+    "exits": [
+      {
+        "ticker": "8035.T",
+        "signal": "trend_break",
+        "sell_qty": 15,
+        "return_from_cost": -0.1108,
+        "rule_ref": 10085.0,
+        "return_from_ref": 0.0,
+        "drawdown_from_peak": 0.0
+      },
+      {
+        "ticker": "9434.T",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.106,
+        "rule_ref": 247.2,
+        "return_from_ref": -0.0,
+        "drawdown_from_peak": -0.0
+      },
+      {
+        "ticker": "AMZN",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.0801,
+        "rule_ref": 262.45,
+        "return_from_ref": 0.0,
+        "drawdown_from_peak": 0.0
+      },
+      {
+        "ticker": "MSFT",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.3795,
+        "rule_ref": 533.52,
+        "return_from_ref": 0.0,
+        "drawdown_from_peak": 0.0
+      },
+      {
+        "ticker": "VRT",
+        "signal": "trend_break",
+        "sell_qty": 1,
+        "return_from_cost": -0.2458,
+        "rule_ref": 206.08,
+        "return_from_ref": 0.0,
+        "drawdown_from_peak": 0.0
+      }
+    ],
+    "entries": []
+  },
+  "risk_limits": {
+    "max_position_pct": 0.25,
+    "min_cash_pct": 0.05,
+    "max_orders_per_day": 5,
+    "max_drawdown_pct": 0.15,
+    "price_buffer": 0.03,
+    "max_limit_deviation": 0.1
+  }
+}
