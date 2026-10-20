@@ -63,3 +63,21 @@ def _select(raw: pd.DataFrame, ticker: str) -> pd.DataFrame | None:
 
 def last_closes(data: dict[str, pd.DataFrame]) -> dict[str, float]:
     return {t: float(df["Close"].iloc[-1]) for t, df in data.items() if not df.empty}
+
+
+def fx_rates(data: MarketData, tickers, settings: dict) -> dict[str, float]:
+    """通貨ごとの「1単位 = 基準通貨でいくら」。基準通貨自身は 1.0。"""
+    from .config import currency
+
+    base = settings["base_currency"]
+    need = {currency(t, settings) for t in tickers} - {base}
+    rates = {base: 1.0}
+    if not need:
+        return rates
+    pairs = {c: settings["fx_tickers"][c] for c in need}
+    hist = data.history(sorted(pairs.values()), 10)
+    for c, sym in pairs.items():
+        if sym not in hist:
+            raise RuntimeError(f"為替レート {sym} を取得できませんでした")
+        rates[c] = float(hist[sym]["Close"].iloc[-1])
+    return rates

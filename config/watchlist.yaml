@@ -1,19 +1,30 @@
 # 注目株リスト。週次リサーチ (weekly-research スキル) が更新する。
-# 新規買いはここに載っている銘柄だけが許可される (保有銘柄の売りはいつでも可)。
+# 新規買い・買い増しはここに載っている銘柄だけが許可される (保有銘柄の売りはいつでも可)。
+# 初期値は現在の保有銘柄。最初の週次リサーチで仮説を書き、入れ替える。
 updated: null
 tickers:
-  - ticker: 7203.T
-    name: トヨタ自動車
-    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+  - ticker: 8035.T
+    name: 東京エレクトロン
+    thesis: 既存の保有銘柄。最初の週次リサーチで仮説を書く
     risks: ""
-    added: null
-  - ticker: 6758.T
-    name: ソニーグループ
-    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+    added: 2026-10-20
+  - ticker: 9434.T
+    name: ソフトバンク
+    thesis: 既存の保有銘柄。最初の週次リサーチで仮説を書く
     risks: ""
-    added: null
-  - ticker: 8306.T
-    name: 三菱UFJフィナンシャル・グループ
-    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+    added: 2026-10-20
+  - ticker: AMZN
+    name: Amazon.com
+    thesis: 既存の保有銘柄。最初の週次リサーチで仮説を書く
     risks: ""
-    added: null
+    added: 2026-10-20
+  - ticker: MSFT
+    name: Microsoft
+    thesis: 既存の保有銘柄。最初の週次リサーチで仮説を書く
+    risks: ""
+    added: 2026-10-20
+  - ticker: VRT
+    name: Vertiv Holdings
+    thesis: 既存の保有銘柄。最初の週次リサーチで仮説を書く
+    risks: ""
+    added: 2026-10-20

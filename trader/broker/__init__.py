@@ -1,14 +1,19 @@
-"""ブローカー実装の切り替え口。
+"""ブローカー実装の切り替え口 (settings.yaml の broker)。
 
-実口座につなぐ場合は PaperBroker と同じ submit / settle を持つクラスを追加し、
-settings.yaml の broker で選ぶ (例: Alpaca, kabuステーション API, 立花証券 e支店 API)。
+- manual: 注文案を出し、人が楽天証券で発注する (半自動)
+- paper: 仮想売買 (翌営業日の寄付きで約定)
+
+API のある証券会社につなぐ場合は submit / settle を持つクラスを追加する。
 """
 from ..portfolio import Portfolio
+from .manual import ManualBroker
 from .paper import PaperBroker
+
+BROKERS = {"manual": ManualBroker, "paper": PaperBroker}
 
 
 def get_broker(portfolio: Portfolio, settings: dict):
     name = settings.get("broker", "paper")
-    if name == "paper":
-        return PaperBroker(portfolio, settings)
-    raise NotImplementedError(f"broker '{name}' は未実装です (trader/broker/ に追加してください)")
+    if name not in BROKERS:
+        raise NotImplementedError(f"broker '{name}' は未実装です (trader/broker/ に追加してください)")
+    return BROKERS[name](portfolio, settings)

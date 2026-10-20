@@ -27,12 +27,20 @@ def load_universe(root: Path = ROOT) -> list[str]:
     return [str(t) for t in load_yaml(root / "config" / "universe.yaml").get("tickers") or []]
 
 
-def lot_size(ticker: str, settings: dict) -> int:
-    sizes = settings.get("lot_size", {})
-    for suffix, size in sizes.items():
+def market(ticker: str, settings: dict) -> dict:
+    markets = settings.get("markets", {})
+    for suffix, m in markets.items():
         if suffix != "default" and ticker.endswith(suffix):
-            return int(size)
-    return int(sizes.get("default", 1))
+            return m
+    return markets.get("default", {})
+
+
+def lot_size(ticker: str, settings: dict) -> int:
+    return int(market(ticker, settings).get("lot_size", 1))
+
+
+def currency(ticker: str, settings: dict) -> str:
+    return market(ticker, settings).get("currency", settings["base_currency"])
 
 
 def today(settings: dict) -> date:
