@@ -7,6 +7,7 @@
   python -m trader sync FILE            manual: 証券口座の保有一覧で記録を上書き
   python -m trader status               現在の口座状況
   python -m trader screen               週次: 母集団をスクリーニング
+  python -m trader backtest             config/rules.yaml のルールを過去の日足で仮想売買
 """
 from __future__ import annotations
 
@@ -16,9 +17,11 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from . import config, indicators
+import pandas as pd
+
+from . import backtest, config, indicators, rules
 from .broker import get_broker
-from .data import MarketData, YahooData, fx_rates, last_closes
+from .data import CachedData, MarketData, YahooData, fx_rates, last_closes
 from .portfolio import Portfolio, append_journal, apply_fill, record_equity
 from .risk import check_orders
 
@@ -110,12 +113,48 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
              "currency": config.currency(w["ticker"], settings), "indicators": summaries.get(w["ticker"])}
             for w in watchlist
         ],
+        "rule_signals": rule_signals(pf, hist, prices, fx, equity, watchlist, rules.load_rules(root / "config" / "rules.yaml"), settings, day),
         "risk_limits": settings["risk"],
     }
     out = p.daily(day)
     out.mkdir(parents=True, exist_ok=True)
     _write_json(out / "snapshot.json", snapshot)
     return snapshot
+
+
+def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day) -> dict:
+    """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。"""
+    exits = []
+    for t, pos in pf.positions.items():
+        if t not in hist:
+            exits.append({"ticker": t, "signal": None, "note": "価格データなし"})
+            continue
+        f = rules.features(hist[t])
+        opened = pd.Timestamp(pos.get("opened") or f.index[-1])
+        peak = max(f.loc[f.index >= opened, "close"].max(), pos["avg_cost"]) if (f.index >= opened).any() else pos["avg_cost"]
+        sig = rules.exit_check(f.iloc[-1].to_dict(), pos["avg_cost"], peak, (pd.Timestamp(day) - opened).days,
+                               pos.get("took_profit", False), rule_set)
+        exits.append({
+            "ticker": t, "signal": sig[0] if sig else None,
+            "sell_qty": rules.sell_qty(pos["qty"], sig[1]) if sig else 0,
+            "return_from_cost": round(prices[t] / pos["avg_cost"] - 1, 4),
+            "drawdown_from_peak": round(prices[t] / peak - 1, 4),
+        })
+    sz = rule_set["sizing"]
+    slots = sz["max_positions"] - len(pf.positions) + sum(1 for e in exits if e["signal"] and e["sell_qty"] == pf.qty(e["ticker"]))
+    entries = []
+    for w in watchlist:
+        t = w["ticker"]
+        if t in pf.positions or t not in hist:
+            continue
+        row = rules.features(hist[t]).iloc[-1].to_dict()
+        fails = rules.entry_check(row, rule_set)
+        unit = prices[t] * fx[config.currency(t, settings)]
+        entries.append({"ticker": t, "ok": not fails, "fails": fails,
+                        "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
+                        "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0})
+    entries.sort(key=lambda e: (not e["ok"], -e["rank_value"]))
+    return {"rules_version": rule_set.get("version"), "open_slots": max(slots, 0), "exits": exits, "entries": entries}
 
 
 def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force: bool) -> dict:
@@ -155,7 +194,7 @@ def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, 
     ccy = config.currency(ticker, settings)
     if rate is None:
         rate = fx_rates(data, [ticker], settings)[ccy]
-    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee)
+    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat())
 
     match = next((o for o in pf.pending if o["ticker"] == ticker and o["side"] == side), None)
     if match:
@@ -193,11 +232,18 @@ def cmd_sync(root: Path, day: date, source: Path) -> dict:
 def _apply_sync(pf: Portfolio, spec: dict, settings: dict) -> None:
     pf.cash = float(spec["cash_jpy"])
     pf.other_assets = float(spec.get("other_assets_jpy", 0))
-    pf.positions = {
-        str(t): {"qty": int(v["qty"]), "avg_cost": float(v["avg_cost"]), "currency": config.currency(str(t), settings)}
-        for t, v in (spec.get("positions") or {}).items()
-        if int(v["qty"]) > 0
-    }
+    old = pf.positions
+    pf.positions = {}
+    for t, v in (spec.get("positions") or {}).items():
+        t = str(t)
+        if int(v["qty"]) <= 0:
+            continue
+        prev = old.get(t, {})
+        pf.positions[t] = {
+            "qty": int(v["qty"]), "avg_cost": float(v["avg_cost"]), "currency": config.currency(t, settings),
+            "opened": prev.get("opened") or str(spec.get("date") or ""),
+            "took_profit": bool(prev.get("took_profit", False)),
+        }
 
 
 def cmd_status(root: Path, data: MarketData) -> dict:
@@ -224,6 +270,39 @@ def cmd_screen(root: Path, data: MarketData, day: date, top: int) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     _write_json(out / "screen.json", result)
     return {**result, "ranked": ranked[:top]}
+
+
+def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, split: date | None,
+                 tickers: list[str] | None, name: str) -> dict:
+    """ルールを過去データで検証する。期間を学習用 (前半) と検証用 (後半) に分けて別々に走らせる。"""
+    settings = config.load_settings(root)
+    rule_set = rules.load_rules(rules_path)
+    tickers = tickers or config.load_universe(root)
+    frames = data.history(tickers, years * 365 + 300)
+    fx_syms = {c: settings["fx_tickers"][c] for c in {config.currency(t, settings) for t in frames} - {settings["base_currency"]}}
+    fx_hist = data.history(sorted(fx_syms.values()), years * 365 + 300)
+    frames = backtest.to_base_currency(frames, {c: fx_hist[s]["Close"] for c, s in fx_syms.items()}, settings)
+
+    first = min(df.index[0] for df in frames.values()) + pd.Timedelta(days=300)  # SMA200 のウォームアップ
+    last = max(df.index[-1] for df in frames.values())
+    split_ts = pd.Timestamp(split) if split else first + (last - first) * 0.7
+    ex = settings.get("execution", {})
+    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+
+    out_dir = root / "reports" / "backtest" / name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    result = {"rules": str(rules_path), "rules_version": rule_set.get("version"), "tickers": len(frames)}
+    for label, a, b in [("in_sample", first, split_ts - pd.Timedelta(days=1)), ("out_of_sample", split_ts, last)]:
+        r = backtest.run(frames, rule_set, a.date(), b.date(), **kw)
+        pd.DataFrame(r.pop("trades")).to_csv(out_dir / f"trades_{label}.csv", index=False)
+        r.pop("equity_curve").to_csv(out_dir / f"equity_{label}.csv")
+        result[label] = r
+    _write_json(out_dir / "result.json", result)
+    for label in ("in_sample", "out_of_sample"):  # 画面には要点だけ出す
+        result[label] = {k: result[label][k] for k in ("period", "metrics", "benchmark")} | {
+            "by_exit_reason": result[label]["analysis"].get("by_exit_reason")}
+    result["output"] = str(out_dir)
+    return result
 
 
 def _write_json(path: Path, obj) -> None:
@@ -255,6 +334,12 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("status")
     s = sub.add_parser("screen")
     s.add_argument("--top", type=int, default=15)
+    s = sub.add_parser("backtest")
+    s.add_argument("--rules", type=Path, default=None, help="既定: config/rules.yaml")
+    s.add_argument("--years", type=int, default=8)
+    s.add_argument("--split", type=date.fromisoformat, help="検証期間の開始日 (既定: 後ろ30%%)")
+    s.add_argument("--tickers", nargs="+", help="既定: config/universe.yaml")
+    s.add_argument("--name", help="出力先 reports/backtest/<name> (既定: 日付-ルール名)")
     args = ap.parse_args(argv)
 
     root = args.root
@@ -272,7 +357,11 @@ def main(argv: list[str] | None = None) -> None:
         out = cmd_sync(root, day, args.source)
     elif args.cmd == "status":
         out = cmd_status(root, data)
-    else:
+    elif args.cmd == "screen":
         out = cmd_screen(root, data, day, args.top)
+    else:
+        rules_path = args.rules or root / "config" / "rules.yaml"
+        name = args.name or f"{day.isoformat()}-{rules_path.stem}"
+        out = cmd_backtest(root, CachedData(data, root / "data" / "cache"), rules_path, args.years, args.split, args.tickers, name)
     json.dump(out, sys.stdout, ensure_ascii=False, indent=2, default=str)
     print()

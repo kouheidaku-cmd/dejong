@@ -70,7 +70,7 @@ def test_paper_fill_next_open_in_base_currency():
     [ev] = b.settle({"MSFT": df}, FX, date(2026, 3, 3))
     assert ev["status"] == "filled" and ev["price"] == 110 and ev["date"] == "2026-03-03"
     assert pf.cash == 100_000 - 2 * 110 * 150
-    assert pf.positions["MSFT"] == {"qty": 2, "avg_cost": 110, "currency": "USD"}
+    assert pf.positions["MSFT"] == {"qty": 2, "avg_cost": 110, "currency": "USD", "opened": "2026-03-03", "took_profit": False}
 
     b.submit({"ticker": "MSFT", "side": "sell", "qty": 2}, date(2026, 3, 3))
     [ev] = b.settle({"MSFT": df}, FX, date(2026, 3, 4))
@@ -208,3 +208,67 @@ def test_yahoo_frame_selection():
     assert _select(by_ticker, "B")["Close"].iloc[-1] == 6
     assert _select(by_field, "B")["Close"].iloc[-1] == 6
     assert _select(by_ticker, "C") is None
+
+
+RULES = config.load_yaml(ROOT / "config" / "rules.yaml")
+
+
+def test_rules_entry_and_exit():
+    row = {"close": 110, "sma20": 105, "sma50": 100, "sma200": 90, "rsi14": 60, "ret_60d": 0.1}
+    from trader import rules
+    assert rules.entry_check(row, RULES) == []
+    assert rules.entry_check({**row, "rsi14": 80}, RULES)  # 過熱
+    assert rules.entry_check({**row, "close": 95}, RULES)  # トレンド割れ
+    assert rules.entry_check({**row, "sma20": float("nan")}, RULES) == ["データ不足"]
+
+    ex = lambda **kw: rules.exit_check({**row, **kw}, 100, kw.pop("peak", 110), 10, False, RULES)
+    assert ex(close=91) == ("stop_loss", 1.0)
+    assert ex(close=101, peak=125) == ("trailing_stop", 1.0)
+    assert ex(close=125) == ("take_profit", 0.5)
+    assert ex(close=105) is None
+    assert rules.sell_qty(1, 0.5) == 1 and rules.sell_qty(15, 0.5) == 7
+
+
+def rise_then_crash(n_up=300, n_down=60):
+    up = np.linspace(100, 200, n_up)
+    down = np.linspace(200, 120, n_down)
+    return bars(np.concatenate([up, down]), start="2018-01-01")
+
+
+def test_backtest_trades_and_loss_analysis():
+    from trader import backtest
+    frames = {"UP": rise_then_crash(), "DOWN": bars(np.linspace(200, 100, 360), start="2018-01-01")}
+    start, end = frames["UP"].index[220].date(), frames["UP"].index[-1].date()
+    r = backtest.run(frames, RULES, start, end, initial_cash=1_000_000, slippage_bps=0)
+    tickers = {t["ticker"] for t in r["trades"]}
+    assert tickers == {"UP"}  # 下落トレンドの銘柄は買わない
+    first = r["trades"][0]
+    # 約定は「シグナルの翌日の寄付き」: 入口価格はエントリー日の始値
+    assert first["entry_price"] == pytest.approx(float(frames["UP"].loc[first["entry_date"], "Open"]), rel=1e-6)
+    reasons = {t["exit_reason"] for t in r["trades"]}
+    assert reasons & {"take_profit", "trailing_stop", "trend_break", "stop_loss"}
+    assert r["metrics"]["trades"] == len(r["trades"]) and r["metrics"]["max_drawdown"] >= 0
+    assert set(r["analysis"]["by_exit_reason"]) == reasons
+    assert r["benchmark"]["total_return"] is not None
+
+
+def test_backtest_command_with_fx(tmp_path):
+    root = make_root(tmp_path, "paper")
+    frames = {"7203.T": rise_then_crash(), "MSFT": rise_then_crash(), "JPY=X": bars(np.full(360, 150.0), start="2018-01-01")}
+    out = cli.cmd_backtest(root, FakeData(frames), root / "config" / "rules.yaml", 1, None, ["7203.T", "MSFT"], "t")
+    assert out["tickers"] == 2
+    assert out["in_sample"]["metrics"] and out["out_of_sample"]["period"]["start"] > out["in_sample"]["period"]["end"]
+    assert (root / "reports" / "backtest" / "t" / "result.json").exists()
+
+
+def test_prep_reports_rule_signals(tmp_path):
+    root = make_root(tmp_path, "manual", sync={
+        "date": "2026-01-05", "cash_jpy": 0,
+        "positions": {"7203.T": {"qty": 10, "avg_cost": 2000}, "MSFT": {"qty": 1, "avg_cost": 400}},
+    })
+    frames = frames_for()
+    snap = cli.cmd_prep(root, FakeData(frames), frames["7203.T"].index[-1].date())
+    sig = {e["ticker"]: e for e in snap["rule_signals"]["exits"]}
+    assert sig["7203.T"]["signal"] == "stop_loss" and sig["7203.T"]["sell_qty"] == 10  # 1500 / 2000 = -25%
+    assert sig["MSFT"]["signal"] == "take_profit"  # 500 / 400 = +25%
+    assert snap["rule_signals"]["open_slots"] == 5  # 1株の利確は全売却になるので2枠とも空く

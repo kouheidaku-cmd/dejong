@@ -6,6 +6,7 @@ MarketData を満たすクラスなら差し替え可能 (テストでは合成�
 from __future__ import annotations
 
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
@@ -81,3 +82,30 @@ def fx_rates(data: MarketData, tickers, settings: dict) -> dict[str, float]:
             raise RuntimeError(f"為替レート {sym} を取得できませんでした")
         rates[c] = float(hist[sym]["Close"].iloc[-1])
     return rates
+
+
+class CachedData:
+    """取得した日足を data/cache/ に CSV で保存し、同じ日のうちは再利用する (バックテストの繰り返し用)。"""
+
+    def __init__(self, inner: MarketData, cache_dir: Path):
+        self.inner = inner
+        self.dir = cache_dir
+
+    def history(self, tickers: list[str], days: int) -> dict[str, pd.DataFrame]:
+        start = pd.Timestamp(date.today() - timedelta(days=days))
+        out, missing = {}, []
+        for t in tickers:
+            path = self.dir / f"{t}.csv"
+            if path.exists() and date.fromtimestamp(path.stat().st_mtime) == date.today():
+                df = pd.read_csv(path, index_col=0, parse_dates=True)
+                if not df.empty and df.index[0] <= start + pd.Timedelta(days=7):
+                    out[t] = df[df.index >= start]
+                    continue
+            missing.append(t)
+        if missing:
+            fetched = self.inner.history(missing, days)
+            self.dir.mkdir(parents=True, exist_ok=True)
+            for t, df in fetched.items():
+                df.to_csv(self.dir / f"{t}.csv")
+            out.update(fetched)
+        return out

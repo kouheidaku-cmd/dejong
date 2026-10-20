@@ -1,0 +1,24 @@
+# 機械的に判定できる売買ルール。バックテスト (python -m trader backtest) と日次のシグナルが同じものを使う。
+# 変更は improve-rules スキルで検証してから、人の了承を得て行う。履歴は config/rules_changelog.md。
+version: 1
+updated: 2026-10-20
+
+entry:                        # 新規買い: すべて満たしたとき (保有中の銘柄は買い増ししない)
+  require_trend: true         # 終値 > SMA50 かつ SMA50 > SMA200
+  min_ret_60d: 0.0            # 60日リターンがこれ以上 (モメンタムがプラス)
+  max_rsi: 70                 # RSI14 がこれ未満 (過熱していない)
+  max_gap_above_sma20: 0.08   # 終値が SMA20 より 8% 以上上なら見送り (高値づかみ防止)
+
+exit:                         # 売り: 上から順に判定し、最初に当たったもの
+  stop_loss: 0.08             # 取得単価から -8% で全売却
+  trailing_stop: 0.15         # 保有中の最高終値から -15% で全売却
+  trend_break: true           # 終値が SMA50 を trend_break_buffer 以上割り込んだら全売却
+  trend_break_buffer: 0.02
+  max_hold_days: null         # 保有日数の上限 (null で無効)
+  take_profit: 0.20           # 取得単価から +20% で一部利確 (1回だけ)
+  take_profit_fraction: 0.5
+
+sizing:
+  max_positions: 5            # 同時に持つ銘柄数
+  target_weight: 0.20         # 新規買い1銘柄の目標比率 (総資産比)
+  rank_by: ret_60d            # 買い候補が枠より多いときの優先順 (大きい順)

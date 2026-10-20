@@ -15,7 +15,8 @@ from pathlib import Path
 @dataclass
 class Portfolio:
     cash: float
-    positions: dict[str, dict] = field(default_factory=dict)  # ticker -> {qty, avg_cost, currency}
+    # ticker -> {qty, avg_cost, currency, opened (保有開始日), took_profit (一部利確済みか)}
+    positions: dict[str, dict] = field(default_factory=dict)
     pending: list[dict] = field(default_factory=list)
     peak_equity: float = 0.0
     next_order_id: int = 1
@@ -47,14 +48,15 @@ class Portfolio:
 
 
 def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
-               ccy: str, rate: float, fee: float = 0.0) -> float | None:
+               ccy: str, rate: float, fee: float = 0.0, day: str | None = None) -> float | None:
     """約定を口座に反映し、売りなら実現損益 (円) を返す。
 
     実現損益は取得単価を約定時のレートで円換算した概算 (為替差損益は区別しない)。
     """
     gross = price * qty * rate
     if side == "buy":
-        pos = pf.positions.setdefault(ticker, {"qty": 0, "avg_cost": 0.0, "currency": ccy})
+        pos = pf.positions.setdefault(
+            ticker, {"qty": 0, "avg_cost": 0.0, "currency": ccy, "opened": day, "took_profit": False})
         pos["avg_cost"] = (pos["avg_cost"] * pos["qty"] + price * qty) / (pos["qty"] + qty)
         pos["qty"] += qty
         pf.cash -= gross + fee
@@ -67,6 +69,8 @@ def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
     pos["qty"] -= qty
     if pos["qty"] == 0:
         del pf.positions[ticker]
+    else:
+        pos["took_profit"] = True  # 一部売却 = ルール上の利確とみなす
     pf.cash += gross - fee
     return round(pnl, 2)
 

@@ -65,7 +65,7 @@ class PaperBroker:
         if o["side"] == "buy" and price * o["qty"] * rate + fee > self.pf.cash:
             return {**ev, "status": "rejected:insufficient_cash"}
         try:
-            pnl = apply_fill(self.pf, o["ticker"], o["side"], o["qty"], price, ccy, rate, fee)
+            pnl = apply_fill(self.pf, o["ticker"], o["side"], o["qty"], price, ccy, rate, fee, day)
         except ValueError:
             return {**ev, "status": "rejected:insufficient_shares"}
         return {**ev, "status": "filled", "price": round(price, 4), "fx": rate,

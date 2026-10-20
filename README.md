@@ -11,19 +11,28 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 
 毎営業日 16:30 ごろ    /daily-trade
   prep    前回の注文案の確認 → 口座評価 (円換算) → 判断材料 snapshot.json
-  Claude  strategy.md と週次の仮説に沿って orders.json を書く
+  Claude  ルールのシグナル (rules.yaml) を基準に、裁量の見送りを加えて orders.json を書く
   submit  リスクチェック (コード) を通った注文だけ「注文案」にする
   Claude  注文案の表と日次レポートを書いて commit / push
 
 人                    楽天証券で発注 (米国株は当日夜、日本株は翌朝)
   → 約定照会や保有銘柄のスクショを送る → /sync-account で記録を更新
+
+ルールの見直し        /improve-rules
+  過去8年の日足で rules.yaml を仮想売買 → 損失トレードを分析 → 改善案を学習期間と検証期間で比較 → 人が了承したら反映
 ```
+
+売買ルールは3層 (詳しくは `config/strategy.md`):
+
+1. **絶対の上限** (`settings.yaml` の risk) — コードが強制
+2. **機械ルール** (`rules.yaml`) — いつ買う・売る・何株。毎日のシグナルとバックテストが同じコード (`trader/rules.py`) を使う
+3. **裁量** — Claude はシグナルの見送りと、仮説が崩れたときの売りだけできる
 
 | 担当 | 内容 |
 |---|---|
 | Claude (スキル) | 銘柄調査、投資仮説、売買判断、レポート、スクショの読み取り |
 | `trader/` (コード) | データ取得、指標計算、円換算、**リスク上限の強制**、記録 |
-| 人 | 発注、`strategy.md` (方針)、`settings.yaml` (上限値)、緊急停止 (`STOP`) |
+| 人 | 発注、ルール変更の了承 (`strategy.md`・`rules.yaml`・`settings.yaml`)、緊急停止 (`STOP`) |
 
 `trader/risk.py` がコードとして強制する主なルール: 1銘柄25%まで / 買付後に現金5%以上 /
 ドローダウン15%で新規買い停止 / ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
@@ -33,7 +42,9 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 ```
 config/
   settings.yaml   リスク上限・市場 (通貨・売買単位)・broker (manual / paper)
-  strategy.md     売買方針 (人間が書く)
+  strategy.md     売買ルールの全体像 (人間が書く)
+  rules.yaml      機械ルール (バックテスト対象)
+  rules_changelog.md  ルール変更の履歴
   watchlist.yaml  注目株 (週次で更新、新規買いはここの銘柄のみ)
   universe.yaml   スクリーニング母集団 (日本株30 + 米国株30)
 state/
@@ -43,8 +54,11 @@ state/
   sync/           楽天の画面から作った照合データ
 reports/daily/    日次の snapshot / orders / 結果 / レポート
 reports/weekly/   週次の screen / レポート
+reports/backtest/ バックテスト結果
+reports/rules/    ルール検証のレポート
+rules/candidates/ ルールの改善案
 trader/           Python パッケージ
-.claude/skills/   daily-trade, weekly-research, sync-account
+.claude/skills/   daily-trade, weekly-research, sync-account, improve-rules
 ```
 
 ## コマンド
@@ -57,6 +71,8 @@ python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録
 python -m trader sync state/sync/<日付>.yaml            # 保有一覧で上書き
 python -m trader status
 python -m trader screen                                 # 週次スクリーニング
+python -m trader backtest --years 8                     # 過去データで仮想売買 (学習/検証に分割)
+python -m trader backtest --rules rules/candidates/x.yaml --name x
 python -m pytest -q
 ```
 
