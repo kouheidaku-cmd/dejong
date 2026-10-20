@@ -1,0 +1,23 @@
+# 売買システムの設定。リスク上限はコード (trader/risk.py) で強制される。
+broker: paper            # paper のみ実装済み。実ブローカーは trader/broker/ に追加する
+timezone: Asia/Tokyo
+currency: JPY            # 通貨換算はしないので、ウォッチリストは同じ通貨の銘柄で揃えること
+initial_cash: 3000000
+
+history_days: 400        # 取得する日足の暦日数 (SMA200 の計算に足りる量)
+
+risk:
+  max_position_pct: 0.25     # 1銘柄あたりの評価額上限 (総資産比)
+  min_cash_pct: 0.10         # 常に残す現金比率
+  max_orders_per_day: 5
+  max_drawdown_pct: 0.15     # 最高値からこれ以上下落したら新規買いを停止 (売りは可)
+  buy_price_buffer: 0.03     # 成行買いの見積りに使う上振れ幅 (翌日ギャップアップ対策)
+  max_limit_deviation: 0.10  # 指値が前日終値から離れすぎていたら拒否
+
+execution:                   # ペーパートレードの約定条件
+  slippage_bps: 10
+  commission_bps: 0
+
+lot_size:                    # 売買単位。サフィックスで判定
+  default: 1
+  ".T": 100

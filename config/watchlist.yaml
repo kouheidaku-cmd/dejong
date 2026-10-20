@@ -1,0 +1,19 @@
+# 注目株リスト。週次リサーチ (weekly-research スキル) が更新する。
+# 新規買いはここに載っている銘柄だけが許可される (保有銘柄の売りはいつでも可)。
+updated: null
+tickers:
+  - ticker: 7203.T
+    name: トヨタ自動車
+    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+    risks: ""
+    added: null
+  - ticker: 6758.T
+    name: ソニーグループ
+    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+    risks: ""
+    added: null
+  - ticker: 8306.T
+    name: 三菱UFJフィナンシャル・グループ
+    thesis: 初期サンプル。最初の週次リサーチで見直すこと
+    risks: ""
+    added: null
