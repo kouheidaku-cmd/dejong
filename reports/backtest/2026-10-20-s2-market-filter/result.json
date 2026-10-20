@@ -1,0 +1,617 @@
+{
+  "rules": "rules/candidates/2026-10-20-s2-market-filter.yaml",
+  "rules_version": 1,
+  "tickers": 61,
+  "in_sample": {
+    "period": {
+      "start": "2018-10-22",
+      "end": "2024-05-26",
+      "days": 1454
+    },
+    "metrics": {
+      "final_equity": 1723552.0971,
+      "total_return": 0.7236,
+      "cagr": 0.1023,
+      "max_drawdown": 0.2545,
+      "sharpe": 0.6112,
+      "exposure": 0.7685,
+      "trades": 214,
+      "win_rate": 0.4579,
+      "avg_win_pct": 0.1883,
+      "avg_loss_pct": -0.0639,
+      "profit_factor": 1.2465,
+      "avg_holding_days": 48.5748
+    },
+    "benchmark": {
+      "total_return": 3.0506,
+      "max_drawdown": 0.2837
+    },
+    "yearly": {
+      "2018": {
+        "strategy": -0.1335,
+        "benchmark": -0.0982
+      },
+      "2019": {
+        "strategy": 0.1761,
+        "benchmark": 0.3214
+      },
+      "2020": {
+        "strategy": 0.1296,
+        "benchmark": 0.3934
+      },
+      "2021": {
+        "strategy": -0.1027,
+        "benchmark": 0.3754
+      },
+      "2022": {
+        "strategy": -0.051,
+        "benchmark": -0.1717
+      },
+      "2023": {
+        "strategy": 0.2675,
+        "benchmark": 0.6122
+      },
+      "2024": {
+        "strategy": 0.3871,
+        "benchmark": 0.3283
+      }
+    },
+    "analysis": {
+      "by_exit_reason": {
+        "stop_loss": {
+          "trades": 35,
+          "win_rate": 0.0,
+          "total_pnl": -771411.1443,
+          "avg_pnl_pct": -0.1061,
+          "avg_holding_days": 15.1143
+        },
+        "take_profit": {
+          "trades": 36,
+          "win_rate": 1.0,
+          "total_pnl": 786636.1865,
+          "avg_pnl_pct": 0.2285,
+          "avg_holding_days": 48.7778
+        },
+        "trailing_stop": {
+          "trades": 11,
+          "win_rate": 0.9091,
+          "total_pnl": 264783.2238,
+          "avg_pnl_pct": 0.2581,
+          "avg_holding_days": 71.7273
+        },
+        "trend_break": {
+          "trades": 132,
+          "win_rate": 0.3939,
+          "total_pnl": 88202.2121,
+          "avg_pnl_pct": 0.028,
+          "avg_holding_days": 55.4621
+        }
+      },
+      "entry_features_losers_vs_winners": {
+        "entry_rsi14": {
+          "losers": 56.9201,
+          "winners": 59.0921
+        },
+        "entry_ret_60d": {
+          "losers": 0.2539,
+          "winners": 0.2778
+        },
+        "entry_gap_sma20": {
+          "losers": 0.0149,
+          "winners": 0.0196
+        }
+      },
+      "worst_tickers": {
+        "9984.T": -83583.7679,
+        "6501.T": -65717.0485,
+        "8035.T": -61019.3191,
+        "8306.T": -49355.1869,
+        "6861.T": -44832.35
+      },
+      "best_tickers": {
+        "VRT": 145829.2362,
+        "6146.T": 101566.7535,
+        "ANET": 95909.8571,
+        "AMD": 94017.0724,
+        "NVDA": 79806.2325
+      },
+      "worst_trades": [
+        {
+          "ticker": "8035.T",
+          "entry_date": "2024-04-16",
+          "exit_date": "2024-04-22",
+          "qty": 40,
+          "entry_price": 7669.662,
+          "exit_price": 6559.434,
+          "pnl": -44409.12,
+          "pnl_pct": -0.1448,
+          "holding_days": 6,
+          "exit_reason": "stop_loss",
+          "entry_close": 7858.0,
+          "entry_rsi14": 56.8291,
+          "entry_ret_60d": 0.4888,
+          "entry_gap_sma20": 0.011794396374124494
+        },
+        {
+          "ticker": "9984.T",
+          "entry_date": "2020-02-27",
+          "exit_date": "2020-03-09",
+          "qty": 149,
+          "entry_price": 1346.5952,
+          "exit_price": 1089.6592,
+          "pnl": -38283.464,
+          "pnl_pct": -0.1908,
+          "holding_days": 11,
+          "exit_reason": "stop_loss",
+          "entry_close": 1353.75,
+          "entry_rsi14": 58.638,
+          "entry_ret_60d": 0.2747,
+          "entry_gap_sma20": 0.06346416331981497
+        },
+        {
+          "ticker": "TSLA",
+          "entry_date": "2021-01-28",
+          "exit_date": "2021-02-23",
+          "qty": 7,
+          "entry_price": 28494.2195,
+          "exit_price": 23147.8486,
+          "pnl": -37424.5966,
+          "pnl_pct": -0.1876,
+          "holding_days": 26,
+          "exit_reason": "stop_loss",
+          "entry_close": 29843.1898,
+          "entry_rsi14": 66.3678,
+          "entry_ret_60d": 1.0891,
+          "entry_gap_sma20": 0.06795482176531409
+        },
+        {
+          "ticker": "4519.T",
+          "entry_date": "2020-02-19",
+          "exit_date": "2020-03-13",
+          "qty": 53,
+          "entry_price": 3967.2966,
+          "exit_price": 3288.708,
+          "pnl": -35965.195,
+          "pnl_pct": -0.171,
+          "holding_days": 23,
+          "exit_reason": "stop_loss",
+          "entry_close": 3911.6667,
+          "entry_rsi14": 64.6063,
+          "entry_ret_60d": 0.2744,
+          "entry_gap_sma20": 0.03417127467737746
+        },
+        {
+          "ticker": "8035.T",
+          "entry_date": "2022-01-06",
+          "exit_date": "2022-01-24",
+          "qty": 45,
+          "entry_price": 4404.4,
+          "exit_price": 3730.9321,
+          "pnl": -30306.0563,
+          "pnl_pct": -0.1529,
+          "holding_days": 18,
+          "exit_reason": "stop_loss",
+          "entry_close": 4497.3335,
+          "entry_rsi14": 66.3907,
+          "entry_ret_60d": 0.47,
+          "entry_gap_sma20": 0.06096711410979272
+        },
+        {
+          "ticker": "8306.T",
+          "entry_date": "2023-02-27",
+          "exit_date": "2023-03-14",
+          "qty": 202,
+          "entry_price": 970.4695,
+          "exit_price": 831.3678,
+          "pnl": -28098.5409,
+          "pnl_pct": -0.1433,
+          "holding_days": 15,
+          "exit_reason": "trend_break",
+          "entry_close": 963.0,
+          "entry_rsi14": 53.9952,
+          "entry_ret_60d": 0.2808,
+          "entry_gap_sma20": 0.002498438475952547
+        },
+        {
+          "ticker": "9984.T",
+          "entry_date": "2021-02-25",
+          "exit_date": "2021-03-25",
+          "qty": 92,
+          "entry_price": 2572.57,
+          "exit_price": 2285.2125,
+          "pnl": -26436.89,
+          "pnl_pct": -0.1117,
+          "holding_days": 28,
+          "exit_reason": "stop_loss",
+          "entry_close": 2495.5,
+          "entry_rsi14": 61.7931,
+          "entry_ret_60d": 0.453,
+          "entry_gap_sma20": 0.060099191809772634
+        },
+        {
+          "ticker": "NVDA",
+          "entry_date": "2024-04-05",
+          "exit_date": "2024-04-22",
+          "qty": 24,
+          "entry_price": 13155.2732,
+          "exit_price": 12065.9239,
+          "pnl": -26144.3834,
+          "pnl_pct": -0.0828,
+          "holding_days": 17,
+          "exit_reason": "stop_loss",
+          "entry_close": 13021.5651,
+          "entry_rsi14": 50.4945,
+          "entry_ret_60d": 0.722,
+          "entry_gap_sma20": -0.03540591859050368
+        },
+        {
+          "ticker": "6098.T",
+          "entry_date": "2020-11-26",
+          "exit_date": "2020-12-03",
+          "qty": 48,
+          "entry_price": 4603.599,
+          "exit_price": 4059.936,
+          "pnl": -26095.824,
+          "pnl_pct": -0.1181,
+          "holding_days": 7,
+          "exit_reason": "stop_loss",
+          "entry_close": 4575.0,
+          "entry_rsi14": 56.3341,
+          "entry_ret_60d": 0.2135,
+          "entry_gap_sma20": 0.029501113886451158
+        },
+        {
+          "ticker": "8058.T",
+          "entry_date": "2024-04-16",
+          "exit_date": "2024-05-09",
+          "qty": 88,
+          "entry_price": 3613.61,
+          "exit_price": 3317.679,
+          "pnl": -26041.928,
+          "pnl_pct": -0.0819,
+          "holding_days": 23,
+          "exit_reason": "stop_loss",
+          "entry_close": 3634.0,
+          "entry_rsi14": 68.3831,
+          "entry_ret_60d": 0.4245,
+          "entry_gap_sma20": 0.031902659264833266
+        }
+      ]
+    },
+    "open_positions": [
+      {
+        "ticker": "VRT",
+        "qty": 20,
+        "avg_cost": 6096.4698,
+        "close": 16665.8239,
+        "unrealized_pct": 1.7337
+      },
+      {
+        "ticker": "8766.T",
+        "qty": 957,
+        "avg_cost": 312.8459,
+        "close": 344.0,
+        "unrealized_pct": 0.0996
+      },
+      {
+        "ticker": "8031.T",
+        "qty": 83,
+        "avg_cost": 3600.597,
+        "close": 4087.0,
+        "unrealized_pct": 0.1351
+      },
+      {
+        "ticker": "NVDA",
+        "qty": 12,
+        "avg_cost": 13431.9337,
+        "close": 16712.7594,
+        "unrealized_pct": 0.2443
+      },
+      {
+        "ticker": "6098.T",
+        "qty": 43,
+        "avg_cost": 7038.031,
+        "close": 7838.0,
+        "unrealized_pct": 0.1137
+      }
+    ]
+  },
+  "out_of_sample": {
+    "period": {
+      "start": "2024-05-27",
+      "end": "2026-10-20",
+      "days": 625
+    },
+    "metrics": {
+      "final_equity": 1010598.1321,
+      "total_return": 0.0106,
+      "cagr": 0.0044,
+      "max_drawdown": 0.3352,
+      "sharpe": 0.1285,
+      "exposure": 0.8167,
+      "trades": 112,
+      "win_rate": 0.3839,
+      "avg_win_pct": 0.1885,
+      "avg_loss_pct": -0.0658,
+      "profit_factor": 0.9217,
+      "avg_holding_days": 41.1161
+    },
+    "benchmark": {
+      "total_return": 0.48,
+      "max_drawdown": 0.2311
+    },
+    "yearly": {
+      "2024": {
+        "strategy": -0.1183,
+        "benchmark": 0.0978
+      },
+      "2025": {
+        "strategy": -0.0348,
+        "benchmark": 0.1603
+      },
+      "2026": {
+        "strategy": 0.1876,
+        "benchmark": 0.1618
+      }
+    },
+    "analysis": {
+      "by_exit_reason": {
+        "stop_loss": {
+          "trades": 22,
+          "win_rate": 0.0,
+          "total_pnl": -352799.8689,
+          "avg_pnl_pct": -0.0986,
+          "avg_holding_days": 16.8636
+        },
+        "take_profit": {
+          "trades": 16,
+          "win_rate": 1.0,
+          "total_pnl": 311436.4819,
+          "avg_pnl_pct": 0.251,
+          "avg_holding_days": 38.5625
+        },
+        "trailing_stop": {
+          "trades": 11,
+          "win_rate": 0.7273,
+          "total_pnl": 185505.884,
+          "avg_pnl_pct": 0.2092,
+          "avg_holding_days": 71.6364
+        },
+        "trend_break": {
+          "trades": 63,
+          "win_rate": 0.3016,
+          "total_pnl": -200569.7402,
+          "avg_pnl_pct": -0.0092,
+          "avg_holding_days": 44.9048
+        }
+      },
+      "entry_features_losers_vs_winners": {
+        "entry_rsi14": {
+          "losers": 57.5342,
+          "winners": 60.221
+        },
+        "entry_ret_60d": {
+          "losers": 0.3437,
+          "winners": 0.3823
+        },
+        "entry_gap_sma20": {
+          "losers": 0.0151,
+          "winners": 0.0258
+        }
+      },
+      "worst_tickers": {
+        "8035.T": -69654.05,
+        "6501.T": -40411.083,
+        "NFLX": -37865.2824,
+        "ORCL": -36796.37,
+        "8316.T": -33980.8207
+      },
+      "best_tickers": {
+        "6981.T": 75971.969,
+        "9984.T": 70972.255,
+        "6098.T": 44270.573,
+        "CSCO": 41790.5467,
+        "8766.T": 31288.0327
+      },
+      "worst_trades": [
+        {
+          "ticker": "8316.T",
+          "entry_date": "2024-08-02",
+          "exit_date": "2024-08-05",
+          "qty": 104,
+          "entry_price": 1683.3483,
+          "exit_price": 1358.973,
+          "pnl": -33735.0262,
+          "pnl_pct": -0.1927,
+          "holding_days": 3,
+          "exit_reason": "trend_break",
+          "entry_close": 1813.3334,
+          "entry_rsi14": 54.3993,
+          "entry_ret_60d": 0.2362,
+          "entry_gap_sma20": -0.002063691851661442
+        },
+        {
+          "ticker": "8035.T",
+          "entry_date": "2025-07-09",
+          "exit_date": "2025-08-04",
+          "qty": 27,
+          "entry_price": 5531.526,
+          "exit_price": 4289.706,
+          "pnl": -33529.14,
+          "pnl_pct": -0.2245,
+          "holding_days": 26,
+          "exit_reason": "stop_loss",
+          "entry_close": 5453.0,
+          "entry_rsi14": 66.3577,
+          "entry_ret_60d": 0.3865,
+          "entry_gap_sma20": 0.06374055108510124
+        },
+        {
+          "ticker": "6501.T",
+          "entry_date": "2024-08-02",
+          "exit_date": "2024-08-05",
+          "qty": 54,
+          "entry_price": 3239.236,
+          "exit_price": 2837.6595,
+          "pnl": -21685.131,
+          "pnl_pct": -0.124,
+          "holding_days": 3,
+          "exit_reason": "trend_break",
+          "entry_close": 3463.0,
+          "entry_rsi14": 50.6892,
+          "entry_ret_60d": 0.2198,
+          "entry_gap_sma20": -0.02238658498715529
+        },
+        {
+          "ticker": "NFLX",
+          "entry_date": "2025-02-04",
+          "exit_date": "2025-03-07",
+          "qty": 11,
+          "entry_price": 15239.6673,
+          "exit_price": 13281.4719,
+          "pnl": -21540.1495,
+          "pnl_pct": -0.1285,
+          "holding_days": 31,
+          "exit_reason": "stop_loss",
+          "entry_close": 15209.1057,
+          "entry_rsi14": 64.7741,
+          "entry_ret_60d": 0.3219,
+          "entry_gap_sma20": 0.06838244271173499
+        },
+        {
+          "ticker": "8035.T",
+          "entry_date": "2026-07-07",
+          "exit_date": "2026-07-21",
+          "qty": 13,
+          "entry_price": 14356.342,
+          "exit_price": 12857.13,
+          "pnl": -19489.756,
+          "pnl_pct": -0.1044,
+          "holding_days": 14,
+          "exit_reason": "stop_loss",
+          "entry_close": 14464.0,
+          "entry_rsi14": 56.1421,
+          "entry_ret_60d": 0.8814,
+          "entry_gap_sma20": 0.005226287112198413
+        },
+        {
+          "ticker": "ABBV",
+          "entry_date": "2025-02-24",
+          "exit_date": "2025-04-07",
+          "qty": 5,
+          "entry_price": 30180.9279,
+          "exit_price": 26301.4078,
+          "pnl": -19397.6005,
+          "pnl_pct": -0.1285,
+          "holding_days": 42,
+          "exit_reason": "stop_loss",
+          "entry_close": 30192.3699,
+          "entry_rsi14": 65.9558,
+          "entry_ret_60d": 0.1321,
+          "entry_gap_sma20": 0.04462456424081762
+        },
+        {
+          "ticker": "6098.T",
+          "entry_date": "2024-08-02",
+          "exit_date": "2024-08-05",
+          "qty": 21,
+          "entry_price": 7988.981,
+          "exit_price": 7086.906,
+          "pnl": -18943.575,
+          "pnl_pct": -0.1129,
+          "holding_days": 3,
+          "exit_reason": "trend_break",
+          "entry_close": 8431.0,
+          "entry_rsi14": 45.2415,
+          "entry_ret_60d": 0.1981,
+          "entry_gap_sma20": -0.05550887805970983
+        },
+        {
+          "ticker": "AMD",
+          "entry_date": "2025-11-17",
+          "exit_date": "2025-11-21",
+          "qty": 4,
+          "entry_price": 37563.0359,
+          "exit_price": 32827.361,
+          "pnl": -18942.6997,
+          "pnl_pct": -0.1261,
+          "holding_days": 4,
+          "exit_reason": "stop_loss",
+          "entry_close": 38164.9693,
+          "entry_rsi14": 56.4145,
+          "entry_ret_60d": 0.5825,
+          "entry_gap_sma20": 0.0044671333102135335
+        },
+        {
+          "ticker": "6501.T",
+          "entry_date": "2024-06-14",
+          "exit_date": "2024-07-26",
+          "qty": 56,
+          "entry_price": 3363.36,
+          "exit_price": 3028.968,
+          "pnl": -18725.952,
+          "pnl_pct": -0.0994,
+          "holding_days": 42,
+          "exit_reason": "stop_loss",
+          "entry_close": 3383.0,
+          "entry_rsi14": 68.2278,
+          "entry_ret_60d": 0.3581,
+          "entry_gap_sma20": 0.06070107230200028
+        },
+        {
+          "ticker": "8031.T",
+          "entry_date": "2024-05-28",
+          "exit_date": "2024-06-14",
+          "qty": 49,
+          "entry_price": 4075.5715,
+          "exit_price": 3697.299,
+          "pnl": -18535.3525,
+          "pnl_pct": -0.0928,
+          "holding_days": 17,
+          "exit_reason": "stop_loss",
+          "entry_close": 4071.5,
+          "entry_rsi14": 64.8124,
+          "entry_ret_60d": 0.2345,
+          "entry_gap_sma20": 0.03428128691366794
+        }
+      ]
+    },
+    "open_positions": [
+      {
+        "ticker": "MSFT",
+        "qty": 2,
+        "avg_cost": 75927.905,
+        "close": 84192.6601,
+        "unrealized_pct": 0.1089
+      },
+      {
+        "ticker": "9432.T",
+        "qty": 1117,
+        "avg_cost": 172.9728,
+        "close": 177.1,
+        "unrealized_pct": 0.0239
+      },
+      {
+        "ticker": "6098.T",
+        "qty": 11,
+        "avg_cost": 16461.445,
+        "close": 18800.0,
+        "unrealized_pct": 0.1421
+      },
+      {
+        "ticker": "CRM",
+        "qty": 5,
+        "avg_cost": 37014.5565,
+        "close": 38260.0642,
+        "unrealized_pct": 0.0336
+      },
+      {
+        "ticker": "6702.T",
+        "qty": 46,
+        "avg_cost": 4088.084,
+        "close": 4391.0,
+        "unrealized_pct": 0.0741
+      }
+    ]
+  }
+}

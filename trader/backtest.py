@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from .config import currency
-from .rules import entry_check, exit_check, features, sell_qty
+from .rules import attach_market, entry_check, exit_check, features, sell_qty
 
 
 def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], settings: dict) -> dict[str, pd.DataFrame]:
@@ -34,9 +34,16 @@ def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], 
 
 
 def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
-        initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0) -> dict:
+        initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0,
+        market: dict[str, pd.Series] | None = None) -> dict:
+    """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。"""
     slip, comm = slippage_bps / 10_000, commission_bps / 10_000
-    feats = {t: features(df).to_dict("index") for t, df in frames.items()}
+    feats = {}
+    for t, df in frames.items():
+        f = features(df)
+        if market and t in market:
+            f = attach_market(f, market[t])
+        feats[t] = f.to_dict("index")
     start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
     dates = sorted({d for f in feats.values() for d in f if start_ts <= d <= end_ts})
     sz = rules["sizing"]
@@ -120,10 +127,12 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
          "unrealized_pct": _r(last_close.get(t, p["avg_cost"]) / p["avg_cost"] - 1)}
         for t, p in pos.items()
     ]
+    bh = buy_and_hold(frames, start_ts, end_ts)
     return {
         "period": {"start": start.isoformat(), "end": end.isoformat(), "days": len(dates)},
         "metrics": metrics(eq, trades, initial_cash),
-        "benchmark": benchmark(frames, start_ts, end_ts),
+        "benchmark": benchmark(bh),
+        "yearly": yearly(eq["equity"] / initial_cash if not eq.empty else pd.Series(dtype=float), bh),
         "analysis": analyze(trades),
         "open_positions": open_positions,
         "trades": trades,
@@ -167,17 +176,34 @@ def metrics(eq: pd.DataFrame, trades: list[dict], initial_cash: float) -> dict:
     }
 
 
-def benchmark(frames: dict[str, pd.DataFrame], start: pd.Timestamp, end: pd.Timestamp) -> dict:
-    """母集団を期間の最初に均等に買って持ち続けた場合。"""
+def buy_and_hold(frames: dict[str, pd.DataFrame], start: pd.Timestamp, end: pd.Timestamp) -> pd.Series:
+    """母集団を期間の最初に均等に買って持ち続けた場合の資産推移 (初期値1)。"""
     curves = []
     for df in frames.values():
         c = df["Close"][(df.index >= start) & (df.index <= end)].dropna()
         if len(c) > 1:
             curves.append(c / c.iloc[0])
     if not curves:
+        return pd.Series(dtype=float)
+    return pd.concat(curves, axis=1).sort_index().ffill().mean(axis=1)
+
+
+def benchmark(bh: pd.Series) -> dict:
+    if bh.empty:
         return {}
-    bh = pd.concat(curves, axis=1).sort_index().ffill().mean(axis=1)
     return {"total_return": _r(bh.iloc[-1] - 1), "max_drawdown": _r((1 - bh / bh.cummax()).max())}
+
+
+def yearly(curve: pd.Series, bh: pd.Series) -> dict:
+    """暦年ごとのリターン (戦略とベンチマーク)。どの年に勝ち負けしたかを見るため。"""
+    def by_year(s):
+        if s.empty:
+            return {}
+        ends = s.groupby(s.index.year).last()
+        starts = ends.shift(1).fillna(s.iloc[0])
+        return {int(y): _r(ends[y] / starts[y] - 1) for y in ends.index}
+    st, b = by_year(curve), by_year(bh)
+    return {y: {"strategy": st.get(y), "benchmark": b.get(y)} for y in sorted(set(st) | set(b))}
 
 
 def analyze(trades: list[dict]) -> dict:

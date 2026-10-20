@@ -293,3 +293,21 @@ def test_rule_ref_resets_stop_loss_baseline(tmp_path):
     src.write_text(yaml.safe_dump({"cash_jpy": 0, "positions": {"7203.T": {"qty": 10, "avg_cost": 2000}}}))
     cli.cmd_sync(root, last.date(), src)
     assert Portfolio.load(root / "state" / "portfolio.json").positions["7203.T"]["rule_ref"] == 1500
+
+
+def test_market_filter_blocks_entries():
+    from trader import backtest, rules
+    mf_rules = {**RULES, "entry": {**RULES["entry"], "market_filter": {"sma": 200, "indices": {"JPY": "^N225"}}}}
+    row = {"close": 110, "sma20": 105, "sma50": 100, "sma200": 90, "rsi14": 60, "ret_60d": 0.1}
+    assert rules.entry_check({**row, "market_ok": 1.0}, mf_rules) == []
+    assert "下降トレンド" in rules.entry_check({**row, "market_ok": 0.0}, mf_rules)[0]
+    assert rules.entry_check({**row, "market_ok": float("nan")}, mf_rules) == ["市場指数のデータ不足"]
+
+    frames = {"UP": rise_then_crash()}
+    start, end = frames["UP"].index[220].date(), frames["UP"].index[-1].date()
+    falling_index = bars(np.linspace(200, 100, 360), start="2018-01-01")
+    down = rules.market_regime(falling_index, 200)
+    r = backtest.run(frames, mf_rules, start, end, market={"UP": down})
+    assert r["trades"] == [] and r["metrics"]["total_return"] == 0  # 指数が下降トレンドなので一度も買わない
+    r = backtest.run(frames, RULES, start, end)
+    assert r["trades"] and set(r["yearly"]) == {2018, 2019}

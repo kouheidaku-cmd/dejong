@@ -28,6 +28,20 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
     }, index=df.index)
 
 
+def market_regime(index_df: pd.DataFrame, sma: int) -> pd.Series:
+    """市場指数が上昇トレンドか (終値 > SMA)。その日の終値時点で分かる情報だけ。"""
+    c = index_df["Close"]
+    ma = c.rolling(sma).mean()
+    return (c > ma).where(ma.notna())
+
+
+def attach_market(f: pd.DataFrame, regime: pd.Series) -> pd.DataFrame:
+    """銘柄の特徴量に、その日の市場指数の判定 (market_ok) を付ける。"""
+    f = f.copy()
+    f["market_ok"] = regime.reindex(f.index, method="ffill")
+    return f
+
+
 def _missing(row, *keys) -> bool:
     return any(row.get(k) is None or math.isnan(row[k]) for k in keys)
 
@@ -47,6 +61,13 @@ def entry_check(row: dict, rules: dict) -> list[str]:
     gap = row["close"] / row["sma20"] - 1
     if gap > e.get("max_gap_above_sma20", math.inf):
         fails.append(f"SMA20 から +{gap:.1%} 乖離")
+    mf = e.get("market_filter")
+    if mf:
+        ok = row.get("market_ok")
+        if ok is None or ok != ok:  # NaN
+            fails.append("市場指数のデータ不足")
+        elif not ok:
+            fails.append(f"市場全体が下降トレンド (指数 < SMA{mf['sma']})")
     return fails
 
 

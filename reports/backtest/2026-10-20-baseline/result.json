@@ -26,6 +26,36 @@
       "total_return": 3.0506,
       "max_drawdown": 0.2837
     },
+    "yearly": {
+      "2018": {
+        "strategy": -0.0454,
+        "benchmark": -0.0982
+      },
+      "2019": {
+        "strategy": 0.219,
+        "benchmark": 0.3214
+      },
+      "2020": {
+        "strategy": 0.2205,
+        "benchmark": 0.3934
+      },
+      "2021": {
+        "strategy": -0.1026,
+        "benchmark": 0.3754
+      },
+      "2022": {
+        "strategy": -0.1642,
+        "benchmark": -0.1717
+      },
+      "2023": {
+        "strategy": 0.3244,
+        "benchmark": 0.6122
+      },
+      "2024": {
+        "strategy": 0.3709,
+        "benchmark": 0.3283
+      }
+    },
     "analysis": {
       "by_exit_reason": {
         "stop_loss": {
@@ -309,6 +339,20 @@
     "benchmark": {
       "total_return": 0.48,
       "max_drawdown": 0.2311
+    },
+    "yearly": {
+      "2024": {
+        "strategy": -0.0983,
+        "benchmark": 0.0978
+      },
+      "2025": {
+        "strategy": -0.1005,
+        "benchmark": 0.1603
+      },
+      "2026": {
+        "strategy": 0.1493,
+        "benchmark": 0.1618
+      }
     },
     "analysis": {
       "by_exit_reason": {

@@ -71,6 +71,7 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
     record_equity(p.equity, day.isoformat(), pf.cash, equity)
     pf.save(p.portfolio)
 
+    rule_set = rules.load_rules(root / "config" / "rules.yaml")
     summaries = {t: indicators.summarize(df) for t, df in hist.items()}
     latest_bars: dict[str, str] = {}
     for t, df in hist.items():
@@ -113,7 +114,8 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
              "currency": config.currency(w["ticker"], settings), "indicators": summaries.get(w["ticker"])}
             for w in watchlist
         ],
-        "rule_signals": rule_signals(pf, hist, prices, fx, equity, watchlist, rules.load_rules(root / "config" / "rules.yaml"), settings, day),
+        "rule_signals": rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day,
+                                     market_regimes(data, hist, rule_set, settings, settings["history_days"])),
         "risk_limits": settings["risk"],
     }
     out = p.daily(day)
@@ -122,7 +124,17 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
     return snapshot
 
 
-def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day) -> dict:
+def market_regimes(data: MarketData, tickers, rule_set: dict, settings: dict, days: int) -> dict[str, pd.Series]:
+    """entry.market_filter を使うとき、銘柄ごとに対応する市場指数の判定を返す。"""
+    mf = rule_set["entry"].get("market_filter")
+    if not mf:
+        return {}
+    hist = data.history(sorted(set(mf["indices"].values())), days)
+    reg = {c: rules.market_regime(hist[sym], mf["sma"]) for c, sym in mf["indices"].items() if sym in hist}
+    return {t: reg[config.currency(t, settings)] for t in tickers if config.currency(t, settings) in reg}
+
+
+def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None) -> dict:
     """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。"""
     exits = []
     for t, pos in pf.positions.items():
@@ -150,14 +162,19 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
         t = w["ticker"]
         if t in pf.positions or t not in hist:
             continue
-        row = rules.features(hist[t]).iloc[-1].to_dict()
+        f = rules.features(hist[t])
+        if market and t in market:
+            f = rules.attach_market(f, market[t])
+        row = f.iloc[-1].to_dict()
         fails = rules.entry_check(row, rule_set)
         unit = prices[t] * fx[config.currency(t, settings)]
         entries.append({"ticker": t, "ok": not fails, "fails": fails,
                         "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
                         "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0})
     entries.sort(key=lambda e: (not e["ok"], -e["rank_value"]))
-    return {"rules_version": rule_set.get("version"), "open_slots": max(slots, 0), "exits": exits, "entries": entries}
+    market_ok = {config.currency(t, settings): bool(m.iloc[-1]) for t, m in (market or {}).items() if m.notna().iloc[-1]}
+    return {"rules_version": rule_set.get("version"), "market_uptrend": market_ok,
+            "open_slots": max(slots, 0), "exits": exits, "entries": entries}
 
 
 def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force: bool) -> dict:
@@ -293,17 +310,18 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
     ex = settings.get("execution", {})
     kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
 
+    market = market_regimes(data, frames, rule_set, settings, years * 365 + 300)
     out_dir = root / "reports" / "backtest" / name
     out_dir.mkdir(parents=True, exist_ok=True)
     result = {"rules": str(rules_path), "rules_version": rule_set.get("version"), "tickers": len(frames)}
     for label, a, b in [("in_sample", first, split_ts - pd.Timedelta(days=1)), ("out_of_sample", split_ts, last)]:
-        r = backtest.run(frames, rule_set, a.date(), b.date(), **kw)
+        r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, **kw)
         pd.DataFrame(r.pop("trades")).to_csv(out_dir / f"trades_{label}.csv", index=False)
         r.pop("equity_curve").to_csv(out_dir / f"equity_{label}.csv")
         result[label] = r
     _write_json(out_dir / "result.json", result)
     for label in ("in_sample", "out_of_sample"):  # 画面には要点だけ出す
-        result[label] = {k: result[label][k] for k in ("period", "metrics", "benchmark")} | {
+        result[label] = {k: result[label][k] for k in ("period", "metrics", "benchmark", "yearly")} | {
             "by_exit_reason": result[label]["analysis"].get("by_exit_reason")}
     result["output"] = str(out_dir)
     return result
