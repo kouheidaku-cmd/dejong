@@ -15,7 +15,8 @@ from pathlib import Path
 @dataclass
 class Portfolio:
     cash: float
-    # ticker -> {qty, avg_cost, currency, opened (保有開始日), took_profit (一部利確済みか)}
+    # ticker -> {qty, avg_cost, currency, opened (保有開始日), took_profit (一部利確済みか),
+    #            rule_ref (損切り・利確の基準価格。なければ avg_cost)}
     positions: dict[str, dict] = field(default_factory=dict)
     pending: list[dict] = field(default_factory=list)
     peak_equity: float = 0.0

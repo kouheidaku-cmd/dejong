@@ -131,13 +131,16 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
             continue
         f = rules.features(hist[t])
         opened = pd.Timestamp(pos.get("opened") or f.index[-1])
-        peak = max(f.loc[f.index >= opened, "close"].max(), pos["avg_cost"]) if (f.index >= opened).any() else pos["avg_cost"]
-        sig = rules.exit_check(f.iloc[-1].to_dict(), pos["avg_cost"], peak, (pd.Timestamp(day) - opened).days,
+        ref = pos.get("rule_ref") or pos["avg_cost"]  # 損切り・利確の基準価格 (既存保有は起点日の価格)
+        peak = max(f.loc[f.index >= opened, "close"].max(), ref) if (f.index >= opened).any() else ref
+        sig = rules.exit_check(f.iloc[-1].to_dict(), ref, peak, (pd.Timestamp(day) - opened).days,
                                pos.get("took_profit", False), rule_set)
         exits.append({
             "ticker": t, "signal": sig[0] if sig else None,
             "sell_qty": rules.sell_qty(pos["qty"], sig[1]) if sig else 0,
             "return_from_cost": round(prices[t] / pos["avg_cost"] - 1, 4),
+            "rule_ref": ref,
+            "return_from_ref": round(prices[t] / ref - 1, 4),
             "drawdown_from_peak": round(prices[t] / peak - 1, 4),
         })
     sz = rule_set["sizing"]
@@ -243,6 +246,7 @@ def _apply_sync(pf: Portfolio, spec: dict, settings: dict) -> None:
             "qty": int(v["qty"]), "avg_cost": float(v["avg_cost"]), "currency": config.currency(t, settings),
             "opened": prev.get("opened") or str(spec.get("date") or ""),
             "took_profit": bool(prev.get("took_profit", False)),
+            "rule_ref": float(v["rule_ref"]) if v.get("rule_ref") else prev.get("rule_ref"),
         }
 
 

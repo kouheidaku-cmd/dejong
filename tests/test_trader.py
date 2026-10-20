@@ -272,3 +272,24 @@ def test_prep_reports_rule_signals(tmp_path):
     assert sig["7203.T"]["signal"] == "stop_loss" and sig["7203.T"]["sell_qty"] == 10  # 1500 / 2000 = -25%
     assert sig["MSFT"]["signal"] == "take_profit"  # 500 / 400 = +25%
     assert snap["rule_signals"]["open_slots"] == 5  # 1株の利確は全売却になるので2枠とも空く
+
+
+def test_rule_ref_resets_stop_loss_baseline(tmp_path):
+    frames = frames_for()
+    last = frames["7203.T"].index[-1]
+    root = make_root(tmp_path, "manual", sync={
+        "date": last.date().isoformat(), "cash_jpy": 0,
+        # 取得単価からは -25% / +25% だが、基準価格を今日の終値にしたので損切りも利確も出ない
+        "positions": {"7203.T": {"qty": 10, "avg_cost": 2000, "rule_ref": 1500},
+                      "MSFT": {"qty": 2, "avg_cost": 400, "rule_ref": 500}},
+    })
+    snap = cli.cmd_prep(root, FakeData(frames), last.date())
+    sig = {e["ticker"]: e for e in snap["rule_signals"]["exits"]}
+    assert sig["7203.T"]["signal"] is None and sig["7203.T"]["return_from_cost"] == -0.25
+    assert sig["MSFT"]["signal"] is None and sig["MSFT"]["return_from_ref"] == 0.0
+
+    # 基準価格は以後の sync でも引き継がれる
+    src = root / "s.yaml"
+    src.write_text(yaml.safe_dump({"cash_jpy": 0, "positions": {"7203.T": {"qty": 10, "avg_cost": 2000}}}))
+    cli.cmd_sync(root, last.date(), src)
+    assert Portfolio.load(root / "state" / "portfolio.json").positions["7203.T"]["rule_ref"] == 1500

@@ -4,9 +4,10 @@ date: 2026-10-20
 cash_jpy: 452
 # 投資信託は売買の対象外。合計資産の表示にだけ使う
 other_assets_jpy: 20410
+# rule_ref: 損切り・利確ルールの基準価格。既存の保有は「今日を起点にする」方針で、この日の画面の現在値を使う
 positions:
-  8035.T: {qty: 15, avg_cost: 11342.26}   # 東京エレクトロン
-  9434.T: {qty: 200, avg_cost: 223.50}    # ソフトバンク
-  AMZN: {qty: 1, avg_cost: 242.99}
-  MSFT: {qty: 2, avg_cost: 386.75}
-  VRT: {qty: 1, avg_cost: 273.23}
+  8035.T: {qty: 15, avg_cost: 11342.26, rule_ref: 10085}   # 東京エレクトロン
+  9434.T: {qty: 200, avg_cost: 223.50, rule_ref: 247.2}    # ソフトバンク
+  AMZN: {qty: 1, avg_cost: 242.99, rule_ref: 262.45}
+  MSFT: {qty: 2, avg_cost: 386.75, rule_ref: 533.52}
+  VRT: {qty: 1, avg_cost: 273.23, rule_ref: 206.08}
