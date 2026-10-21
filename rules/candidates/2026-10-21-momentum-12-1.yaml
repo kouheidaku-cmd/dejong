@@ -1,0 +1,11 @@
+# 事前登録 2026-10-21 (rules/candidates/PROTOCOL-2026-10-21.md)。検証前に仕様を固定
+version: 1
+strategy: momentum_rotation
+
+rotation:
+  lookback: mom_12_1               # 並べ替えに使うリターン (直近1か月を除く)
+  top_n: 8                     # 持つ銘柄数。1銘柄の目標は総資産の 1/top_n
+  require_positive_momentum: true   # リターンがマイナスの銘柄は持たない (その枠は現金)
+  market_filter:               # 市場指数が SMA200 より下の市場の銘柄は持たない
+    sma: 200
+    indices: {JPY: "^N225", USD: "^GSPC"}
