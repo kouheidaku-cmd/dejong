@@ -311,3 +311,37 @@ def test_market_filter_blocks_entries():
     assert r["trades"] == [] and r["metrics"]["total_return"] == 0  # 指数が下降トレンドなので一度も買わない
     r = backtest.run(frames, RULES, start, end)
     assert r["trades"] and set(r["yearly"]) == {2018, 2019}
+
+
+def test_momentum_rotation_monthly():
+    from trader import backtest
+    rot = {"strategy": "momentum_rotation",
+           "rotation": {"lookback": "mom_6_1", "top_n": 1, "require_positive_momentum": True}}
+    n = 400
+    frames = {"UP": bars(np.linspace(100, 300, n), start="2018-01-01"),
+              "FLAT": bars(np.linspace(100, 110, n), start="2018-01-01"),
+              "DOWN": bars(np.linspace(300, 100, n), start="2018-01-01")}
+    idx = frames["UP"].index
+    r = backtest.run(frames, rot, idx[200].date(), idx[-1].date(), slippage_bps=0)
+    assert r["open_positions"] and r["open_positions"][0]["ticker"] == "UP"  # 一番上がった銘柄だけ持つ
+    assert all(t["ticker"] != "DOWN" for t in r["trades"])  # マイナスの銘柄は買わない
+    # 売買は月末のシグナル → 翌月最初の営業日だけ
+    eq = r["equity_curve"]
+    first_invested = eq[eq["invested"] > 0].index[0]
+    assert first_invested.day <= 3 and (first_invested - pd.offsets.BDay(1)).month != first_invested.month
+
+
+def test_forward_records_since_start(tmp_path):
+    root = make_root(tmp_path, "paper")
+    frames = frames_for()
+    frames["^N225"] = bars(np.linspace(100, 120, 260))
+    frames["^GSPC"] = bars(np.linspace(100, 110, 260))
+    start = frames["7203.T"].index[-60].date()
+    (root / "config" / "forward.yaml").write_text(yaml.safe_dump(
+        {"start": start.isoformat(), "rules": [{"name": "v1", "path": "config/rules.yaml"}]}))
+    out = cli.cmd_forward(root, FakeData(frames))
+    assert out["start"] == start.isoformat() and out["rules"]["v1"]["trades"] >= 0
+    assert out["index_50_50"]["return"] > 0
+    assert (root / "reports" / "forward" / "history.csv").read_text().count("\n") == 3  # header + v1 + index
+    cli.cmd_forward(root, FakeData(frames))  # 同じ日の再実行は上書き
+    assert (root / "reports" / "forward" / "history.csv").read_text().count("\n") == 3

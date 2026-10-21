@@ -1,0 +1,14 @@
+# フォワードテスト: 下のルールを start の日の終値から実データで記録する (実際の口座とは別の仮想口座、各100万円)。
+# 過去データでの検証と違い、ルールを決めた後のデータなので、一番信用できる確かめ方になる。
+# python3 -m trader forward で最新の成績を計算する (週次リサーチで実行)。
+start: 2026-10-21
+rules:
+  - name: s4-combined
+    path: rules/candidates/2026-10-20-s4-combined.yaml
+    label: 採用候補 (事前登録の基準をすべて満たした)
+  - name: momentum-12-1
+    path: rules/candidates/2026-10-21-momentum-12-1.yaml
+    label: 参考 (通算リターンは最大だが、下落幅の基準が未達)
+  - name: v1
+    path: config/rules.yaml
+    label: 現行ルール

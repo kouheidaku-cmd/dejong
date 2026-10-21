@@ -45,6 +45,7 @@ config/
   strategy.md     売買ルールの全体像 (人間が書く)
   rules.yaml      機械ルール (バックテスト対象)
   rules_changelog.md  ルール変更の履歴
+  forward.yaml    フォワードテストするルールと開始日
   watchlist.yaml  注目株 (週次で更新、新規買いはここの銘柄のみ)
   universe.yaml   スクリーニング母集団 (日本株30 + 米国株30)
 state/
@@ -56,6 +57,7 @@ reports/daily/    日次の snapshot / orders / 結果 / レポート
 reports/weekly/   週次の screen / レポート
 reports/backtest/ バックテスト結果
 reports/rules/    ルール検証のレポート
+reports/forward/  フォワードテストの記録 (config/forward.yaml のルール)
 rules/candidates/ ルールの改善案
 trader/           Python パッケージ
 .claude/skills/   daily-trade, weekly-research, sync-account, improve-rules
@@ -73,6 +75,8 @@ python -m trader status
 python -m trader screen                                 # 週次スクリーニング
 python -m trader backtest --years 8                     # 過去データで仮想売買 (学習/検証に分割)
 python -m trader backtest --rules rules/candidates/x.yaml --name x
+python -m trader yearly config/rules.yaml rules/candidates/x.yaml --name y   # 暦年ごとに比較 (指数50/50つき)
+python -m trader forward                                # 決めた日以降の実データで記録 (フォワードテスト)
 python -m pytest -q
 ```
 
@@ -80,7 +84,8 @@ python -m pytest -q
 
 ## 定期実行
 
-Claude Code のルーチン (スケジュール実行) で、日次は平日 16:30 JST に `/daily-trade`、週次は土曜に `/weekly-research` を実行する。
+Claude Code のルーチン (スケジュール実行) で、日次は平日 16:19 JST、週次は土曜 9:45 JST に実行する。
+実行先はリポジトリを push できる専用セッション「dejong 定期実行 (日次・週次)」。
 状態 (`state/`) はリポジトリにしか残らないので、**毎回同じブランチ (main) に push される**ことが前提。
 
 市場データは Yahoo Finance (yfinance) から取るので、実行環境から `query1.finance.yahoo.com` などに通信できる必要がある。

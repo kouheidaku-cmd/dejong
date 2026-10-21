@@ -8,6 +8,8 @@
   python -m trader status               現在の口座状況
   python -m trader screen               週次: 母集団をスクリーニング
   python -m trader backtest             config/rules.yaml のルールを過去の日足で仮想売買
+  python -m trader yearly RULES...      暦年ごとに独立して走らせ、指数 50/50 と比べる
+  python -m trader forward              決めた日以降の実データでルールを記録 (フォワードテスト)
 """
 from __future__ import annotations
 
@@ -17,6 +19,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from . import backtest, config, indicators, rules
@@ -126,7 +129,7 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
 
 def market_regimes(data: MarketData, tickers, rule_set: dict, settings: dict, days: int) -> dict[str, pd.Series]:
     """entry.market_filter を使うとき、銘柄ごとに対応する市場指数の判定を返す。"""
-    mf = rule_set["entry"].get("market_filter")
+    mf = rules.market_filter(rule_set)
     if not mf:
         return {}
     hist = data.history(sorted(set(mf["indices"].values())), days)
@@ -296,13 +299,8 @@ def cmd_screen(root: Path, data: MarketData, day: date, top: int) -> dict:
 def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, split: date | None,
                  tickers: list[str] | None, name: str) -> dict:
     """ルールを過去データで検証する。期間を学習用 (前半) と検証用 (後半) に分けて別々に走らせる。"""
-    settings = config.load_settings(root)
     rule_set = rules.load_rules(rules_path)
-    tickers = tickers or config.load_universe(root)
-    frames = data.history(tickers, years * 365 + 300)
-    fx_syms = {c: settings["fx_tickers"][c] for c in {config.currency(t, settings) for t in frames} - {settings["base_currency"]}}
-    fx_hist = data.history(sorted(fx_syms.values()), years * 365 + 300)
-    frames = backtest.to_base_currency(frames, {c: fx_hist[s]["Close"] for c, s in fx_syms.items()}, settings)
+    frames, settings = _load_frames(root, data, tickers or config.load_universe(root), years * 365 + 300)
 
     first = min(df.index[0] for df in frames.values()) + pd.Timedelta(days=300)  # SMA200 のウォームアップ
     last = max(df.index[-1] for df in frames.values())
@@ -325,6 +323,115 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
             "by_exit_reason": result[label]["analysis"].get("by_exit_reason")}
     result["output"] = str(out_dir)
     return result
+
+
+def _load_frames(root: Path, data: MarketData, tickers, days: int):
+    settings = config.load_settings(root)
+    frames = data.history(tickers, days)
+    fx_syms = {c: settings["fx_tickers"][c] for c in {config.currency(t, settings) for t in frames} - {settings["base_currency"]}}
+    fx_hist = data.history(sorted(fx_syms.values()), days)
+    return backtest.to_base_currency(frames, {c: fx_hist[s]["Close"] for c, s in fx_syms.items()}, settings), settings
+
+
+def index_blend_curve(data: MarketData, days: int, start: pd.Timestamp, end: pd.Timestamp) -> pd.Series:
+    """日経平均と S&P500 (円換算) を期間の最初に半分ずつ買って持ち続けた場合 (初期値1)。"""
+    h = data.history(["^N225", "^GSPC", "JPY=X"], days)
+    spx = h["^GSPC"]["Close"] * h["JPY=X"]["Close"].reindex(h["^GSPC"].index, method="ffill")
+    parts = []
+    for s in (h["^N225"]["Close"], spx):
+        x = s[(s.index >= start) & (s.index <= end)].dropna()
+        if not x.empty:  # 期間の初日にまだ日足がない市場は、最初の日足から数える
+            parts.append(x / x.iloc[0])
+    if not parts:
+        return pd.Series([1.0], index=[start])
+    return pd.concat(parts, axis=1).sort_index().ffill().fillna(1.0).mean(axis=1)
+
+
+def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int, until: date | None, name: str) -> dict:
+    """暦年ごとに独立して (毎年100万円から) 走らせ、指数 50/50 と比べる。複数のルールを同じ条件で比較できる。"""
+    days = years * 365 + 300
+    frames, settings = _load_frames(root, data, config.load_universe(root), days)
+    first = min(df.index[0] for df in frames.values())
+    last = max(df.index[-1] for df in frames.values())
+    if until:
+        last = min(last, pd.Timestamp(until))
+    warm = first + pd.Timedelta(days=380)  # SMA200 と12か月モメンタムのウォームアップ
+    first_year = warm.year if warm.month == 1 and warm.day <= 15 else warm.year + 1
+    ex = settings.get("execution", {})
+    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+
+    windows = [(pd.Timestamp(y, 1, 1), min(pd.Timestamp(y, 12, 31), last)) for y in range(first_year, last.year + 1)]
+    out = {"until": last.date().isoformat(), "index_50_50": {}, "rules": {}}
+    for a, b in windows:
+        c = index_blend_curve(data, days, a, b)
+        out["index_50_50"][a.year] = {"return": backtest._r(c.iloc[-1] - 1),
+                                      "max_drawdown": backtest._r((1 - c / c.cummax()).max())}
+    for rp in rules_paths:
+        rule_set = rules.load_rules(rp)
+        market = market_regimes(data, frames, rule_set, settings, days)
+        per_year = {}
+        for a, b in windows:
+            r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, **kw)
+            m = r["metrics"]
+            per_year[a.year] = {"return": m["total_return"], "max_drawdown": m["max_drawdown"], "trades": m["trades"]}
+        rets = [v["return"] for v in per_year.values()]
+        out["rules"][rp.stem] = {
+            "years": per_year,
+            "positive_years": sum(r > 0 for r in rets),
+            "worst_year": min(rets),
+            "chained_return": backtest._r(np.prod([1 + r for r in rets]) - 1),
+            "avg_max_drawdown": backtest._r(np.mean([v["max_drawdown"] for v in per_year.values()])),
+        }
+    idx = list(out["index_50_50"].values())
+    out["index_summary"] = {
+        "positive_years": sum(v["return"] > 0 for v in idx),
+        "worst_year": min(v["return"] for v in idx),
+        "chained_return": backtest._r(np.prod([1 + v["return"] for v in idx]) - 1),
+        "avg_max_drawdown": backtest._r(np.mean([v["max_drawdown"] for v in idx])),
+    }
+    out_dir = root / "reports" / "backtest" / name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(out_dir / "yearly.json", out)
+    out["output"] = str(out_dir)
+    return out
+
+
+def cmd_forward(root: Path, data: MarketData) -> dict:
+    """config/forward.yaml のルールを、start の日から最新のデータまで仮想売買する (毎回最初から計算し直す)。"""
+    spec = config.load_yaml(root / "config" / "forward.yaml")
+    start = pd.Timestamp(spec["start"])
+    days = 450 + (pd.Timestamp.today().normalize() - start).days  # SMA200・12か月モメンタムのウォームアップ込み
+    frames, settings = _load_frames(root, data, config.load_universe(root), days)
+    last = max(df.index[-1] for df in frames.values())
+    ex = settings.get("execution", {})
+    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+
+    out = {"start": start.date().isoformat(), "until": last.date().isoformat(), "rules": {}}
+    for item in spec["rules"]:
+        rule_set = rules.load_rules(root / item["path"])
+        market = market_regimes(data, frames, rule_set, settings, days)
+        r = backtest.run(frames, rule_set, start.date(), last.date(), market=market, **kw)
+        m = r["metrics"]
+        out["rules"][item["name"]] = {
+            "label": item.get("label", ""),
+            "return": m.get("total_return"), "max_drawdown": m.get("max_drawdown"), "trades": m.get("trades"),
+            "open_positions": r["open_positions"],
+        }
+    c = index_blend_curve(data, days, start, last)
+    out["index_50_50"] = {"return": backtest._r(c.iloc[-1] - 1), "max_drawdown": backtest._r((1 - c / c.cummax()).max())}
+
+    out_dir = root / "reports" / "forward"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(out_dir / "latest.json", out)
+    hist = out_dir / "history.csv"
+    rows = [f"{out['until']},{n},{v['return']},{v['max_drawdown']},{v['trades']}" for n, v in out["rules"].items()]
+    rows.append(f"{out['until']},index_50_50,{out['index_50_50']['return']},{out['index_50_50']['max_drawdown']},")
+    lines = hist.read_text().splitlines() if hist.exists() else ["date,name,return,max_drawdown,trades"]
+    lines = [l for l in lines if not l.startswith(out["until"] + ",")] + rows  # 同じ日の再実行は上書き
+    hist.write_text("\n".join(lines) + "\n")
+    for v in out["rules"].values():  # 画面には銘柄の一覧を出さない
+        v["open_positions"] = [p["ticker"] for p in v["open_positions"]]
+    return out
 
 
 def _write_json(path: Path, obj) -> None:
@@ -362,6 +469,12 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--split", type=date.fromisoformat, help="検証期間の開始日 (既定: 後ろ30%%)")
     s.add_argument("--tickers", nargs="+", help="既定: config/universe.yaml")
     s.add_argument("--name", help="出力先 reports/backtest/<name> (既定: 日付-ルール名)")
+    sub.add_parser("forward", help="config/forward.yaml のルールを、決めた日以降の実データで記録する")
+    s = sub.add_parser("yearly", help="暦年ごとに独立して走らせ、指数 50/50 と比べる")
+    s.add_argument("rules", type=Path, nargs="+", help="比較するルールファイル")
+    s.add_argument("--years", type=int, default=8)
+    s.add_argument("--until", type=date.fromisoformat, help="この日までのデータで評価")
+    s.add_argument("--name", required=True, help="出力先 reports/backtest/<name>")
     args = ap.parse_args(argv)
 
     root = args.root
@@ -379,6 +492,10 @@ def main(argv: list[str] | None = None) -> None:
         out = cmd_sync(root, day, args.source)
     elif args.cmd == "status":
         out = cmd_status(root, data)
+    elif args.cmd == "forward":
+        out = cmd_forward(root, CachedData(data, root / "data" / "cache"))
+    elif args.cmd == "yearly":
+        out = cmd_yearly(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.until, args.name)
     elif args.cmd == "screen":
         out = cmd_screen(root, data, day, args.top)
     else:

@@ -1,0 +1,237 @@
+{
+  "until": "2026-10-20",
+  "index_50_50": {
+    "2019": {
+      "return": 0.2436,
+      "max_drawdown": 0.0903
+    },
+    "2020": {
+      "return": 0.1382,
+      "max_drawdown": 0.3134
+    },
+    "2021": {
+      "return": 0.2458,
+      "max_drawdown": 0.0553
+    },
+    "2022": {
+      "return": -0.0927,
+      "max_drawdown": 0.1418
+    },
+    "2023": {
+      "return": 0.325,
+      "max_drawdown": 0.0721
+    },
+    "2024": {
+      "return": 0.289,
+      "max_drawdown": 0.2078
+    },
+    "2025": {
+      "return": 0.2187,
+      "max_drawdown": 0.2259
+    },
+    "2026": {
+      "return": 0.1868,
+      "max_drawdown": 0.0893
+    }
+  },
+  "rules": {
+    "rules": {
+      "years": {
+        "2019": {
+          "return": 0.2311,
+          "max_drawdown": 0.1022,
+          "trades": 22
+        },
+        "2020": {
+          "return": 0.2189,
+          "max_drawdown": 0.2696,
+          "trades": 55
+        },
+        "2021": {
+          "return": 0.0773,
+          "max_drawdown": 0.1298,
+          "trades": 39
+        },
+        "2022": {
+          "return": -0.21,
+          "max_drawdown": 0.21,
+          "trades": 53
+        },
+        "2023": {
+          "return": 0.3594,
+          "max_drawdown": 0.0961,
+          "trades": 28
+        },
+        "2024": {
+          "return": 0.1832,
+          "max_drawdown": 0.2896,
+          "trades": 46
+        },
+        "2025": {
+          "return": -0.1059,
+          "max_drawdown": 0.3027,
+          "trades": 49
+        },
+        "2026": {
+          "return": 0.1108,
+          "max_drawdown": 0.1084,
+          "trades": 40
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.21,
+      "chained_return": 1.0401,
+      "avg_max_drawdown": 0.1885
+    },
+    "2026-10-20-s4-combined": {
+      "years": {
+        "2019": {
+          "return": 0.1426,
+          "max_drawdown": 0.0726,
+          "trades": 11
+        },
+        "2020": {
+          "return": 0.0895,
+          "max_drawdown": 0.2365,
+          "trades": 41
+        },
+        "2021": {
+          "return": 0.2798,
+          "max_drawdown": 0.0743,
+          "trades": 25
+        },
+        "2022": {
+          "return": -0.0377,
+          "max_drawdown": 0.1477,
+          "trades": 37
+        },
+        "2023": {
+          "return": 0.3008,
+          "max_drawdown": 0.0858,
+          "trades": 20
+        },
+        "2024": {
+          "return": 0.0455,
+          "max_drawdown": 0.2469,
+          "trades": 44
+        },
+        "2025": {
+          "return": -0.107,
+          "max_drawdown": 0.2101,
+          "trades": 30
+        },
+        "2026": {
+          "return": 0.0571,
+          "max_drawdown": 0.1027,
+          "trades": 41
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.107,
+      "chained_return": 0.9682,
+      "avg_max_drawdown": 0.1471
+    },
+    "2026-10-21-momentum-12-1": {
+      "years": {
+        "2019": {
+          "return": 0.0901,
+          "max_drawdown": 0.1132,
+          "trades": 31
+        },
+        "2020": {
+          "return": 0.5262,
+          "max_drawdown": 0.1593,
+          "trades": 18
+        },
+        "2021": {
+          "return": 0.3963,
+          "max_drawdown": 0.1352,
+          "trades": 23
+        },
+        "2022": {
+          "return": -0.1179,
+          "max_drawdown": 0.1648,
+          "trades": 32
+        },
+        "2023": {
+          "return": 0.6325,
+          "max_drawdown": 0.0898,
+          "trades": 30
+        },
+        "2024": {
+          "return": 0.5489,
+          "max_drawdown": 0.3185,
+          "trades": 17
+        },
+        "2025": {
+          "return": -0.134,
+          "max_drawdown": 0.2484,
+          "trades": 27
+        },
+        "2026": {
+          "return": 0.01,
+          "max_drawdown": 0.2638,
+          "trades": 17
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.134,
+      "chained_return": 3.532,
+      "avg_max_drawdown": 0.1866
+    },
+    "2026-10-21-momentum-6-1": {
+      "years": {
+        "2019": {
+          "return": 0.0428,
+          "max_drawdown": 0.1777,
+          "trades": 40
+        },
+        "2020": {
+          "return": 0.5169,
+          "max_drawdown": 0.1672,
+          "trades": 24
+        },
+        "2021": {
+          "return": 0.1897,
+          "max_drawdown": 0.1451,
+          "trades": 35
+        },
+        "2022": {
+          "return": -0.078,
+          "max_drawdown": 0.1346,
+          "trades": 33
+        },
+        "2023": {
+          "return": 0.5215,
+          "max_drawdown": 0.1137,
+          "trades": 31
+        },
+        "2024": {
+          "return": 0.4798,
+          "max_drawdown": 0.3261,
+          "trades": 29
+        },
+        "2025": {
+          "return": -0.045,
+          "max_drawdown": 0.2505,
+          "trades": 23
+        },
+        "2026": {
+          "return": -0.013,
+          "max_drawdown": 0.2421,
+          "trades": 29
+        }
+      },
+      "positive_years": 5,
+      "worst_year": -0.078,
+      "chained_return": 2.6823,
+      "avg_max_drawdown": 0.1946
+    }
+  },
+  "index_summary": {
+    "positive_years": 7,
+    "worst_year": -0.0927,
+    "chained_return": 2.9522,
+    "avg_max_drawdown": 0.1495
+  }
+}

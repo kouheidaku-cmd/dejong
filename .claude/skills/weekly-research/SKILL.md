@@ -42,6 +42,13 @@ description: 週1回の注目株リサーチ。母集団のスクリーニング
    - 機械ルールで損失が目立つ (損切りが続く、同じパターンで負けている) なら、improve-rules スキルで検証することを提案する
    - `strategy.md` や `settings.yaml` に変更を提案するならその内容と根拠
 
+   - フォワードテスト (ルールを決めた後の実データでの記録) を更新して読む:
+     ```bash
+     python -m trader forward
+     ```
+     `config/forward.yaml` の各ルールと指数 50/50 の、記録開始日からの成績が出る (`reports/forward/`)。
+     レポートに表で載せる。開始から3か月未満のうちは、成績の差で結論を出さない
+
 5. **ウォッチリスト更新** — `config/watchlist.yaml` を書き換える:
    ```yaml
    updated: 2026-10-25
@@ -64,7 +71,7 @@ description: 週1回の注目株リサーチ。母集団のスクリーニング
 
 8. **記録を残す**
    ```bash
-   git add config/watchlist.yaml reports
+   git add config/watchlist.yaml reports rules
    git commit -m "weekly: <年-W週>"
    git push
    ```

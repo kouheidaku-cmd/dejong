@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from .config import currency
-from .rules import attach_market, entry_check, exit_check, features, sell_qty
+from .rules import attach_market, entry_check, exit_check, features, rotation_targets, sell_qty
 
 
 def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], settings: dict) -> dict[str, pd.DataFrame]:
@@ -46,12 +46,13 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         feats[t] = f.to_dict("index")
     start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
     dates = sorted({d for f in feats.values() for d in f if start_ts <= d <= end_ts})
-    sz = rules["sizing"]
+    rotation = rules.get("strategy") == "momentum_rotation"
+    month_ends = {d for d, nxt in zip(dates, dates[1:] + [None]) if nxt is None or nxt.month != d.month}
 
     cash = initial_cash
     pos: dict[str, dict] = {}
     orders: list[dict] = []
-    trades, curve, last_close = [], [], {}
+    trades, curve, last_close, last_row = [], [], {}, {}
 
     for d in dates:
         # 1. 前日のシグナルを寄付きで約定 (売りが先)
@@ -92,34 +93,14 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         equity = cash + invested
 
         # 3. 終値でシグナル判定 → 翌営業日の注文
-        selling = {o["ticker"] for o in orders if o["side"] == "sell"}
-        full_exits = 0
-        for t, p in pos.items():
-            row = feats[t].get(d)
-            if row is None or t in selling:
-                continue
-            p["peak"] = max(p["peak"], row["close"])
-            sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules)
-            if sig:
-                qty = sell_qty(p["qty"], sig[1])
-                orders.append({"ticker": t, "side": "sell", "qty": qty, "reason": sig[0]})
-                full_exits += qty == p["qty"]
-
-        buying = {o["ticker"] for o in orders if o["side"] == "buy"}
-        slots = sz["max_positions"] - (len(pos) - full_exits) - len(buying)
-        if slots <= 0:
-            continue
-        candidates = []
         for t, f in feats.items():
-            row = f.get(d)
-            if t in pos or t in buying or row is None or entry_check(row, rules):
-                continue
-            candidates.append((row.get(sz.get("rank_by", "ret_60d")) or 0, t, row))
-        for _, t, row in sorted(candidates, reverse=True)[:slots]:
-            qty = int(sz["target_weight"] * equity // row["close"])
-            if qty > 0:
-                orders.append({"ticker": t, "side": "buy", "qty": qty,
-                               "entry": {k: _r(row[k]) for k in ("close", "rsi14", "ret_60d", "sma20", "sma50")}})
+            if d in f:
+                last_row[t] = f[d]
+        if rotation:
+            if d in month_ends:
+                orders += _rotation_orders(last_row, pos, orders, equity, rules)
+        else:
+            orders += _swing_orders(d, feats, pos, orders, equity, rules)
 
     eq = pd.DataFrame(curve).set_index("date") if curve else pd.DataFrame(columns=["equity", "invested"])
     open_positions = [
@@ -138,6 +119,59 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         "trades": trades,
         "equity_curve": eq,
     }
+
+
+ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1")
+
+
+def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
+    """スイング型: 毎日、売りルールと買いルールを判定する。"""
+    sz, new = rules["sizing"], []
+    selling = {o["ticker"] for o in orders if o["side"] == "sell"}
+    full_exits = 0
+    for t, p in pos.items():
+        row = feats[t].get(d)
+        if row is None or t in selling:
+            continue
+        p["peak"] = max(p["peak"], row["close"])
+        sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules)
+        if sig:
+            qty = sell_qty(p["qty"], sig[1])
+            new.append({"ticker": t, "side": "sell", "qty": qty, "reason": sig[0]})
+            full_exits += qty == p["qty"]
+
+    buying = {o["ticker"] for o in orders if o["side"] == "buy"}
+    slots = sz["max_positions"] - (len(pos) - full_exits) - len(buying)
+    if slots <= 0:
+        return new
+    candidates = []
+    for t, f in feats.items():
+        row = f.get(d)
+        if t in pos or t in buying or row is None or entry_check(row, rules):
+            continue
+        candidates.append((row.get(sz.get("rank_by", "ret_60d")) or 0, t, row))
+    for _, t, row in sorted(candidates, reverse=True)[:slots]:
+        qty = int(sz["target_weight"] * equity // row["close"])
+        if qty > 0:
+            new.append({"ticker": t, "side": "buy", "qty": qty, "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
+    return new
+
+
+def _rotation_orders(last_row, pos, orders, equity, rules) -> list[dict]:
+    """月次入れ替え型: 月末に上位銘柄を選び直し、外れた銘柄を売り、新しく入った銘柄を買う。"""
+    targets = rotation_targets(last_row, rules)
+    pending = {o["ticker"] for o in orders}
+    new = [{"ticker": t, "side": "sell", "qty": p["qty"], "reason": "rotation_out"}
+           for t, p in pos.items() if t not in targets and t not in pending]
+    per = equity / rules["rotation"]["top_n"]
+    for t in targets:
+        if t in pos or t in pending:
+            continue
+        row = last_row[t]
+        qty = int(per // row["close"])
+        if qty > 0:
+            new.append({"ticker": t, "side": "buy", "qty": qty, "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
+    return new
 
 
 def _trade(ticker, p, qty, price, proceeds, d, reason) -> dict:
@@ -218,7 +252,8 @@ def analyze(trades: list[dict]) -> dict:
     }
     by_ticker = df.groupby("ticker")["pnl"].sum().sort_values()
     losers, winners = df[df["pnl"] <= 0], df[df["pnl"] > 0]
-    entry_cols = [c for c in df.columns if c.startswith("entry_") and c not in ("entry_date", "entry_price", "entry_close", "entry_sma20", "entry_sma50")]
+    entry_cols = [c for c in df.columns if c.startswith("entry_") and c not in ("entry_date", "entry_price", "entry_close", "entry_sma20", "entry_sma50")
+                  and df[c].notna().any()]
     compare = {
         c: {"losers": _r(losers[c].mean()) if len(losers) else None, "winners": _r(winners[c].mean()) if len(winners) else None}
         for c in entry_cols

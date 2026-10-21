@@ -1,0 +1,31 @@
+{
+  "start": "2026-10-21",
+  "until": "2026-10-21",
+  "rules": {
+    "s4-combined": {
+      "label": "採用候補 (事前登録の基準をすべて満たした)",
+      "return": 0.0,
+      "max_drawdown": 0.0,
+      "trades": 0,
+      "open_positions": []
+    },
+    "momentum-12-1": {
+      "label": "参考 (通算リターンは最大だが、下落幅の基準が未達)",
+      "return": 0.0,
+      "max_drawdown": 0.0,
+      "trades": 0,
+      "open_positions": []
+    },
+    "v1": {
+      "label": "現行ルール",
+      "return": 0.0,
+      "max_drawdown": 0.0,
+      "trades": 0,
+      "open_positions": []
+    }
+  },
+  "index_50_50": {
+    "return": 0.0,
+    "max_drawdown": 0.0
+  }
+}

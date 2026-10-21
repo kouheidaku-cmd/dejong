@@ -25,6 +25,8 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
         "sma200": c.rolling(200).mean(),
         "rsi14": rsi(c),
         "ret_60d": c / c.shift(60) - 1,
+        "mom_12_1": c.shift(21) / c.shift(252) - 1,  # 過去12か月 (直近1か月を除く) のリターン
+        "mom_6_1": c.shift(21) / c.shift(126) - 1,
     }, index=df.index)
 
 
@@ -33,6 +35,29 @@ def market_regime(index_df: pd.DataFrame, sma: int) -> pd.Series:
     c = index_df["Close"]
     ma = c.rolling(sma).mean()
     return (c > ma).where(ma.notna())
+
+
+def market_filter(rules: dict) -> dict | None:
+    """ルールが使う市場フィルターの設定 (スイング型は entry、入れ替え型は rotation の下)。"""
+    return (rules.get("entry") or {}).get("market_filter") or (rules.get("rotation") or {}).get("market_filter")
+
+
+def rotation_targets(rows: dict[str, dict], rules: dict) -> list[str]:
+    """月次入れ替え型: 各銘柄の最新の特徴量から、持つべき銘柄 (上位 top_n) を返す。"""
+    rot = rules["rotation"]
+    ranked = []
+    for t, row in rows.items():
+        v = row.get(rot["lookback"])
+        if v is None or v != v:
+            continue
+        if rot.get("require_positive_momentum") and v <= 0:
+            continue
+        if rot.get("market_filter"):
+            ok = row.get("market_ok")
+            if ok is None or ok != ok or not ok:
+                continue
+        ranked.append((v, t))
+    return [t for _, t in sorted(ranked, reverse=True)[:rot["top_n"]]]
 
 
 def attach_market(f: pd.DataFrame, regime: pd.Series) -> pd.DataFrame:
