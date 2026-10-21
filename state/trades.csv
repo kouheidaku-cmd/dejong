@@ -1,0 +1,2 @@
+date,id,ticker,side,qty,type,limit_price,status,price,currency,fx,commission,realized_pnl,rationale
+2026-10-21,,6501.T,buy,15,market,,"rejected:買付後の現金が下限 5% を下回る (見込み現金 100,414 円, 必要 90,228 円)",,,,,,entries 2位 (全条件OK、60日リターン+21.5%)。決算10/28は5営業日先で3営業日ルールの対象外だが決算またぎになる点は要注意。open_slots=2 なので上位2銘柄まで

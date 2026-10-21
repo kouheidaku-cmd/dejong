@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-21",
+  "broker": "manual",
+  "accepted": [
+    {
+      "id": 1,
+      "placed_on": "2026-10-21",
+      "status": "proposed",
+      "ticker": "8035.T",
+      "side": "sell",
+      "qty": 15,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "機械ルールの exits: trend_break (終値10,160円がSMA50 11,159円を2%超割り込み)。取得単価から-10.4%。裁量で覆さず、ルール通り全株売り"
+    },
+    {
+      "id": 2,
+      "placed_on": "2026-10-21",
+      "status": "proposed",
+      "ticker": "VRT",
+      "side": "sell",
+      "qty": 1,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "機械ルールの exits: trend_break。取得単価から-25.5%、50日線・200日線とも下回り週次でも仮説が弱まっている。ルール通り全株売り"
+    },
+    {
+      "id": 3,
+      "placed_on": "2026-10-21",
+      "status": "proposed",
+      "ticker": "CRM",
+      "side": "buy",
+      "qty": 2,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "entries 1位 (全条件OK、60日リターン+39.7%)。決算は12月でしばらく先、悪材料なし。売却代金で入れ替え"
+    }
+  ],
+  "rejected": [
+    {
+      "ticker": "6501.T",
+      "side": "buy",
+      "qty": 15,
+      "type": "market",
+      "rationale": "entries 2位 (全条件OK、60日リターン+21.5%)。決算10/28は5営業日先で3営業日ルールの対象外だが決算またぎになる点は要注意。open_slots=2 なので上位2銘柄まで",
+      "reason": "買付後の現金が下限 5% を下回る (見込み現金 100,414 円, 必要 90,228 円)"
+    }
+  ]
+}
