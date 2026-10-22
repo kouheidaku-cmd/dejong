@@ -34,6 +34,7 @@ class FakeData:
 
 def make_root(tmp_path, broker, sync=None):
     shutil.copytree(ROOT / "config", tmp_path / "config")
+    shutil.copy(ROOT / "rules" / "archive" / "v1.yaml", tmp_path / "config" / "rules.yaml")
     settings = config.load_yaml(tmp_path / "config" / "settings.yaml")
     settings["broker"] = broker
     (tmp_path / "config" / "settings.yaml").write_text(yaml.safe_dump(settings, allow_unicode=True))
@@ -210,7 +211,8 @@ def test_yahoo_frame_selection():
     assert _select(by_ticker, "C") is None
 
 
-RULES = config.load_yaml(ROOT / "config" / "rules.yaml")
+# テストは仕様が固定された v1 で行う (config/rules.yaml は運用に合わせて変わるため)
+RULES = config.load_yaml(ROOT / "rules" / "archive" / "v1.yaml")
 
 
 def test_rules_entry_and_exit():
