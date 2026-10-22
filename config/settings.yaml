@@ -23,3 +23,9 @@ risk:
 execution:                   # paper モードの約定条件
   slippage_bps: 10
   commission_bps: 0
+
+nisa:                        # NISA の枠 (楽天証券「NISA」画面の値。週次の照合のときに更新する)
+  year: 2026
+  as_of: 2026-10-22
+  growth_remaining: 1292350  # 成長投資枠の残り (年240万円のうち 1,107,650円を利用済み)
+  tsumitate_remaining: 1200000  # つみたて投資枠の残り (未使用)
