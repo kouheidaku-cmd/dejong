@@ -47,41 +47,7 @@
       "account": "nisa_growth"
     }
   },
-  "pending": [
-    {
-      "id": 1,
-      "placed_on": "2026-10-21",
-      "status": "proposed",
-      "ticker": "8035.T",
-      "side": "sell",
-      "qty": 15,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "機械ルールの exits: trend_break (終値10,160円がSMA50 11,159円を2%超割り込み)。取得単価から-10.4%。裁量で覆さず、ルール通り全株売り"
-    },
-    {
-      "id": 2,
-      "placed_on": "2026-10-21",
-      "status": "proposed",
-      "ticker": "VRT",
-      "side": "sell",
-      "qty": 1,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "機械ルールの exits: trend_break。取得単価から-25.5%、50日線・200日線とも下回り週次でも仮説が弱まっている。ルール通り全株売り"
-    },
-    {
-      "id": 3,
-      "placed_on": "2026-10-21",
-      "status": "proposed",
-      "ticker": "CRM",
-      "side": "buy",
-      "qty": 2,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "entries 1位 (全条件OK、60日リターン+39.7%)。決算は12月でしばらく先、悪材料なし。売却代金で入れ替え"
-    }
-  ],
+  "pending": [],
   "peak_equity": 444127.36204527225,
   "next_order_id": 4,
   "other_assets": 20612.0
