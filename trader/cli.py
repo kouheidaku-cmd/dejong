@@ -267,6 +267,7 @@ def _apply_sync(pf: Portfolio, spec: dict, settings: dict) -> None:
             "opened": prev.get("opened") or str(spec.get("date") or ""),
             "took_profit": bool(prev.get("took_profit", False)),
             "rule_ref": float(v["rule_ref"]) if v.get("rule_ref") else prev.get("rule_ref"),
+            "account": v.get("account") or prev.get("account"),  # 口座区分 (nisa_growth / tokutei など)
         }
 
 

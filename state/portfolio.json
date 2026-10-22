@@ -1,5 +1,5 @@
 {
-  "cash": 452.0,
+  "cash": 451.0,
   "positions": {
     "8035.T": {
       "qty": 15,
@@ -7,7 +7,8 @@
       "currency": "JPY",
       "opened": "2026-10-20",
       "took_profit": false,
-      "rule_ref": 10085.0
+      "rule_ref": 10085.0,
+      "account": "nisa_growth"
     },
     "9434.T": {
       "qty": 200,
@@ -15,7 +16,8 @@
       "currency": "JPY",
       "opened": "2026-10-20",
       "took_profit": false,
-      "rule_ref": 247.2
+      "rule_ref": 247.2,
+      "account": "nisa_growth"
     },
     "AMZN": {
       "qty": 1,
@@ -23,15 +25,8 @@
       "currency": "USD",
       "opened": "2026-10-20",
       "took_profit": false,
-      "rule_ref": 262.45
-    },
-    "MSFT": {
-      "qty": 2,
-      "avg_cost": 386.75,
-      "currency": "USD",
-      "opened": "2026-10-20",
-      "took_profit": false,
-      "rule_ref": 533.52
+      "rule_ref": 262.45,
+      "account": "nisa_growth"
     },
     "VRT": {
       "qty": 1,
@@ -39,7 +34,17 @@
       "currency": "USD",
       "opened": "2026-10-20",
       "took_profit": false,
-      "rule_ref": 206.08
+      "rule_ref": 206.08,
+      "account": "nisa_growth"
+    },
+    "MSFT": {
+      "qty": 2,
+      "avg_cost": 386.75,
+      "currency": "USD",
+      "opened": "2026-10-20",
+      "took_profit": false,
+      "rule_ref": 533.52,
+      "account": "nisa_growth"
     }
   },
   "pending": [
@@ -79,5 +84,5 @@
   ],
   "peak_equity": 444127.36204527225,
   "next_order_id": 4,
-  "other_assets": 20410.0
+  "other_assets": 20612.0
 }

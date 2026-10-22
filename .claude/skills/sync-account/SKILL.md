@@ -35,6 +35,7 @@ positions:               # 保有銘柄画面の数量と平均取得価額 (米
   8035.T: {qty: 15, avg_cost: 11342.26}
   MSFT: {qty: 2, avg_cost: 386.75}
 # reset_peak: true       # 入出金があったときだけ (ドローダウンの基準をリセット)
+# account は口座区分 (nisa_growth / tokutei など)。書かなければ前回の値が引き継がれる
 # rule_ref は書かなくてよい (前回の値が引き継がれる)。損切り・利確の基準を取得単価から変えたいと人が言ったときだけ
 #   8035.T: {qty: 15, avg_cost: 11342.26, rule_ref: 10085}
 ```
