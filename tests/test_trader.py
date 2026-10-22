@@ -347,3 +347,13 @@ def test_forward_records_since_start(tmp_path):
     assert (root / "reports" / "forward" / "history.csv").read_text().count("\n") == 3  # header + v1 + index
     cli.cmd_forward(root, FakeData(frames))  # 同じ日の再実行は上書き
     assert (root / "reports" / "forward" / "history.csv").read_text().count("\n") == 3
+
+
+def test_partial_sell_marks_take_profit_only_when_flagged():
+    from trader.portfolio import apply_fill
+    pf = Portfolio(cash=0, positions={"MSFT": {"qty": 2, "avg_cost": 400, "currency": "USD", "took_profit": False}})
+    apply_fill(pf, "MSFT", "sell", 1, 500, "USD", 150)  # 入れ替えのための一部売り
+    assert pf.positions["MSFT"]["took_profit"] is False
+    pf.positions["MSFT"]["qty"] = 2
+    apply_fill(pf, "MSFT", "sell", 1, 500, "USD", 150, take_profit=True)
+    assert pf.positions["MSFT"]["took_profit"] is True

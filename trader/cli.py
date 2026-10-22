@@ -210,14 +210,14 @@ def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force
 
 
 def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, qty: int,
-               price: float, rate: float | None, fee: float) -> dict:
+               price: float, rate: float | None, fee: float, take_profit: bool = False) -> dict:
     """人が発注して約定した注文を記録する。対応する注文案があれば消す。"""
     p, settings = Paths(root), config.load_settings(root)
     pf = Portfolio.load(p.portfolio)
     ccy = config.currency(ticker, settings)
     if rate is None:
         rate = fx_rates(data, [ticker], settings)[ccy]
-    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat())
+    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat(), take_profit)
 
     match = next((o for o in pf.pending if o["ticker"] == ticker and o["side"] == side), None)
     if match:
@@ -459,6 +459,7 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("price", type=float, help="約定単価 (現地通貨)")
     s.add_argument("--fx", type=float, help="約定時の為替レート (省略時は最新レート)")
     s.add_argument("--fee", type=float, default=0.0, help="手数料 (円)")
+    s.add_argument("--take-profit", action="store_true", help="ルールの利確シグナルによる一部売りのとき")
     s = sub.add_parser("sync")
     s.add_argument("source", type=Path)
     sub.add_parser("status")
@@ -488,7 +489,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "submit":
         out = cmd_submit(root, data, day, args.orders, args.force)
     elif args.cmd == "record":
-        out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee)
+        out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee, args.take_profit)
     elif args.cmd == "sync":
         out = cmd_sync(root, day, args.source)
     elif args.cmd == "status":

@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-22",
+  "broker": "manual",
+  "accepted": [
+    {
+      "id": 4,
+      "placed_on": "2026-10-22",
+      "status": "proposed",
+      "ticker": "MSFT",
+      "side": "sell",
+      "qty": 1,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "人の判断による偏りの解消 (選択肢B)。口座の38.8%と上限25%を超えているため2株→1株 (約19%) に減らす。NISAなので売却益 (約+2.3万円) は非課税"
+    },
+    {
+      "id": 5,
+      "placed_on": "2026-10-22",
+      "status": "proposed",
+      "ticker": "8035.T",
+      "side": "sell",
+      "qty": 4,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "人の判断による偏りの解消 (選択肢B)。口座の32.6%と上限25%を超えているため15株→11株 (約24%) に減らす。決算 (10/30予定) 前の集中リスクも下げる"
+    },
+    {
+      "id": 6,
+      "placed_on": "2026-10-22",
+      "status": "proposed",
+      "ticker": "9432.T",
+      "side": "buy",
+      "qty": 260,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "v2 の買い条件をすべて満たす (rule_signals ok)。AI関連以外で分散。決算 11/4 は3営業日より先。売却代金で入れ替え"
+    },
+    {
+      "id": 7,
+      "placed_on": "2026-10-22",
+      "status": "proposed",
+      "ticker": "8001.T",
+      "side": "buy",
+      "qty": 20,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "v2 の買い条件をすべて満たす (rule_signals ok)。AI関連以外で分散。決算 11/4 は3営業日より先。売却代金で入れ替え"
+    }
+  ],
+  "rejected": []
+}

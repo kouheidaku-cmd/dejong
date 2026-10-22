@@ -49,7 +49,8 @@ class Portfolio:
 
 
 def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
-               ccy: str, rate: float, fee: float = 0.0, day: str | None = None) -> float | None:
+               ccy: str, rate: float, fee: float = 0.0, day: str | None = None,
+               take_profit: bool = False) -> float | None:
     """約定を口座に反映し、売りなら実現損益 (円) を返す。
 
     実現損益は取得単価を約定時のレートで円換算した概算 (為替差損益は区別しない)。
@@ -70,8 +71,8 @@ def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
     pos["qty"] -= qty
     if pos["qty"] == 0:
         del pf.positions[ticker]
-    else:
-        pos["took_profit"] = True  # 一部売却 = ルール上の利確とみなす
+    elif take_profit:
+        pos["took_profit"] = True  # ルールの利確 (一部売却) は1回だけ
     pf.cash += gross - fee
     return round(pnl, 2)
 
