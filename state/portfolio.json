@@ -1,5 +1,5 @@
 {
-  "cash": 451.0,
+  "cash": -35529.0,
   "positions": {
     "8035.T": {
       "qty": 15,
@@ -45,6 +45,13 @@
       "took_profit": false,
       "rule_ref": 533.52,
       "account": "nisa_growth"
+    },
+    "9432.T": {
+      "qty": 200,
+      "avg_cost": 179.9,
+      "currency": "JPY",
+      "opened": "2026-10-23",
+      "took_profit": false
     }
   },
   "pending": [
@@ -69,17 +76,6 @@
       "type": "market",
       "limit_price": null,
       "rationale": "人の判断による偏りの解消 (選択肢B)。口座の32.6%と上限25%を超えているため15株→11株 (約24%) に減らす。決算 (10/30予定) 前の集中リスクも下げる"
-    },
-    {
-      "id": 6,
-      "placed_on": "2026-10-22",
-      "status": "proposed",
-      "ticker": "9432.T",
-      "side": "buy",
-      "qty": 260,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "v2 の買い条件をすべて満たす (rule_signals ok)。AI関連以外で分散。決算 11/4 は3営業日より先。売却代金で入れ替え"
     },
     {
       "id": 7,
