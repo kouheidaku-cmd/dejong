@@ -1,6 +1,7 @@
 # 売買システムの設定。リスク上限はコード (trader/risk.py) で強制される。
 broker: manual           # manual: Claude は注文案を出すだけで、人が楽天証券で発注する / paper: 仮想売買
 timezone: Asia/Tokyo
+default_account: nisa_growth  # 新しく買う株の口座区分 (NISA成長投資枠の残りがある限り)
 base_currency: JPY       # 評価・リスク計算はすべて円換算。現金も円貨決済前提で円にまとめて持つ
 
 history_days: 400        # 取得する日足の暦日数 (SMA200 の計算に足りる量)

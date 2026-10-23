@@ -357,3 +357,12 @@ def test_partial_sell_marks_take_profit_only_when_flagged():
     pf.positions["MSFT"]["qty"] = 2
     apply_fill(pf, "MSFT", "sell", 1, 500, "USD", 150, take_profit=True)
     assert pf.positions["MSFT"]["took_profit"] is True
+
+
+def test_record_buy_sets_default_account(tmp_path):
+    root = make_root(tmp_path, "manual", sync={"cash_jpy": 100000, "positions": {}})
+    settings = config.load_yaml(root / "config" / "settings.yaml")
+    settings["default_account"] = "nisa_growth"
+    (root / "config" / "settings.yaml").write_text(yaml.safe_dump(settings, allow_unicode=True))
+    cli.cmd_record(root, FakeData({}), date(2026, 10, 23), "9432.T", "buy", 100, 180.0, None, 0.0)
+    assert Portfolio.load(root / "state" / "portfolio.json").positions["9432.T"]["account"] == "nisa_growth"

@@ -218,6 +218,8 @@ def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, 
     if rate is None:
         rate = fx_rates(data, [ticker], settings)[ccy]
     pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat(), take_profit)
+    if side == "buy" and not pf.positions[ticker].get("account"):
+        pf.positions[ticker]["account"] = settings.get("default_account")  # 新規の買いは既定の口座区分
 
     match = next((o for o in pf.pending if o["ticker"] == ticker and o["side"] == side), None)
     if match:
