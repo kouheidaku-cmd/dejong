@@ -1,8 +1,9 @@
 # 機械的に判定できる売買ルール。バックテスト (python -m trader backtest) と日次のシグナルが同じものを使う。
 # 変更は improve-rules スキルで検証してから、人の了承を得て行う。履歴は config/rules_changelog.md。
 # v2 = 構造案4 (トレンド崩れで売らない + 市場フィルター + 8銘柄に分散)。2026-10-22 に人の判断で採用
-version: 2
-updated: 2026-10-22
+# v3 = v2 + 決算の3営業日前〜当日は新規買いしない (検証 reports/rules/2026-10-24-earnings.md)。2026-10-24 に人の了承で採用
+version: 3
+updated: 2026-10-24
 
 entry:                        # 新規買い: すべて満たしたとき (保有中の銘柄は買い増ししない)
   require_trend: true         # 終値 > SMA50 かつ SMA50 > SMA200
@@ -26,3 +27,6 @@ sizing:
   max_positions: 8            # 同時保有を 5 → 8 に増やして分散
   target_weight: 0.12         # 1銘柄の目標を 20% → 12%
   rank_by: ret_60d            # 買い候補が枠より多いときの優先順 (大きい順)
+
+earnings:                     # 決算発表日 (Yahoo Finance) を使う判定
+  entry_blackout_days: 3      # 決算日の3営業日前〜当日に約定する新規買いをしない (保有中の銘柄は決算をまたいで持つ)

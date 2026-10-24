@@ -118,7 +118,8 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
             for w in watchlist
         ],
         "rule_signals": rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day,
-                                     market_regimes(data, hist, rule_set, settings, settings["history_days"])),
+                                     market_regimes(data, hist, rule_set, settings, settings["history_days"]),
+                                     earnings_for(data, hist, rule_set)),
         "risk_limits": settings["risk"],
     }
     out = p.daily(day)
@@ -144,7 +145,7 @@ def earnings_for(data: MarketData, tickers, rule_set: dict) -> dict[str, list]:
     return data.earnings_dates(sorted(tickers))
 
 
-def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None) -> dict:
+def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None, earnings=None) -> dict:
     """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。"""
     exits = []
     for t, pos in pf.positions.items():
@@ -175,10 +176,16 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
         f = rules.features(hist[t])
         if market and t in market:
             f = rules.attach_market(f, market[t])
+        if earnings and t in earnings:
+            f = rules.attach_earnings(f, earnings[t])
         row = f.iloc[-1].to_dict()
         fails = rules.entry_check(row, rule_set)
+        if rule_set.get("earnings") and not (earnings and t in earnings):
+            fails.append("決算日を取得できない (決算前かどうか確認してから判断)")
         unit = prices[t] * fx[config.currency(t, settings)]
+        dte = row.get("dte")
         entries.append({"ticker": t, "ok": not fails, "fails": fails,
+                        "days_to_earnings": int(dte) if dte is not None and dte == dte else None,
                         "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
                         "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0})
     entries.sort(key=lambda e: (not e["ok"], -e["rank_value"]))

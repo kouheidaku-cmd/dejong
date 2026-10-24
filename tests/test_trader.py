@@ -401,3 +401,23 @@ def test_earnings_blackout_and_exit_before():
     r = backtest.run({"UP": up}, half, start, end, slippage_bps=0, earnings={"UP": earn})
     cuts = [t for t in r["trades"] if t["exit_reason"] == "before_earnings"]
     assert len(cuts) == 2  # 1回の決算につき1回だけ (半分ずつ)
+
+
+def test_rule_signals_block_entries_before_earnings():
+    from trader import rules
+    up = bars(np.linspace(100, 160, 320) + 2 * np.sin(np.arange(320)), start="2018-01-01")
+    hist = {"UP": up}
+    pf = Portfolio(cash=1_000_000)
+    rule_set = {**config.load_yaml(ROOT / "config" / "rules.yaml")}
+    rule_set.pop("entry", None)
+    rule_set["entry"] = {"require_trend": True, "max_rsi": 101}
+    rule_set["earnings"] = {"entry_blackout_days": 3}
+    day = up.index[-1].date()
+    args = (pf, hist, {"UP": 160.0}, FX, 1_000_000, [{"ticker": "UP"}], rule_set, SETTINGS, day)
+    soon = {"UP": [(up.index[-1] + pd.offsets.BDay(2)).date()]}
+    later = {"UP": [(up.index[-1] + pd.offsets.BDay(30)).date()]}
+    e = cli.rule_signals(*args, earnings=soon)["entries"][0]
+    assert not e["ok"] and e["days_to_earnings"] == 2 and "決算" in e["fails"][0]
+    e = cli.rule_signals(*args, earnings=later)["entries"][0]
+    assert e["ok"] and e["days_to_earnings"] == 30
+    assert not cli.rule_signals(*args, earnings={})["entries"][0]["ok"]  # 決算日が取れないときは止める

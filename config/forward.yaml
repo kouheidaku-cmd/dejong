@@ -5,7 +5,10 @@ start: 2026-10-21
 rules:
   - name: s4-combined
     path: rules/candidates/2026-10-20-s4-combined.yaml
-    label: 採用中 (2026-10-22 から実際の口座のルール v2)
+    label: v2 (2026-10-22〜24 の実際の口座のルール)
+  - name: v3-earnings-blackout
+    path: rules/candidates/2026-10-24-e1-entry-blackout.yaml
+    label: 採用中 (2026-10-24 から実際の口座のルール v3。採用は 10/24 なので 10/21〜23 の分は後付け)
   - name: momentum-12-1
     path: rules/candidates/2026-10-21-momentum-12-1.yaml
     label: 参考 (通算リターンは最大だが、下落幅の基準が未達)
