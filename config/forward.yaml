@@ -15,3 +15,6 @@ rules:
   - name: v1
     path: rules/archive/v1.yaml
     label: 以前のルール (比較用)
+  - name: swap-gap20
+    path: rules/candidates/2026-10-24-w1-swap-gap20.yaml
+    label: 参考 (v3 + 弱い保有の入れ替え。リターンは大きく上がったが下落の基準が未達。2026-10-24 から追加)

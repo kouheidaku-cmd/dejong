@@ -3,24 +3,24 @@
   "until": "2026-10-23",
   "rules": {
     "s4-combined": {
-      "label": "採用中 (2026-10-22 から実際の口座のルール v2)",
-      "return": -0.0079,
-      "max_drawdown": 0.0091,
+      "label": "v2 (2026-10-22〜24 の実際の口座のルール)",
+      "return": -0.0092,
+      "max_drawdown": 0.0104,
       "trades": 0,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 1,
           "avg_cost": 84390.8053,
-          "close": 82399.4272,
-          "unrealized_pct": -0.0236
+          "close": 82250.5102,
+          "unrealized_pct": -0.0254
         },
         {
           "ticker": "CRM",
           "qty": 3,
           "avg_cost": 38717.7682,
-          "close": 39578.8582,
-          "unrealized_pct": 0.0222
+          "close": 38979.256,
+          "unrealized_pct": 0.0068
         },
         {
           "ticker": "7974.T",
@@ -40,8 +40,72 @@
           "ticker": "AMD",
           "qty": 1,
           "avg_cost": 82959.8563,
-          "close": 80319.9875,
-          "unrealized_pct": -0.0318
+          "close": 81039.9012,
+          "unrealized_pct": -0.0231
+        },
+        {
+          "ticker": "8001.T",
+          "qty": 52,
+          "avg_cost": 2315.8135,
+          "close": 2301.0,
+          "unrealized_pct": -0.0064
+        },
+        {
+          "ticker": "6758.T",
+          "qty": 29,
+          "avg_cost": 4002.999,
+          "close": 4137.0,
+          "unrealized_pct": 0.0335
+        },
+        {
+          "ticker": "9432.T",
+          "qty": 681,
+          "avg_cost": 176.4763,
+          "close": 174.8,
+          "unrealized_pct": -0.0095
+        }
+      ]
+    },
+    "v3-earnings-blackout": {
+      "label": "採用中 (2026-10-24 から実際の口座のルール v3。採用は 10/24 なので 10/21〜23 の分は後付け)",
+      "return": -0.0092,
+      "max_drawdown": 0.0104,
+      "trades": 0,
+      "open_positions": [
+        {
+          "ticker": "MSFT",
+          "qty": 1,
+          "avg_cost": 84390.8053,
+          "close": 82250.5102,
+          "unrealized_pct": -0.0254
+        },
+        {
+          "ticker": "CRM",
+          "qty": 3,
+          "avg_cost": 38717.7682,
+          "close": 38979.256,
+          "unrealized_pct": 0.0068
+        },
+        {
+          "ticker": "7974.T",
+          "qty": 13,
+          "avg_cost": 8639.631,
+          "close": 8539.0,
+          "unrealized_pct": -0.0116
+        },
+        {
+          "ticker": "6501.T",
+          "qty": 20,
+          "avg_cost": 5889.884,
+          "close": 5562.0,
+          "unrealized_pct": -0.0557
+        },
+        {
+          "ticker": "AMD",
+          "qty": 1,
+          "avg_cost": 82959.8563,
+          "close": 81039.9012,
+          "unrealized_pct": -0.0231
         },
         {
           "ticker": "8001.T",
@@ -75,23 +139,23 @@
     },
     "v1": {
       "label": "以前のルール (比較用)",
-      "return": -0.0212,
-      "max_drawdown": 0.0212,
-      "trades": 0,
+      "return": -0.0296,
+      "max_drawdown": 0.0296,
+      "trades": 1,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 2,
           "avg_cost": 84390.8053,
-          "close": 82399.4272,
-          "unrealized_pct": -0.0236
+          "close": 82250.5102,
+          "unrealized_pct": -0.0254
         },
         {
           "ticker": "CRM",
           "qty": 5,
           "avg_cost": 38717.7682,
-          "close": 39578.8582,
-          "unrealized_pct": 0.0222
+          "close": 38979.256,
+          "unrealized_pct": 0.0068
         },
         {
           "ticker": "7974.T",
@@ -108,24 +172,81 @@
           "unrealized_pct": -0.0557
         },
         {
-          "ticker": "AMD",
-          "qty": 2,
-          "avg_cost": 82959.8563,
-          "close": 80319.9875,
-          "unrealized_pct": -0.0318
-        },
-        {
           "ticker": "9432.T",
-          "qty": 448,
+          "qty": 1116,
           "avg_cost": 181.2811,
           "close": 174.8,
           "unrealized_pct": -0.0358
         }
       ]
+    },
+    "swap-gap20": {
+      "label": "参考 (v3 + 弱い保有の入れ替え。リターンは大きく上がったが下落の基準が未達。2026-10-24 から追加)",
+      "return": -0.0092,
+      "max_drawdown": 0.0104,
+      "trades": 0,
+      "open_positions": [
+        {
+          "ticker": "MSFT",
+          "qty": 1,
+          "avg_cost": 84390.8053,
+          "close": 82250.5102,
+          "unrealized_pct": -0.0254
+        },
+        {
+          "ticker": "CRM",
+          "qty": 3,
+          "avg_cost": 38717.7682,
+          "close": 38979.256,
+          "unrealized_pct": 0.0068
+        },
+        {
+          "ticker": "7974.T",
+          "qty": 13,
+          "avg_cost": 8639.631,
+          "close": 8539.0,
+          "unrealized_pct": -0.0116
+        },
+        {
+          "ticker": "6501.T",
+          "qty": 20,
+          "avg_cost": 5889.884,
+          "close": 5562.0,
+          "unrealized_pct": -0.0557
+        },
+        {
+          "ticker": "AMD",
+          "qty": 1,
+          "avg_cost": 82959.8563,
+          "close": 81039.9012,
+          "unrealized_pct": -0.0231
+        },
+        {
+          "ticker": "8001.T",
+          "qty": 52,
+          "avg_cost": 2315.8135,
+          "close": 2301.0,
+          "unrealized_pct": -0.0064
+        },
+        {
+          "ticker": "6758.T",
+          "qty": 29,
+          "avg_cost": 4002.999,
+          "close": 4137.0,
+          "unrealized_pct": 0.0335
+        },
+        {
+          "ticker": "9432.T",
+          "qty": 681,
+          "avg_cost": 176.4763,
+          "close": 174.8,
+          "unrealized_pct": -0.0095
+        }
+      ]
     }
   },
   "index_50_50": {
-    "return": -0.0264,
-    "max_drawdown": 0.0264
+    "return": -0.028,
+    "max_drawdown": 0.028
   }
 }

@@ -151,19 +151,50 @@ def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
 
     buying = {o["ticker"] for o in orders if o["side"] == "buy"}
     slots = sz["max_positions"] - (len(pos) - full_exits) - len(buying)
-    if slots <= 0:
+    swap = rules.get("swap")
+    if slots <= 0 and not swap:
         return new
+    rank_by = sz.get("rank_by", "ret_60d")
     candidates = []
     for t, f in feats.items():
         row = f.get(d)
         if t in pos or t in buying or row is None or entry_check(row, rules):
             continue
-        candidates.append((row.get(sz.get("rank_by", "ret_60d")) or 0, t, row))
-    for _, t, row in sorted(candidates, reverse=True)[:slots]:
+        candidates.append((row.get(rank_by) or 0, t, row))
+    candidates.sort(reverse=True)
+    if slots <= 0:
+        return new + _swap_orders(d, feats, pos, selling | {o["ticker"] for o in new}, candidates, equity, rules)
+    for _, t, row in candidates[:slots]:
         qty = int(sz["target_weight"] * equity // row["close"])
         if qty > 0:
             new.append({"ticker": t, "side": "buy", "qty": qty, "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
     return new
+
+
+def _swap_orders(d, feats, pos, selling, candidates, equity, rules) -> list[dict]:
+    """枠が埋まっているとき、一番弱い保有と候補1位の差が大きければ1組だけ入れ替える。"""
+    if not candidates:
+        return []
+    sw, sz = rules["swap"], rules["sizing"]
+    rank_by = sz.get("rank_by", "ret_60d")
+    held = []
+    for t, p in pos.items():
+        row = feats[t].get(d)
+        v = None if row is None else row.get(rank_by)
+        if t in selling or v is None or v != v or (d - p["entry_date"]).days < sw.get("min_hold_days", 0):
+            continue
+        held.append((v, t))
+    if not held:
+        return []
+    weak_v, weak_t = min(held)
+    best_v, best_t, best_row = candidates[0]
+    if best_v - weak_v < sw["min_gap"] or (sw.get("only_negative") and weak_v >= 0):
+        return []
+    qty = int(sz["target_weight"] * equity // best_row["close"])
+    if qty <= 0:
+        return []
+    return [{"ticker": weak_t, "side": "sell", "qty": pos[weak_t]["qty"], "reason": "swap_out"},
+            {"ticker": best_t, "side": "buy", "qty": qty, "entry": {k: _r(best_row.get(k)) for k in ENTRY_KEYS}}]
 
 
 def _rotation_orders(last_row, pos, orders, equity, rules) -> list[dict]:

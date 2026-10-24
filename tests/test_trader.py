@@ -421,3 +421,25 @@ def test_rule_signals_block_entries_before_earnings():
     e = cli.rule_signals(*args, earnings=later)["entries"][0]
     assert e["ok"] and e["days_to_earnings"] == 30
     assert not cli.rule_signals(*args, earnings={})["entries"][0]["ok"]  # 決算日が取れないときは止める
+
+
+def test_swap_replaces_weakest_holding():
+    from trader import backtest
+    n = 400
+    wave = 0.5 * np.sin(np.arange(n))  # RSI が100に張り付かない程度の揺れ
+    slow = bars(np.linspace(100, 115, n) + wave, start="2018-01-01")  # 先に買い条件を満たすが勢いが弱い
+    fast = np.concatenate([np.full(300, 100.0), np.linspace(100, 220, 100)]) + wave  # 後から急に強くなる
+    frames = {"SLOW": slow, "FAST": bars(fast, start="2018-01-01")}
+    base = {**RULES, "entry": {"require_trend": True, "max_rsi": 101},
+            "exit": {"stop_loss": 0.5}, "sizing": {"max_positions": 1, "target_weight": 0.9, "rank_by": "ret_60d"}}
+    start, end = slow.index[220].date(), slow.index[-1].date()
+    r = backtest.run(frames, base, start, end, slippage_bps=0)
+    assert {t["ticker"] for t in r["trades"]} <= {"SLOW"}  # 入れ替えなしでは FAST を買えない
+    sw = {**base, "swap": {"min_gap": 0.2, "min_hold_days": 28}}
+    r = backtest.run(frames, sw, start, end, slippage_bps=0)
+    out = [t for t in r["trades"] if t["exit_reason"] == "swap_out"]
+    assert out and out[0]["ticker"] == "SLOW"
+    assert any(p["ticker"] == "FAST" for p in r["open_positions"])
+    neg = {**base, "swap": {"min_gap": 0.2, "min_hold_days": 28, "only_negative": True}}
+    r = backtest.run(frames, neg, start, end, slippage_bps=0)
+    assert not [t for t in r["trades"] if t["exit_reason"] == "swap_out"]  # SLOW の60日リターンはプラスなので外さない
