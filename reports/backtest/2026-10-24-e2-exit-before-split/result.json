@@ -1,0 +1,784 @@
+{
+  "rules": "rules/candidates/2026-10-24-e2-exit-before.yaml",
+  "rules_version": 2,
+  "tickers": 61,
+  "earnings_coverage": {
+    "tickers": 61,
+    "of": 61,
+    "missing": [],
+    "latest_first_date": "2020-05-05",
+    "first_dates": {
+      "4063.T": "2006-05-15",
+      "4502.T": "2006-07-31",
+      "4519.T": "2005-04-22",
+      "4568.T": "2006-07-31",
+      "6098.T": "2015-08-10",
+      "6146.T": "2004-11-08",
+      "6273.T": "2008-05-14",
+      "6367.T": "2008-05-14",
+      "6501.T": "2004-07-29",
+      "6702.T": "2004-07-29",
+      "6758.T": "2004-07-28",
+      "6861.T": "2008-05-09",
+      "6902.T": "2004-12-16",
+      "6954.T": "2006-04-24",
+      "6981.T": "2004-08-10",
+      "7203.T": "2004-08-03",
+      "7267.T": "2004-07-28",
+      "7741.T": "2004-10-20",
+      "7974.T": "2013-07-31",
+      "8001.T": "2004-11-09",
+      "8031.T": "2005-02-04",
+      "8035.T": "2005-05-31",
+      "8058.T": "2004-11-05",
+      "8306.T": "2010-02-03",
+      "8316.T": "2009-01-28",
+      "8766.T": "2010-08-11",
+      "9432.T": "2004-08-05",
+      "9433.T": "2004-07-29",
+      "9434.T": "2019-02-05",
+      "9983.T": "2008-04-10",
+      "9984.T": "2006-11-08",
+      "AAPL": "2002-04-17",
+      "ABBV": "2013-03-15",
+      "ADBE": "2002-03-14",
+      "AMD": "2002-01-16",
+      "AMZN": "2002-04-23",
+      "ANET": "2014-08-07",
+      "AVGO": "2009-12-03",
+      "BRK-B": "2010-05-07",
+      "COST": "2002-03-05",
+      "CRM": "2004-08-19",
+      "CSCO": "2002-05-07",
+      "GOOGL": "2004-10-21",
+      "HD": "2002-02-26",
+      "JPM": "2002-04-17",
+      "KO": "2002-01-29",
+      "LLY": "2002-01-24",
+      "MA": "2006-08-02",
+      "META": "2012-07-26",
+      "MRK": "2002-01-22",
+      "MSFT": "2002-01-17",
+      "NFLX": "2002-07-24",
+      "NVDA": "2002-05-22",
+      "ORCL": "2002-06-18",
+      "PG": "2002-04-30",
+      "TSLA": "2010-11-09",
+      "UNH": "2002-04-18",
+      "V": "2008-04-28",
+      "VRT": "2020-05-05",
+      "WMT": "2002-05-14",
+      "XOM": "2002-01-23"
+    }
+  },
+  "in_sample": {
+    "period": {
+      "start": "2018-10-28",
+      "end": "2024-05-29",
+      "days": 1452
+    },
+    "metrics": {
+      "final_equity": 2024655.6881,
+      "total_return": 1.0247,
+      "cagr": 0.1347,
+      "max_drawdown": 0.2571,
+      "sharpe": 0.8775,
+      "exposure": 0.7811,
+      "trades": 406,
+      "win_rate": 0.5493,
+      "avg_win_pct": 0.1307,
+      "avg_loss_pct": -0.0647,
+      "profit_factor": 1.5511,
+      "avg_holding_days": 39.7192
+    },
+    "benchmark": {
+      "total_return": 3.4029,
+      "max_drawdown": 0.2829
+    },
+    "yearly": {
+      "2018": {
+        "strategy": -0.0705,
+        "benchmark": -0.0456
+      },
+      "2019": {
+        "strategy": 0.1848,
+        "benchmark": 0.3309
+      },
+      "2020": {
+        "strategy": 0.1377,
+        "benchmark": 0.3666
+      },
+      "2021": {
+        "strategy": 0.1458,
+        "benchmark": 0.3757
+      },
+      "2022": {
+        "strategy": -0.0719,
+        "benchmark": -0.1655
+      },
+      "2023": {
+        "strategy": 0.2123,
+        "benchmark": 0.6242
+      },
+      "2024": {
+        "strategy": 0.2536,
+        "benchmark": 0.3604
+      }
+    },
+    "analysis": {
+      "by_exit_reason": {
+        "before_earnings": {
+          "trades": 258,
+          "win_rate": 0.6783,
+          "total_pnl": 1645471.3253,
+          "avg_pnl_pct": 0.0654,
+          "avg_holding_days": 44.5659
+        },
+        "stop_loss": {
+          "trades": 92,
+          "win_rate": 0.0,
+          "total_pnl": -1303396.265,
+          "avg_pnl_pct": -0.0977,
+          "avg_holding_days": 23.5109
+        },
+        "take_profit": {
+          "trades": 44,
+          "win_rate": 1.0,
+          "total_pnl": 653286.0642,
+          "avg_pnl_pct": 0.2194,
+          "avg_holding_days": 43.2045
+        },
+        "trailing_stop": {
+          "trades": 12,
+          "win_rate": 0.3333,
+          "total_pnl": -48627.6245,
+          "avg_pnl_pct": -0.0199,
+          "avg_holding_days": 47.0
+        }
+      },
+      "entry_features_losers_vs_winners": {
+        "entry_rsi14": {
+          "losers": 59.5843,
+          "winners": 58.4765
+        },
+        "entry_ret_60d": {
+          "losers": 0.259,
+          "winners": 0.2243
+        },
+        "entry_mom_12_1": {
+          "losers": 0.5113,
+          "winners": 0.5491
+        },
+        "entry_mom_6_1": {
+          "losers": 0.2835,
+          "winners": 0.2904
+        },
+        "entry_gap_sma20": {
+          "losers": 0.0247,
+          "winners": 0.0193
+        }
+      },
+      "worst_tickers": {
+        "9984.T": -61411.2247,
+        "8306.T": -50409.402,
+        "8035.T": -49361.5379,
+        "6702.T": -29848.236,
+        "6758.T": -26013.2147
+      },
+      "best_tickers": {
+        "6146.T": 178235.6547,
+        "AMD": 166340.7288,
+        "NVDA": 116161.9973,
+        "AVGO": 84831.8312,
+        "4063.T": 62498.256
+      },
+      "worst_trades": [
+        {
+          "ticker": "8035.T",
+          "entry_date": "2024-04-16",
+          "exit_date": "2024-04-22",
+          "qty": 30,
+          "entry_price": 7669.662,
+          "exit_price": 6559.434,
+          "pnl": -33306.84,
+          "pnl_pct": -0.1448,
+          "holding_days": 6,
+          "exit_reason": "stop_loss",
+          "entry_close": 7858.0,
+          "entry_rsi14": 56.8291,
+          "entry_ret_60d": 0.4888,
+          "entry_mom_12_1": 1.3587,
+          "entry_mom_6_1": 0.9146,
+          "entry_gap_sma20": 0.011794396374124494
+        },
+        {
+          "ticker": "TSLA",
+          "entry_date": "2021-01-29",
+          "exit_date": "2021-02-23",
+          "qty": 5,
+          "entry_price": 28882.6962,
+          "exit_price": 23147.8486,
+          "pnl": -28674.2382,
+          "pnl_pct": -0.1986,
+          "holding_days": 25,
+          "exit_reason": "stop_loss",
+          "entry_close": 29001.3936,
+          "entry_rsi14": 60.6828,
+          "entry_ret_60d": 1.1445,
+          "entry_mom_12_1": 4.4187,
+          "entry_mom_6_1": 1.1805,
+          "entry_gap_sma20": 0.02683853092427202
+        },
+        {
+          "ticker": "ANET",
+          "entry_date": "2024-03-05",
+          "exit_date": "2024-04-22",
+          "qty": 22,
+          "entry_price": 10694.8989,
+          "exit_price": 9521.7049,
+          "pnl": -25810.2689,
+          "pnl_pct": -0.1097,
+          "holding_days": 48,
+          "exit_reason": "stop_loss",
+          "entry_close": 10805.3082,
+          "entry_rsi14": 67.4315,
+          "entry_ret_60d": 0.36,
+          "entry_mom_12_1": 1.0782,
+          "entry_mom_6_1": 0.3553,
+          "entry_gap_sma20": 0.06364007729927756
+        },
+        {
+          "ticker": "TSLA",
+          "entry_date": "2020-02-26",
+          "exit_date": "2020-02-28",
+          "qty": 22,
+          "entry_price": 5759.0066,
+          "exit_price": 4598.9234,
+          "pnl": -25521.8299,
+          "pnl_pct": -0.2014,
+          "holding_days": 2,
+          "exit_reason": "stop_loss",
+          "entry_close": 5911.7081,
+          "entry_rsi14": 59.0355,
+          "entry_ret_60d": 1.4735,
+          "entry_mom_12_1": 0.8697,
+          "entry_mom_6_1": 1.7492,
+          "entry_gap_sma20": 0.04367282009730089
+        },
+        {
+          "ticker": "8306.T",
+          "entry_date": "2023-02-17",
+          "exit_date": "2023-03-14",
+          "qty": 171,
+          "entry_price": 979.4785,
+          "exit_price": 831.3678,
+          "pnl": -25326.9276,
+          "pnl_pct": -0.1512,
+          "holding_days": 25,
+          "exit_reason": "stop_loss",
+          "entry_close": 974.9,
+          "entry_rsi14": 62.0868,
+          "entry_ret_60d": 0.3669,
+          "entry_mom_12_1": 0.2996,
+          "entry_mom_6_1": 0.2971,
+          "entry_gap_sma20": 0.022969328758355
+        },
+        {
+          "ticker": "9984.T",
+          "entry_date": "2020-02-27",
+          "exit_date": "2020-03-09",
+          "qty": 98,
+          "entry_price": 1346.5952,
+          "exit_price": 1089.6592,
+          "pnl": -25179.728,
+          "pnl_pct": -0.1908,
+          "holding_days": 11,
+          "exit_reason": "stop_loss",
+          "entry_close": 1353.75,
+          "entry_rsi14": 58.638,
+          "entry_ret_60d": 0.2747,
+          "entry_mom_12_1": -0.042,
+          "entry_mom_6_1": -0.0255,
+          "entry_gap_sma20": 0.06346416331981497
+        },
+        {
+          "ticker": "8035.T",
+          "entry_date": "2022-06-08",
+          "exit_date": "2022-06-14",
+          "qty": 43,
+          "entry_price": 3985.982,
+          "exit_price": 3406.59,
+          "pnl": -24913.856,
+          "pnl_pct": -0.1454,
+          "holding_days": 6,
+          "exit_reason": "stop_loss",
+          "entry_close": 3959.3333,
+          "entry_rsi14": 55.2209,
+          "entry_ret_60d": 0.1481,
+          "entry_mom_12_1": 0.1544,
+          "entry_mom_6_1": -0.1054,
+          "entry_gap_sma20": 0.020104939066807326
+        },
+        {
+          "ticker": "GOOGL",
+          "entry_date": "2020-02-11",
+          "exit_date": "2020-02-28",
+          "qty": 16,
+          "entry_price": 8313.5847,
+          "exit_price": 6980.0549,
+          "pnl": -21336.4768,
+          "pnl_pct": -0.1604,
+          "holding_days": 17,
+          "exit_reason": "stop_loss",
+          "entry_close": 8270.8509,
+          "entry_rsi14": 65.8756,
+          "entry_ret_60d": 0.1694,
+          "entry_mom_12_1": 0.2794,
+          "entry_mom_6_1": 0.2298,
+          "entry_gap_sma20": 0.03423676771112372
+        },
+        {
+          "ticker": "NVDA",
+          "entry_date": "2024-04-05",
+          "exit_date": "2024-04-22",
+          "qty": 18,
+          "entry_price": 13155.2732,
+          "exit_price": 12065.9239,
+          "pnl": -19608.2876,
+          "pnl_pct": -0.0828,
+          "holding_days": 17,
+          "exit_reason": "stop_loss",
+          "entry_close": 13021.5651,
+          "entry_rsi14": 50.4945,
+          "entry_ret_60d": 0.722,
+          "entry_mom_12_1": 2.4686,
+          "entry_mom_6_1": 0.9835,
+          "entry_gap_sma20": -0.03540591859050368
+        },
+        {
+          "ticker": "VRT",
+          "entry_date": "2023-02-28",
+          "exit_date": "2023-03-13",
+          "qty": 76,
+          "entry_price": 2136.8589,
+          "exit_price": 1879.7395,
+          "pnl": -19541.0806,
+          "pnl_pct": -0.1203,
+          "holding_days": 13,
+          "exit_reason": "stop_loss",
+          "entry_close": 2149.5853,
+          "entry_rsi14": 57.891,
+          "entry_ret_60d": 0.1739,
+          "entry_mom_12_1": 0.2755,
+          "entry_mom_6_1": 0.0588,
+          "entry_gap_sma20": 0.062117604042754904
+        }
+      ]
+    },
+    "open_positions": [
+      {
+        "ticker": "8766.T",
+        "qty": 726,
+        "avg_cost": 312.8459,
+        "close": 357.4,
+        "unrealized_pct": 0.1424
+      },
+      {
+        "ticker": "6702.T",
+        "qty": 91,
+        "avg_cost": 2352.35,
+        "close": 2250.5,
+        "unrealized_pct": -0.0433
+      },
+      {
+        "ticker": "JPM",
+        "qty": 7,
+        "avg_cost": 30149.0314,
+        "close": 31155.1736,
+        "unrealized_pct": 0.0334
+      },
+      {
+        "ticker": "XOM",
+        "qty": 5,
+        "avg_cost": 18651.0909,
+        "close": 17869.6799,
+        "unrealized_pct": -0.0419
+      },
+      {
+        "ticker": "8031.T",
+        "qty": 59,
+        "avg_cost": 3916.4125,
+        "close": 4032.5,
+        "unrealized_pct": 0.0296
+      },
+      {
+        "ticker": "6501.T",
+        "qty": 81,
+        "avg_cost": 2908.906,
+        "close": 3171.0,
+        "unrealized_pct": 0.0901
+      },
+      {
+        "ticker": "VRT",
+        "qty": 15,
+        "avg_cost": 14758.4525,
+        "close": 16231.0102,
+        "unrealized_pct": 0.0998
+      },
+      {
+        "ticker": "GOOGL",
+        "qty": 8,
+        "avg_cost": 27469.7396,
+        "close": 27662.3837,
+        "unrealized_pct": 0.007
+      }
+    ]
+  },
+  "out_of_sample": {
+    "period": {
+      "start": "2024-05-30",
+      "end": "2026-10-23",
+      "days": 625
+    },
+    "metrics": {
+      "final_equity": 1122746.2731,
+      "total_return": 0.1227,
+      "cagr": 0.0495,
+      "max_drawdown": 0.2157,
+      "sharpe": 0.3612,
+      "exposure": 0.7823,
+      "trades": 188,
+      "win_rate": 0.5319,
+      "avg_win_pct": 0.1245,
+      "avg_loss_pct": -0.0807,
+      "profit_factor": 1.119,
+      "avg_holding_days": 37.5266
+    },
+    "benchmark": {
+      "total_return": 0.4766,
+      "max_drawdown": 0.2319
+    },
+    "yearly": {
+      "2024": {
+        "strategy": 0.0502,
+        "benchmark": 0.1151
+      },
+      "2025": {
+        "strategy": -0.0725,
+        "benchmark": 0.1582
+      },
+      "2026": {
+        "strategy": 0.1526,
+        "benchmark": 0.1434
+      }
+    },
+    "analysis": {
+      "by_exit_reason": {
+        "before_earnings": {
+          "trades": 85,
+          "win_rate": 0.8,
+          "total_pnl": 457942.3157,
+          "avg_pnl_pct": 0.0623,
+          "avg_holding_days": 44.5529
+        },
+        "stop_loss": {
+          "trades": 60,
+          "win_rate": 0.0,
+          "total_pnl": -646421.0369,
+          "avg_pnl_pct": -0.1005,
+          "avg_holding_days": 21.05
+        },
+        "take_profit": {
+          "trades": 23,
+          "win_rate": 1.0,
+          "total_pnl": 265084.536,
+          "avg_pnl_pct": 0.2194,
+          "avg_holding_days": 41.5217
+        },
+        "trailing_stop": {
+          "trades": 20,
+          "win_rate": 0.45,
+          "total_pnl": 13980.5388,
+          "avg_pnl_pct": 0.052,
+          "avg_holding_days": 52.5
+        }
+      },
+      "entry_features_losers_vs_winners": {
+        "entry_rsi14": {
+          "losers": 57.5065,
+          "winners": 58.9411
+        },
+        "entry_ret_60d": {
+          "losers": 0.3393,
+          "winners": 0.3054
+        },
+        "entry_mom_12_1": {
+          "losers": 0.7369,
+          "winners": 0.4975
+        },
+        "entry_mom_6_1": {
+          "losers": 0.3936,
+          "winners": 0.2378
+        },
+        "entry_gap_sma20": {
+          "losers": 0.0154,
+          "winners": 0.0259
+        }
+      },
+      "worst_tickers": {
+        "6146.T": -22881.04,
+        "8058.T": -21088.396,
+        "AMD": -18670.9034,
+        "META": -16447.4242,
+        "ORCL": -15964.1685
+      },
+      "best_tickers": {
+        "6098.T": 53537.118,
+        "WMT": 30193.8242,
+        "GOOGL": 26941.4024,
+        "7974.T": 21857.794,
+        "9983.T": 18741.6
+      },
+      "worst_trades": [
+        {
+          "ticker": "8766.T",
+          "entry_date": "2024-07-30",
+          "exit_date": "2024-08-05",
+          "qty": 303,
+          "entry_price": 385.3183,
+          "exit_price": 287.4456,
+          "pnl": -29655.4124,
+          "pnl_pct": -0.254,
+          "holding_days": 6,
+          "exit_reason": "stop_loss",
+          "entry_close": 391.6,
+          "entry_rsi14": 47.6894,
+          "entry_ret_60d": 0.1812,
+          "entry_mom_12_1": 0.825,
+          "entry_mom_6_1": 0.52,
+          "entry_gap_sma20": -0.046266080560316225
+        },
+        {
+          "ticker": "6981.T",
+          "entry_date": "2026-07-14",
+          "exit_date": "2026-07-21",
+          "qty": 15,
+          "entry_price": 9010.001,
+          "exit_price": 7570.422,
+          "pnl": -21593.685,
+          "pnl_pct": -0.1598,
+          "holding_days": 7,
+          "exit_reason": "stop_loss",
+          "entry_close": 9066.0,
+          "entry_rsi14": 44.3181,
+          "entry_ret_60d": 1.0942,
+          "entry_mom_12_1": 2.9721,
+          "entry_mom_6_1": 1.5678,
+          "entry_gap_sma20": -0.15523667536339913
+        },
+        {
+          "ticker": "6981.T",
+          "entry_date": "2026-06-30",
+          "exit_date": "2026-07-08",
+          "qty": 12,
+          "entry_price": 10650.64,
+          "exit_price": 8903.088,
+          "pnl": -20970.624,
+          "pnl_pct": -0.1641,
+          "holding_days": 8,
+          "exit_reason": "stop_loss",
+          "entry_close": 10740.0,
+          "entry_rsi14": 57.0702,
+          "entry_ret_60d": 2.1505,
+          "entry_mom_12_1": 3.6185,
+          "entry_mom_6_1": 2.0469,
+          "entry_gap_sma20": 0.03570481448443785
+        },
+        {
+          "ticker": "V",
+          "entry_date": "2025-03-26",
+          "exit_date": "2025-04-07",
+          "qty": 2,
+          "entry_price": 51933.0792,
+          "exit_price": 43887.016,
+          "pnl": -16092.1263,
+          "pnl_pct": -0.1549,
+          "holding_days": 12,
+          "exit_reason": "stop_loss",
+          "entry_close": 51959.7359,
+          "entry_rsi14": 54.4795,
+          "entry_ret_60d": 0.0311,
+          "entry_mom_12_1": 0.1939,
+          "entry_mom_6_1": 0.2847,
+          "entry_gap_sma20": 0.016267762004949837
+        },
+        {
+          "ticker": "NVDA",
+          "entry_date": "2024-06-28",
+          "exit_date": "2024-07-25",
+          "qty": 6,
+          "entry_price": 20038.4047,
+          "exit_price": 17378.4437,
+          "pnl": -15959.7662,
+          "pnl_pct": -0.1327,
+          "holding_days": 27,
+          "exit_reason": "stop_loss",
+          "entry_close": 19915.3977,
+          "entry_rsi14": 60.075,
+          "entry_ret_60d": 0.4688,
+          "entry_mom_12_1": 1.9737,
+          "entry_mom_6_1": 1.5489,
+          "entry_gap_sma20": 0.02587276720147469
+        },
+        {
+          "ticker": "TSLA",
+          "entry_date": "2025-01-31",
+          "exit_date": "2025-02-10",
+          "qty": 2,
+          "entry_price": 61936.4428,
+          "exit_price": 54034.9708,
+          "pnl": -15802.944,
+          "pnl_pct": -0.1276,
+          "holding_days": 10,
+          "exit_reason": "stop_loss",
+          "entry_close": 62111.4467,
+          "entry_rsi14": 48.0357,
+          "entry_ret_60d": 0.6226,
+          "entry_mom_12_1": 1.4075,
+          "entry_mom_6_1": 0.9883,
+          "entry_gap_sma20": -0.021052934972553006
+        },
+        {
+          "ticker": "9984.T",
+          "entry_date": "2024-07-18",
+          "exit_date": "2024-07-26",
+          "qty": 44,
+          "entry_price": 2665.1625,
+          "exit_price": 2323.1745,
+          "pnl": -15047.472,
+          "pnl_pct": -0.1283,
+          "holding_days": 8,
+          "exit_reason": "stop_loss",
+          "entry_close": 2836.25,
+          "entry_rsi14": 67.0834,
+          "entry_ret_60d": 0.4405,
+          "entry_mom_12_1": 0.4867,
+          "entry_mom_6_1": 0.5687,
+          "entry_gap_sma20": 0.05076457131213585
+        },
+        {
+          "ticker": "ABBV",
+          "entry_date": "2025-02-13",
+          "exit_date": "2025-04-07",
+          "qty": 4,
+          "entry_price": 29998.6308,
+          "exit_price": 26301.4078,
+          "pnl": -14788.892,
+          "pnl_pct": -0.1232,
+          "holding_days": 53,
+          "exit_reason": "stop_loss",
+          "entry_close": 29478.6267,
+          "entry_rsi14": 64.0272,
+          "entry_ret_60d": 0.1189,
+          "entry_mom_12_1": 0.074,
+          "entry_mom_6_1": -0.0021,
+          "entry_gap_sma20": 0.05438800648016717
+        },
+        {
+          "ticker": "9984.T",
+          "entry_date": "2026-06-10",
+          "exit_date": "2026-06-30",
+          "qty": 19,
+          "entry_price": 6720.714,
+          "exit_price": 5962.032,
+          "pnl": -14414.958,
+          "pnl_pct": -0.1129,
+          "holding_days": 20,
+          "exit_reason": "stop_loss",
+          "entry_close": 7048.0,
+          "entry_rsi14": 53.8715,
+          "entry_ret_60d": 0.9405,
+          "entry_mom_12_1": 1.9448,
+          "entry_mom_6_1": 0.3653,
+          "entry_gap_sma20": 0.025685803681874342
+        },
+        {
+          "ticker": "VRT",
+          "entry_date": "2024-06-20",
+          "exit_date": "2024-07-18",
+          "qty": 7,
+          "entry_price": 15041.5699,
+          "exit_price": 13007.0001,
+          "pnl": -14241.9887,
+          "pnl_pct": -0.1353,
+          "holding_days": 28,
+          "exit_reason": "stop_loss",
+          "entry_close": 15035.1171,
+          "entry_rsi14": 52.855,
+          "entry_ret_60d": 0.2019,
+          "entry_mom_12_1": 3.7577,
+          "entry_mom_6_1": 1.215,
+          "entry_gap_sma20": -0.00031568102716139634
+        }
+      ]
+    },
+    "open_positions": [
+      {
+        "ticker": "AAPL",
+        "qty": 2,
+        "avg_cost": 48874.2048,
+        "close": 54528.9323,
+        "unrealized_pct": 0.1157
+      },
+      {
+        "ticker": "8306.T",
+        "qty": 37,
+        "avg_cost": 3483.48,
+        "close": 3295.0,
+        "unrealized_pct": -0.0541
+      },
+      {
+        "ticker": "7267.T",
+        "qty": 79,
+        "avg_cost": 1645.644,
+        "close": 1795.0,
+        "unrealized_pct": 0.0908
+      },
+      {
+        "ticker": "MSFT",
+        "qty": 1,
+        "avg_cost": 75067.7603,
+        "close": 82250.5102,
+        "unrealized_pct": 0.0957
+      },
+      {
+        "ticker": "6098.T",
+        "qty": 7,
+        "avg_cost": 17001.985,
+        "close": 19060.0,
+        "unrealized_pct": 0.121
+      },
+      {
+        "ticker": "CRM",
+        "qty": 3,
+        "avg_cost": 37671.2077,
+        "close": 38979.256,
+        "unrealized_pct": 0.0347
+      },
+      {
+        "ticker": "7974.T",
+        "qty": 15,
+        "avg_cost": 8838.83,
+        "close": 8539.0,
+        "unrealized_pct": -0.0339
+      },
+      {
+        "ticker": "9432.T",
+        "qty": 770,
+        "avg_cost": 181.2811,
+        "close": 174.8,
+        "unrealized_pct": -0.0358
+      }
+    ]
+  }
+}

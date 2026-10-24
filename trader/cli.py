@@ -137,6 +137,13 @@ def market_regimes(data: MarketData, tickers, rule_set: dict, settings: dict, da
     return {t: reg[config.currency(t, settings)] for t in tickers if config.currency(t, settings) in reg}
 
 
+def earnings_for(data: MarketData, tickers, rule_set: dict) -> dict[str, list]:
+    """ルールが earnings を使うとき、銘柄ごとの決算日を返す (取れない銘柄は含めない)。"""
+    if not rule_set.get("earnings") or not hasattr(data, "earnings_dates"):
+        return {}
+    return data.earnings_dates(sorted(tickers))
+
+
 def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None) -> dict:
     """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。"""
     exits = []
@@ -312,11 +319,14 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
     kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
 
     market = market_regimes(data, frames, rule_set, settings, years * 365 + 300)
+    earnings = earnings_for(data, frames, rule_set)
     out_dir = root / "reports" / "backtest" / name
     out_dir.mkdir(parents=True, exist_ok=True)
     result = {"rules": str(rules_path), "rules_version": rule_set.get("version"), "tickers": len(frames)}
+    if rule_set.get("earnings"):
+        result["earnings_coverage"] = _earnings_coverage(earnings, frames)
     for label, a, b in [("in_sample", first, split_ts - pd.Timedelta(days=1)), ("out_of_sample", split_ts, last)]:
-        r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, **kw)
+        r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings, **kw)
         pd.DataFrame(r.pop("trades")).to_csv(out_dir / f"trades_{label}.csv", index=False)
         r.pop("equity_curve").to_csv(out_dir / f"equity_{label}.csv")
         result[label] = r
@@ -326,6 +336,13 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
             "by_exit_reason": result[label]["analysis"].get("by_exit_reason")}
     result["output"] = str(out_dir)
     return result
+
+
+def _earnings_coverage(earnings: dict[str, list], frames: dict) -> dict:
+    """決算日が取れた銘柄数と、最も古い決算日 (この日より前は決算の判定が効かない)。"""
+    firsts = {t: min(ds).isoformat() for t, ds in earnings.items() if ds}
+    return {"tickers": len(firsts), "of": len(frames), "missing": sorted(set(frames) - set(firsts)),
+            "latest_first_date": max(firsts.values()) if firsts else None, "first_dates": firsts}
 
 
 def _load_frames(root: Path, data: MarketData, tickers, days: int):
@@ -372,9 +389,12 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
     for rp in rules_paths:
         rule_set = rules.load_rules(rp)
         market = market_regimes(data, frames, rule_set, settings, days)
+        earnings = earnings_for(data, frames, rule_set)
+        if earnings:
+            out.setdefault("earnings_coverage", _earnings_coverage(earnings, frames))
         per_year = {}
         for a, b in windows:
-            r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, **kw)
+            r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings, **kw)
             m = r["metrics"]
             per_year[a.year] = {"return": m["total_return"], "max_drawdown": m["max_drawdown"], "trades": m["trades"]}
         rets = [v["return"] for v in per_year.values()]
@@ -413,7 +433,8 @@ def cmd_forward(root: Path, data: MarketData) -> dict:
     for item in spec["rules"]:
         rule_set = rules.load_rules(root / item["path"])
         market = market_regimes(data, frames, rule_set, settings, days)
-        r = backtest.run(frames, rule_set, start.date(), last.date(), market=market, **kw)
+        earnings = earnings_for(data, frames, rule_set)
+        r = backtest.run(frames, rule_set, start.date(), last.date(), market=market, earnings=earnings, **kw)
         m = r["metrics"]
         out["rules"][item["name"]] = {
             "label": item.get("label", ""),

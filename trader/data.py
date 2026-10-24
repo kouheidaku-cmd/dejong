@@ -44,6 +44,25 @@ class YahooData:
         return out
 
 
+    def earnings_dates(self, tickers: list[str]) -> dict[str, list[date]]:
+        """過去と予定の決算発表日 (取引所の現地の日付)。取れなかった銘柄は含めない。"""
+        import yfinance as yf
+
+        out = {}
+        for t in sorted(set(tickers)):
+            try:
+                df = yf.Ticker(t).get_earnings_dates(limit=60)
+            except Exception:
+                continue
+            if df is None or df.empty:
+                continue
+            idx = pd.DatetimeIndex(df.index)
+            if idx.tz is not None:
+                idx = idx.tz_convert("Asia/Tokyo" if t.endswith(".T") else "America/New_York")
+            out[t] = sorted({d.date() for d in idx})
+        return out
+
+
 def _select(raw: pd.DataFrame, ticker: str) -> pd.DataFrame | None:
     if isinstance(raw.columns, pd.MultiIndex):
         if ticker in raw.columns.get_level_values(0):
@@ -107,5 +126,23 @@ class CachedData:
             self.dir.mkdir(parents=True, exist_ok=True)
             for t, df in fetched.items():
                 df.to_csv(self.dir / f"{t}.csv")
+            out.update(fetched)
+        return out
+
+    def earnings_dates(self, tickers: list[str]) -> dict[str, list[date]]:
+        """決算日を data/cache/earnings/ に保存し、同じ日のうちは再利用する。"""
+        d = self.dir / "earnings"
+        out, missing = {}, []
+        for t in tickers:
+            path = d / f"{t}.csv"
+            if path.exists() and date.fromtimestamp(path.stat().st_mtime) == date.today():
+                out[t] = [date.fromisoformat(x) for x in path.read_text().split()]
+            else:
+                missing.append(t)
+        if missing and hasattr(self.inner, "earnings_dates"):
+            fetched = self.inner.earnings_dates(missing)
+            d.mkdir(parents=True, exist_ok=True)
+            for t, ds in fetched.items():
+                (d / f"{t}.csv").write_text("\n".join(x.isoformat() for x in ds))
             out.update(fetched)
         return out

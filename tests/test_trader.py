@@ -366,3 +366,38 @@ def test_record_buy_sets_default_account(tmp_path):
     (root / "config" / "settings.yaml").write_text(yaml.safe_dump(settings, allow_unicode=True))
     cli.cmd_record(root, FakeData({}), date(2026, 10, 23), "9432.T", "buy", 100, 180.0, None, 0.0)
     assert Portfolio.load(root / "state" / "portfolio.json").positions["9432.T"]["account"] == "nisa_growth"
+
+
+def test_days_to_earnings_counts_trading_days():
+    from trader import rules
+    idx = pd.bdate_range("2026-01-05", periods=10)  # 1/5(月)〜1/16(金)
+    dte = rules.days_to_earnings(idx, [date(2026, 1, 9), date(2026, 1, 17)])  # 1/17 は土曜 → 次の営業日扱い
+    assert list(dte.iloc[:5]) == [4, 3, 2, 1, 0]  # 1/9 当日が 0
+    assert dte.iloc[5] == 5  # 1/12 から見た次の決算 1/17(土) は日足の外 → 次の営業日 1/19 まで平日で5日
+    assert rules.days_to_earnings(idx, []).isna().all()
+
+
+def test_earnings_blackout_and_exit_before():
+    from trader import backtest, rules
+    up = bars(np.linspace(100, 160, 320) + 2 * np.sin(np.arange(320)), start="2018-01-01")  # RSI が100に張り付かない上昇
+    idx = up.index
+    earn = [idx[260].date(), idx[300].date()]
+    base = {**RULES, "exit": {**RULES["exit"], "trend_break": False, "take_profit": None, "trailing_stop": None}}
+    row = {"close": 110, "sma20": 105, "sma50": 100, "sma200": 90, "rsi14": 60, "ret_60d": 0.1}
+    blk = {**base, "earnings": {"entry_blackout_days": 3}}
+    assert rules.entry_check({**row, "dte": 4}, blk)  # 翌日の約定が決算3営業日前 → 見送り
+    assert rules.entry_check({**row, "dte": 5}, blk) == []
+    assert rules.entry_check({**row, "dte": 0}, blk) == []  # 決算当日のシグナル → 翌日 (決算後) の約定は可
+
+    start, end = idx[220].date(), idx[-1].date()
+    full = {**base, "earnings": {"entry_blackout_days": 3, "exit_before_days": 2, "exit_fraction": 1.0}}
+    r = backtest.run({"UP": up}, full, start, end, slippage_bps=0, earnings={"UP": earn})
+    cuts = [t for t in r["trades"] if t["exit_reason"] == "before_earnings"]
+    assert [t["exit_date"] for t in cuts] == [idx[258].date().isoformat(), idx[298].date().isoformat()]  # 2営業日前の寄付き
+    for t in r["trades"]:  # 決算日をまたいで持っていない
+        assert not any(t["entry_date"] <= e.isoformat() < t["exit_date"] for e in earn)
+
+    half = {**base, "earnings": {"entry_blackout_days": 3, "exit_before_days": 2, "exit_fraction": 0.5}}
+    r = backtest.run({"UP": up}, half, start, end, slippage_bps=0, earnings={"UP": earn})
+    cuts = [t for t in r["trades"] if t["exit_reason"] == "before_earnings"]
+    assert len(cuts) == 2  # 1回の決算につき1回だけ (半分ずつ)

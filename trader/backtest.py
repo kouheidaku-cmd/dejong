@@ -14,7 +14,8 @@ import numpy as np
 import pandas as pd
 
 from .config import currency
-from .rules import attach_market, entry_check, exit_check, features, rotation_targets, sell_qty
+from .rules import (attach_earnings, attach_market, earnings_exit, entry_check, exit_check, features,
+                    rotation_targets, sell_qty)
 
 
 def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], settings: dict) -> dict[str, pd.DataFrame]:
@@ -35,14 +36,17 @@ def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], 
 
 def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0,
-        market: dict[str, pd.Series] | None = None) -> dict:
-    """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。"""
+        market: dict[str, pd.Series] | None = None, earnings: dict[str, list] | None = None) -> dict:
+    """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。
+    earnings: 銘柄ごとの過去の決算日。rules の earnings を使うときに渡す (ない銘柄は決算の判定をしない)。"""
     slip, comm = slippage_bps / 10_000, commission_bps / 10_000
     feats = {}
     for t, df in frames.items():
         f = features(df)
         if market and t in market:
             f = attach_market(f, market[t])
+        if earnings and t in earnings:
+            f = attach_earnings(f, earnings[t])
         feats[t] = f.to_dict("index")
     start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
     dates = sorted({d for f in feats.values() for d in f if start_ts <= d <= end_ts})
@@ -135,6 +139,11 @@ def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
             continue
         p["peak"] = max(p["peak"], row["close"])
         sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules)
+        if not sig:
+            frac = earnings_exit(row, rules)
+            if frac and p.get("earnings_cut") != row["earn_id"]:
+                p["earnings_cut"] = row["earn_id"]  # 1回の決算につき1回だけ
+                sig = ("before_earnings", frac)
         if sig:
             qty = sell_qty(p["qty"], sig[1])
             new.append({"ticker": t, "side": "sell", "qty": qty, "reason": sig[0]})

@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from .config import ROOT, load_yaml
@@ -28,6 +29,39 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
         "mom_12_1": c.shift(21) / c.shift(252) - 1,  # 過去12か月 (直近1か月を除く) のリターン
         "mom_6_1": c.shift(21) / c.shift(126) - 1,
     }, index=df.index)
+
+
+def days_to_earnings(index: pd.DatetimeIndex, dates) -> pd.Series:
+    """各日から次の決算日まで何営業日か (その銘柄の日足がある日で数える。決算日当日は 0)。
+
+    決算日が休場日なら次の営業日を決算日とみなす。日足の最後より先の決算日は平日の数で数える。
+    次の決算日が分からない日は NaN。
+    """
+    n = len(index)
+    if n == 0:
+        return pd.Series(dtype=float)
+    pos = []
+    for d in sorted(pd.Timestamp(x).normalize() for x in dates):
+        i = int(index.searchsorted(d))
+        if i >= n:
+            i = n - 1 + int(np.busday_count(index[-1].date(), d.date()))
+        pos.append(i)
+    out = np.full(n, np.nan)
+    if pos:
+        pos = np.array(sorted(set(pos)))
+        rows = np.arange(n)
+        k = np.searchsorted(pos, rows)  # 各行以降で最初の決算日
+        ok = k < len(pos)
+        out[ok] = pos[k[ok]] - rows[ok]
+    return pd.Series(out, index=index)
+
+
+def attach_earnings(f: pd.DataFrame, dates) -> pd.DataFrame:
+    """銘柄の特徴量に、次の決算日までの営業日数 (dte) を付ける。"""
+    f = f.copy()
+    f["dte"] = days_to_earnings(f.index, dates)
+    f["earn_id"] = np.arange(len(f)) + f["dte"]  # どの決算か (同じ決算なら日が進んでも同じ値)
+    return f
 
 
 def market_regime(index_df: pd.DataFrame, sma: int) -> pd.Series:
@@ -93,6 +127,11 @@ def entry_check(row: dict, rules: dict) -> list[str]:
             fails.append("市場指数のデータ不足")
         elif not ok:
             fails.append(f"市場全体が下降トレンド (指数 < SMA{mf['sma']})")
+    blackout = (rules.get("earnings") or {}).get("entry_blackout_days")
+    dte = row.get("dte")
+    # 翌営業日に約定するので、約定日が決算日の blackout 営業日前〜当日になるシグナルを止める
+    if blackout is not None and dte is not None and dte == dte and 1 <= dte <= blackout + 1:
+        fails.append(f"決算日まで {int(dte)} 営業日 (決算前の新規買いは見送り)")
     return fails
 
 
@@ -114,6 +153,15 @@ def exit_check(row: dict, avg_cost: float, peak_close: float, held_days: int,
     if x.get("take_profit") and not took_profit and ret >= x["take_profit"]:
         return "take_profit", float(x.get("take_profit_fraction", 1.0))
     return None
+
+
+def earnings_exit(row: dict, rules: dict) -> float | None:
+    """決算前に売る割合を返す (翌営業日の寄付きが決算日の exit_before_days 営業日前以降になる日)。なければ None。"""
+    e = rules.get("earnings") or {}
+    k, dte = e.get("exit_before_days"), row.get("dte")
+    if k is None or dte is None or dte != dte or not 1 <= dte <= k + 1:
+        return None
+    return float(e.get("exit_fraction", 1.0))
 
 
 def sell_qty(qty: int, fraction: float) -> int:
