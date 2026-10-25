@@ -5,6 +5,7 @@
   python -m trader submit ORDERS.json   日次: リスクチェックして発注 (manual では注文案として記録)
   python -m trader record ...           manual: 人が発注して約定した1件を記録
   python -m trader sync FILE            manual: 証券口座の保有一覧で記録を上書き
+  python -m trader cashflow -20000      入金 (+) / 出金 (-) を記録
   python -m trader status               現在の口座状況
   python -m trader screen               週次: 母集団をスクリーニング
   python -m trader backtest             config/rules.yaml のルールを過去の日足で仮想売買
@@ -244,6 +245,22 @@ def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, 
     pf.save(p.portfolio)
     append_journal(p.journal, [event])
     return {"event": event, "cash": round(pf.cash), "warning": "現金がマイナスです。sync で実際の残高に合わせてください" if pf.cash < 0 else None}
+
+
+def cmd_cashflow(root: Path, day: date, amount: float, note: str) -> dict:
+    """入金 (+) / 出金 (-) を記録する。最高値も同じだけずらし、出入金をドローダウンと見なさないようにする。"""
+    p = Paths(root)
+    pf = Portfolio.load(p.portfolio)
+    cash_before = pf.cash
+    pf.cash += amount
+    if pf.peak_equity:
+        pf.peak_equity = max(pf.peak_equity + amount, 0.0)
+    pf.save(p.portfolio)
+    event = {"date": day.isoformat(), "ticker": "CASH", "side": "deposit" if amount > 0 else "withdraw",
+             "qty": 0, "status": "cashflow", "price": amount, "currency": "JPY", "rationale": note}
+    append_journal(p.journal, [event])
+    return {"cash_before": round(cash_before), "cash_after": round(pf.cash), "peak_equity": round(pf.peak_equity),
+            "warning": "現金がマイナスです。sync で実際の残高に合わせてください" if pf.cash < 0 else None}
 
 
 def cmd_sync(root: Path, day: date, source: Path) -> dict:
@@ -490,6 +507,9 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--fx", type=float, help="約定時の為替レート (省略時は最新レート)")
     s.add_argument("--fee", type=float, default=0.0, help="手数料 (円)")
     s.add_argument("--take-profit", action="store_true", help="ルールの利確シグナルによる一部売りのとき")
+    s = sub.add_parser("cashflow", help="入金 (+金額) / 出金 (-金額) を記録")
+    s.add_argument("amount", type=float, help="円。出金はマイナス (例: -20000)")
+    s.add_argument("--note", default="", help="メモ")
     s = sub.add_parser("sync")
     s.add_argument("source", type=Path)
     sub.add_parser("status")
@@ -520,6 +540,8 @@ def main(argv: list[str] | None = None) -> None:
         out = cmd_submit(root, data, day, args.orders, args.force)
     elif args.cmd == "record":
         out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee, args.take_profit)
+    elif args.cmd == "cashflow":
+        out = cmd_cashflow(root, day, args.amount, args.note)
     elif args.cmd == "sync":
         out = cmd_sync(root, day, args.source)
     elif args.cmd == "status":

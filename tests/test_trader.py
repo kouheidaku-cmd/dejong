@@ -443,3 +443,14 @@ def test_swap_replaces_weakest_holding():
     neg = {**base, "swap": {"min_gap": 0.2, "min_hold_days": 28, "only_negative": True}}
     r = backtest.run(frames, neg, start, end, slippage_bps=0)
     assert not [t for t in r["trades"] if t["exit_reason"] == "swap_out"]  # SLOW の60日リターンはプラスなので外さない
+
+
+def test_cashflow_keeps_drawdown_unchanged(tmp_path):
+    root = make_root(tmp_path, "manual", sync={"cash_jpy": 30000, "positions": {}})
+    pf = Portfolio.load(root / "state" / "portfolio.json")
+    pf.peak_equity = 100000
+    pf.save(root / "state" / "portfolio.json")
+    out = cli.cmd_cashflow(root, date(2026, 10, 26), -20000, "出金")
+    pf = Portfolio.load(root / "state" / "portfolio.json")
+    assert out["cash_after"] == 10000 and pf.peak_equity == 80000
+    assert "cashflow" in (root / "state" / "trades.csv").read_text()
