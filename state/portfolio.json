@@ -63,30 +63,7 @@
       "account": "nisa_growth"
     }
   },
-  "pending": [
-    {
-      "id": 8,
-      "placed_on": "2026-10-26",
-      "status": "proposed",
-      "ticker": "8035.T",
-      "side": "sell",
-      "qty": 11,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "機械ルールの損切り (stop_loss): 終値 9,110円が基準価格 10,085円から -9.7% で -8% を超えた。取得単価から -19.7%。決算 (10/30) 前だが裁量で覆さず、ルール通り全株売り"
-    },
-    {
-      "id": 9,
-      "placed_on": "2026-10-26",
-      "status": "proposed",
-      "ticker": "CRM",
-      "side": "buy",
-      "qty": 1,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "v3 の買い条件をすべて満たす唯一の候補 (60日リターン +37.6%、決算まで28営業日)。空き枠2のうち1。東京エレクトロンの売却代金で買う"
-    }
-  ],
+  "pending": [],
   "peak_equity": 444127.36204527225,
   "next_order_id": 10,
   "other_assets": 20612.0
