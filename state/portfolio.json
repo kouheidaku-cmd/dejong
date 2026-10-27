@@ -1,5 +1,5 @@
 {
-  "cash": 130036.82177764892,
+  "cash": 91145.14744964891,
   "positions": {
     "9434.T": {
       "qty": 200,
@@ -52,21 +52,17 @@
       "opened": "2026-10-23",
       "took_profit": false,
       "account": "nisa_growth"
+    },
+    "CRM": {
+      "qty": 1,
+      "avg_cost": 242.4682,
+      "currency": "USD",
+      "opened": "2026-10-27",
+      "took_profit": false,
+      "account": "nisa_growth"
     }
   },
-  "pending": [
-    {
-      "id": 10,
-      "placed_on": "2026-10-27",
-      "status": "proposed",
-      "ticker": "CRM",
-      "side": "buy",
-      "qty": 1,
-      "type": "market",
-      "limit_price": null,
-      "rationale": "v3 の買い条件をすべて満たす候補の1位 (60日リターン +34.6%、決算まで27営業日)。空き枠1。前日 (10/26) の注文案 id 9 と同じ内容で、東京エレクトロンの売却代金で買う"
-    }
-  ],
+  "pending": [],
   "peak_equity": 444127.36204527225,
   "next_order_id": 11,
   "other_assets": 20612.0
