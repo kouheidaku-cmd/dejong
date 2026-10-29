@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-29",
+  "broker": "manual",
+  "accepted": [
+    {
+      "id": 12,
+      "placed_on": "2026-10-29",
+      "status": "proposed",
+      "ticker": "6758.T",
+      "side": "buy",
+      "qty": 12,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "v3 の買い条件を満たす候補 (60日リターン +3.3%、RSI 53、終値 3,936円 > SMA50 3,830円 > SMA200 3,552円)。順位1位の富士通を裁量で見送ったため2位を採用。空き枠1。決算 (11/5 頃) は5営業日先で v3 の見送り期間の外。数量は目安どおり総資産の約12%"
+    }
+  ],
+  "rejected": []
+}
