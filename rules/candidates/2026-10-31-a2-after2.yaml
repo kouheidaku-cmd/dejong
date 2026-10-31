@@ -1,0 +1,33 @@
+# 機械的に判定できる売買ルール。バックテスト (python -m trader backtest) と日次のシグナルが同じものを使う。
+# 変更は improve-rules スキルで検証してから、人の了承を得て行う。履歴は config/rules_changelog.md。
+# v2 = 構造案4 (トレンド崩れで売らない + 市場フィルター + 8銘柄に分散)。2026-10-22 に人の判断で採用
+# v3 = v2 + 決算の3営業日前〜当日は新規買いしない (検証 reports/rules/2026-10-24-earnings.md)。2026-10-24 に人の了承で採用
+version: 3  # 候補 2026-10-31-a2-after2 (v3 + 決算の後 2 営業日も新規買いしない)
+updated: 2026-10-24
+
+entry:                        # 新規買い: すべて満たしたとき (保有中の銘柄は買い増ししない)
+  require_trend: true         # 終値 > SMA50 かつ SMA50 > SMA200
+  min_ret_60d: 0.0            # 60日リターンがこれ以上 (モメンタムがプラス)
+  max_rsi: 70                 # RSI14 がこれ未満 (過熱していない)
+  max_gap_above_sma20: 0.08   # 終値が SMA20 より 8% 以上上なら見送り (高値づかみ防止)
+  market_filter:              # 市場指数が SMA200 より下なら新規買いしない
+    sma: 200
+    indices: {JPY: "^N225", USD: "^GSPC"}
+
+exit:                         # 売り: 上から順に判定し、最初に当たったもの
+  stop_loss: 0.08             # 取得単価から -8% で全売却
+  trailing_stop: 0.15         # 保有中の最高終値から -15% で全売却
+  trend_break: false          # トレンド崩れでは売らない (損切りとトレーリングだけ)
+  trend_break_buffer: 0.02
+  max_hold_days: null         # 保有日数の上限 (null で無効)
+  take_profit: 0.20           # 取得単価から +20% で一部利確 (1回だけ)
+  take_profit_fraction: 0.5
+
+sizing:
+  max_positions: 8            # 同時保有を 5 → 8 に増やして分散
+  target_weight: 0.12         # 1銘柄の目標を 20% → 12%
+  rank_by: ret_60d            # 買い候補が枠より多いときの優先順 (大きい順)
+
+earnings:                     # 決算発表日 (Yahoo Finance) を使う判定
+  entry_blackout_days: 3      # 決算日の3営業日前〜当日に約定する新規買いをしない (保有中の銘柄は決算をまたいで持つ)
+  entry_after_days: 2         # 決算日の翌営業日〜2営業日後に約定する新規買いもしない (決算への反応を見てから買う)
