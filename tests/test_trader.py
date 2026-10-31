@@ -454,3 +454,17 @@ def test_cashflow_keeps_drawdown_unchanged(tmp_path):
     pf = Portfolio.load(root / "state" / "portfolio.json")
     assert out["cash_after"] == 10000 and pf.peak_equity == 80000
     assert "cashflow" in (root / "state" / "trades.csv").read_text()
+
+
+def test_entry_after_earnings_blackout():
+    from trader import rules
+    idx = pd.bdate_range("2026-01-05", periods=10)  # 1/5(月)〜1/16(金)
+    dse = rules.days_since_earnings(idx, [date(2026, 1, 7), date(2026, 1, 10)])  # 1/10 は土曜 → 1/12 扱い
+    assert np.isnan(dse.iloc[0]) and list(dse.iloc[2:7]) == [0, 1, 2, 0, 1]
+    row = {"close": 110, "sma20": 105, "sma50": 100, "sma200": 90, "rsi14": 60, "ret_60d": 0.1}
+    r2 = {**RULES, "earnings": {"entry_blackout_days": 3, "entry_after_days": 2}}
+    assert rules.entry_check({**row, "dte": 40, "dse": 0}, r2)  # 決算日の終値 → 翌朝の約定は止める
+    assert rules.entry_check({**row, "dte": 40, "dse": 1}, r2)  # 約定は決算の2営業日後 → 止める
+    assert rules.entry_check({**row, "dte": 40, "dse": 2}, r2) == []  # 約定は3営業日後 → 可
+    v3 = {**RULES, "earnings": {"entry_blackout_days": 3}}
+    assert rules.entry_check({**row, "dte": 40, "dse": 0}, v3) == []  # v3 は決算翌朝の買いを許す

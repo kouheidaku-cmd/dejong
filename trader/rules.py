@@ -56,10 +56,28 @@ def days_to_earnings(index: pd.DatetimeIndex, dates) -> pd.Series:
     return pd.Series(out, index=index)
 
 
+def days_since_earnings(index: pd.DatetimeIndex, dates) -> pd.Series:
+    """各日が直近の決算日から何営業日後か (決算日当日は 0)。まだ決算がない日は NaN。
+
+    決算日が休場日なら次の営業日を決算日とみなす (days_to_earnings と同じ)。
+    """
+    n = len(index)
+    out = np.full(n, np.nan)
+    pos = sorted({int(index.searchsorted(pd.Timestamp(x).normalize())) for x in dates})
+    pos = np.array([i for i in pos if i < n])
+    if len(pos):
+        rows = np.arange(n)
+        k = np.searchsorted(pos, rows, side="right") - 1  # 各行以前で最後の決算日
+        ok = k >= 0
+        out[ok] = rows[ok] - pos[k[ok]]
+    return pd.Series(out, index=index)
+
+
 def attach_earnings(f: pd.DataFrame, dates) -> pd.DataFrame:
     """銘柄の特徴量に、次の決算日までの営業日数 (dte) を付ける。"""
     f = f.copy()
     f["dte"] = days_to_earnings(f.index, dates)
+    f["dse"] = days_since_earnings(f.index, dates)
     f["earn_id"] = np.arange(len(f)) + f["dte"]  # どの決算か (同じ決算なら日が進んでも同じ値)
     return f
 
@@ -132,6 +150,11 @@ def entry_check(row: dict, rules: dict) -> list[str]:
     # 翌営業日に約定するので、約定日が決算日の blackout 営業日前〜当日になるシグナルを止める
     if blackout is not None and dte is not None and dte == dte and 1 <= dte <= blackout + 1:
         fails.append(f"決算日まで {int(dte)} 営業日 (決算前の新規買いは見送り)")
+    after = (rules.get("earnings") or {}).get("entry_after_days")
+    dse = row.get("dse")
+    # 翌営業日に約定するので、約定日が決算日の翌営業日〜after 営業日後になるシグナルを止める
+    if after and dse is not None and dse == dse and 0 <= dse <= after - 1:
+        fails.append(f"決算日から {int(dse)} 営業日 (決算直後の新規買いは見送り)")
     return fails
 
 
