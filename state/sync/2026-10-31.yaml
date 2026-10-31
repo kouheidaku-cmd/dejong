@@ -1,0 +1,13 @@
+# 楽天証券 Web「ホーム」「保有商品一覧」(2026-10-31 朝) から作成。全銘柄が NISA 成長投資枠
+date: 2026-10-31
+cash_jpy: 22340          # 預り金 21,890円 + 外貨預り金 2.86 USD (450円)
+other_assets_jpy: 20521  # eMAXIS Slim 米国株式(S&P500) 4,579口
+positions:
+  6758.T: {qty: 12, avg_cost: 4047.00}
+  8001.T: {qty: 20, avg_cost: 2336.00}
+  9432.T: {qty: 260, avg_cost: 180.15}
+  9434.T: {qty: 200, avg_cost: 223.50}
+  AMZN: {qty: 1, avg_cost: 242.99}
+  VRT: {qty: 1, avg_cost: 273.23}
+  MSFT: {qty: 1, avg_cost: 386.75}
+  CRM: {qty: 1, avg_cost: 242.47}

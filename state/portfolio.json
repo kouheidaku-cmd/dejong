@@ -1,6 +1,33 @@
 {
-  "cash": 71145.14744964891,
+  "cash": 22340.0,
   "positions": {
+    "6758.T": {
+      "qty": 12,
+      "avg_cost": 4047.0,
+      "currency": "JPY",
+      "opened": "2026-10-30",
+      "took_profit": false,
+      "rule_ref": null,
+      "account": "nisa_growth"
+    },
+    "8001.T": {
+      "qty": 20,
+      "avg_cost": 2336.0,
+      "currency": "JPY",
+      "opened": "2026-10-23",
+      "took_profit": false,
+      "rule_ref": null,
+      "account": "nisa_growth"
+    },
+    "9432.T": {
+      "qty": 260,
+      "avg_cost": 180.15,
+      "currency": "JPY",
+      "opened": "2026-10-23",
+      "took_profit": false,
+      "rule_ref": null,
+      "account": "nisa_growth"
+    },
     "9434.T": {
       "qty": 200,
       "avg_cost": 223.5,
@@ -37,33 +64,18 @@
       "rule_ref": 533.52,
       "account": "nisa_growth"
     },
-    "9432.T": {
-      "qty": 260,
-      "avg_cost": 180.15384615384616,
-      "currency": "JPY",
-      "opened": "2026-10-23",
-      "took_profit": false,
-      "account": "nisa_growth"
-    },
-    "8001.T": {
-      "qty": 20,
-      "avg_cost": 2336.0,
-      "currency": "JPY",
-      "opened": "2026-10-23",
-      "took_profit": false,
-      "account": "nisa_growth"
-    },
     "CRM": {
       "qty": 1,
-      "avg_cost": 242.4682,
+      "avg_cost": 242.47,
       "currency": "USD",
       "opened": "2026-10-27",
       "took_profit": false,
+      "rule_ref": null,
       "account": "nisa_growth"
     }
   },
   "pending": [],
   "peak_equity": 424127.36204527225,
   "next_order_id": 13,
-  "other_assets": 20612.0
+  "other_assets": 20521.0
 }
