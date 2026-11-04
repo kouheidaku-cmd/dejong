@@ -1,5 +1,5 @@
 {
-  "cash": 22340.0,
+  "cash": 60721.0455,
   "positions": {
     "6758.T": {
       "qty": 12,
@@ -35,15 +35,6 @@
       "opened": "2026-10-20",
       "took_profit": false,
       "rule_ref": 247.2,
-      "account": "nisa_growth"
-    },
-    "AMZN": {
-      "qty": 1,
-      "avg_cost": 242.99,
-      "currency": "USD",
-      "opened": "2026-10-20",
-      "took_profit": false,
-      "rule_ref": 262.45,
       "account": "nisa_growth"
     },
     "VRT": {
