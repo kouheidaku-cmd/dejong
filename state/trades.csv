@@ -26,3 +26,4 @@ date,id,ticker,side,qty,type,limit_price,status,price,currency,fx,commission,rea
 2026-11-05,,9432.T,sell,200,,,filled,166.7,JPY,1.0,0.0,-2690.0,
 2026-11-05,,9432.T,sell,60,,,filled,166.0,JPY,1.0,0.0,-849.0,
 2026-11-05,,6098.T,buy,2,,,filled,18000.0,JPY,1.0,0.0,,
+2026-11-04,,CRM,sell,1,,,filled,228.48,USD,157.68,2.0,-2207.94,
