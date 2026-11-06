@@ -28,3 +28,4 @@ date,id,ticker,side,qty,type,limit_price,status,price,currency,fx,commission,rea
 2026-11-05,,6098.T,buy,2,,,filled,18000.0,JPY,1.0,0.0,,
 2026-11-04,,CRM,sell,1,,,filled,228.48,USD,157.68,2.0,-2207.94,
 2026-11-06,18,VRT,sell,1,market,,proposal_unconfirmed,,,,,,機械ルールのトレーリングストップ (trailing_stop): 11/4 終値 205.55ドルが保有中の最高値 245.92ドル (10/29) から -16.4% で -15% を超えた。11/4 は -12.9% (ニュース検索で理由は見つからず)。取得単価 273.23ドルからは -24.8%、基準価格 206.08ドルからはほぼ同値。裁量で覆さず全株売り
+2026-11-05,,VRT,sell,1,,,filled,194.0,USD,157.67,2.0,-12494.19,
