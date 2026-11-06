@@ -1,0 +1,545 @@
+{
+  "date": "2026-11-06",
+  "broker": "manual",
+  "latest_bar_date": {
+    "JPY": "2026-11-06",
+    "USD": "2026-11-05"
+  },
+  "fx": {
+    "JPY": 1.0,
+    "USD": 158.02699279785156
+  },
+  "stopped": false,
+  "account": {
+    "cash": 104046,
+    "equity": 392269,
+    "other_assets": 20521,
+    "total_assets": 412790,
+    "peak_equity": 424127,
+    "drawdown": 0.0751,
+    "cash_pct": 0.2652
+  },
+  "positions": [
+    {
+      "ticker": "6758.T",
+      "qty": 12,
+      "currency": "JPY",
+      "avg_cost": 4047.0,
+      "close": 4142.0,
+      "value_base": 49704,
+      "weight": 0.1267,
+      "unrealized_pct": 0.0235,
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 4142.0,
+        "ret_1d": -0.0164,
+        "ret_5d": 0.0523,
+        "ret_20d": 0.1066,
+        "ret_60d": 0.1423,
+        "sma20": 3974.7,
+        "sma50": 3858.92,
+        "sma200": 3553.575,
+        "rsi14": 62.8359,
+        "atr14_pct": 0.0325,
+        "vol20_annual": 0.3261,
+        "gap_from_52w_high": -0.1187,
+        "volume_ratio": 2.443
+      }
+    },
+    {
+      "ticker": "8001.T",
+      "qty": 20,
+      "currency": "JPY",
+      "avg_cost": 2336.0,
+      "close": 2241.0,
+      "value_base": 44820,
+      "weight": 0.1143,
+      "unrealized_pct": -0.0407,
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 2241.0,
+        "ret_1d": -0.0645,
+        "ret_5d": -0.0347,
+        "ret_20d": 0.0368,
+        "ret_60d": 0.1018,
+        "sma20": 2283.675,
+        "sma50": 2242.38,
+        "sma200": 2060.3825,
+        "rsi14": 47.0261,
+        "atr14_pct": 0.0309,
+        "vol20_annual": 0.3925,
+        "gap_from_52w_high": -0.0645,
+        "volume_ratio": 1.512
+      }
+    },
+    {
+      "ticker": "9434.T",
+      "qty": 200,
+      "currency": "JPY",
+      "avg_cost": 223.5,
+      "close": 235.39999389648438,
+      "value_base": 47080,
+      "weight": 0.12,
+      "unrealized_pct": 0.0532,
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 235.4,
+        "ret_1d": -0.0356,
+        "ret_5d": 0.0116,
+        "ret_20d": -0.022,
+        "ret_60d": 0.0297,
+        "sma20": 239.78,
+        "sma50": 241.08,
+        "sma200": 223.255,
+        "rsi14": 45.3641,
+        "atr14_pct": 0.0234,
+        "vol20_annual": 0.2721,
+        "gap_from_52w_high": -0.0644,
+        "volume_ratio": 1.2109
+      }
+    },
+    {
+      "ticker": "VRT",
+      "qty": 1,
+      "currency": "USD",
+      "avg_cost": 273.23,
+      "close": 176.72999572753906,
+      "value_base": 27928,
+      "weight": 0.0712,
+      "unrealized_pct": -0.3532,
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 176.73,
+        "ret_1d": -0.1402,
+        "ret_5d": -0.2814,
+        "ret_20d": -0.2749,
+        "ret_60d": -0.3871,
+        "sma20": 217.366,
+        "sma50": 238.7256,
+        "sma200": 271.2137,
+        "rsi14": 34.0827,
+        "atr14_pct": 0.104,
+        "vol20_annual": 1.0578,
+        "gap_from_52w_high": -0.5303,
+        "volume_ratio": 2.3111
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "qty": 1,
+      "currency": "USD",
+      "avg_cost": 386.75,
+      "close": 535.9299926757812,
+      "value_base": 84691,
+      "weight": 0.2159,
+      "unrealized_pct": 0.3857,
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 535.93,
+        "ret_1d": -0.0358,
+        "ret_5d": 0.0109,
+        "ret_20d": 0.0255,
+        "ret_60d": 0.0883,
+        "sma20": 531.6305,
+        "sma50": 516.1348,
+        "sma200": 439.45,
+        "rsi14": 54.4491,
+        "atr14_pct": 0.0288,
+        "vol20_annual": 0.3621,
+        "gap_from_52w_high": -0.0358,
+        "volume_ratio": 1.6825
+      }
+    },
+    {
+      "ticker": "6098.T",
+      "qty": 2,
+      "currency": "JPY",
+      "avg_cost": 18000.0,
+      "close": 17000.0,
+      "value_base": 34000,
+      "weight": 0.0867,
+      "unrealized_pct": -0.0556,
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 17000.0,
+        "ret_1d": -0.0561,
+        "ret_5d": -0.1001,
+        "ret_20d": 0.0,
+        "ret_60d": 0.3235,
+        "sma20": 18396.5,
+        "sma50": 17356.0,
+        "sma200": 11435.775,
+        "rsi14": 40.3347,
+        "atr14_pct": 0.0428,
+        "vol20_annual": 0.3902,
+        "gap_from_52w_high": -0.1146,
+        "volume_ratio": 1.1525
+      }
+    }
+  ],
+  "settled_orders": [
+    {
+      "id": 18,
+      "placed_on": "2026-11-05",
+      "status": "proposal_unconfirmed",
+      "ticker": "VRT",
+      "side": "sell",
+      "qty": 1,
+      "type": "market",
+      "limit_price": null,
+      "rationale": "機械ルールのトレーリングストップ (trailing_stop): 11/4 終値 205.55ドルが保有中の最高値 245.92ドル (10/29) から -16.4% で -15% を超えた。11/4 は -12.9% (ニュース検索で理由は見つからず)。取得単価 273.23ドルからは -24.8%、基準価格 206.08ドルからはほぼ同値。裁量で覆さず全株売り",
+      "date": "2026-11-06"
+    }
+  ],
+  "pending_orders": [],
+  "watchlist": [
+    {
+      "ticker": "9434.T",
+      "name": "ソフトバンク",
+      "thesis": "安定配当の通信。年初来高値253円の近くで上昇トレンドを維持、平均目標株価は約266円",
+      "risks": "親会社SBG (9984) の信用不安による連想売り、10/17 の My SoftBank への不正アクセス事案",
+      "next_earnings": "2026-11-09",
+      "added": "2026-10-20",
+      "held": 200,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 235.4,
+        "ret_1d": -0.0356,
+        "ret_5d": 0.0116,
+        "ret_20d": -0.022,
+        "ret_60d": 0.0297,
+        "sma20": 239.78,
+        "sma50": 241.08,
+        "sma200": 223.255,
+        "rsi14": 45.3641,
+        "atr14_pct": 0.0234,
+        "vol20_annual": 0.2721,
+        "gap_from_52w_high": -0.0644,
+        "volume_ratio": 1.2109
+      }
+    },
+    {
+      "ticker": "AMZN",
+      "name": "Amazon.com",
+      "thesis": "AWS の成長は加速 (Q3 で前年比 +39%)。ただし Q3 決算 (10/29) は売上・EPS とも市場予想未達",
+      "risks": "フリーキャッシュフローは -424億ドル、2026年の設備投資 2,200億ドルの計画を維持し、AI 過剰投資の懸念。10/30 終値 240.35ドルは損切りライン (約241.45ドル) を下回った",
+      "next_earnings": "2027-01 下旬 (未確認)",
+      "added": "2026-10-20",
+      "held": 0,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 260.21,
+        "ret_1d": -0.0219,
+        "ret_5d": 0.0674,
+        "ret_20d": 0.0242,
+        "ret_60d": -0.0265,
+        "sma20": 254.435,
+        "sma50": 253.8894,
+        "sma200": 243.8154,
+        "rsi14": 54.9692,
+        "atr14_pct": 0.0397,
+        "vol20_annual": 0.43,
+        "gap_from_52w_high": -0.0838,
+        "volume_ratio": 1.7782
+      }
+    },
+    {
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "thesis": "Q1 FY27 (10/28 発表) で Azure が前年比 +48% と加速し会社予想 (44〜45%) を上回った。次の四半期の Azure 見通しは 49〜50% (市場予想 45%)",
+      "risks": "設備投資が前年の約2倍 (394億ドル)。決算後の時間外で +4% だったが翌日は横ばいで、AI 投資全体への警戒が強い",
+      "next_earnings": "2027-01 下旬 (未確認)",
+      "added": "2026-10-20",
+      "held": 1,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 535.93,
+        "ret_1d": -0.0358,
+        "ret_5d": 0.0109,
+        "ret_20d": 0.0255,
+        "ret_60d": 0.0883,
+        "sma20": 531.6305,
+        "sma50": 516.1348,
+        "sma200": 439.45,
+        "rsi14": 54.4491,
+        "atr14_pct": 0.0288,
+        "vol20_annual": 0.3621,
+        "gap_from_52w_high": -0.0358,
+        "volume_ratio": 1.6825
+      }
+    },
+    {
+      "ticker": "VRT",
+      "name": "Vertiv Holdings",
+      "thesis": "データセンターの電源・冷却。Q3 (10/28) は売上 +61%、調整後 EPS 2.21ドル (+78%) で通期予想を引き上げ。株価は決算日に +16.5%",
+      "risks": "AI インフラ株全体の売りに巻き込まれやすい (10/22 に -8%)。利確ライン (+20%、約247.30ドル) 目前で、1株なので利確が出ると全株売り",
+      "next_earnings": "2027-02 (未確認)",
+      "added": "2026-10-20",
+      "held": 1,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 176.73,
+        "ret_1d": -0.1402,
+        "ret_5d": -0.2814,
+        "ret_20d": -0.2749,
+        "ret_60d": -0.3871,
+        "sma20": 217.366,
+        "sma50": 238.7256,
+        "sma200": 271.2137,
+        "rsi14": 34.0827,
+        "atr14_pct": 0.104,
+        "vol20_annual": 1.0578,
+        "gap_from_52w_high": -0.5303,
+        "volume_ratio": 2.3111
+      }
+    },
+    {
+      "ticker": "9432.T",
+      "name": "NTT",
+      "thesis": "約2年半ぶりの高値圏。ドコモ値上げで業績底入れの期待、10/6 に目標株価197円への引き上げ。1株約177円で少額から買える",
+      "risks": "ドコモの顧客流出、値上げ効果が想定に届かない。10/23 に260株を保有開始 (平均180.15円)",
+      "next_earnings": "2026-11-04",
+      "added": "2026-10-20",
+      "held": 0,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 160.2,
+        "ret_1d": -0.0285,
+        "ret_5d": -0.0659,
+        "ret_20d": -0.0691,
+        "ret_60d": 0.0369,
+        "sma20": 172.53,
+        "sma50": 172.75,
+        "sma200": 157.8075,
+        "rsi14": 30.7069,
+        "atr14_pct": 0.0261,
+        "vol20_annual": 0.2713,
+        "gap_from_52w_high": -0.11,
+        "volume_ratio": 1.5915
+      }
+    },
+    {
+      "ticker": "8001.T",
+      "name": "伊藤忠商事",
+      "thesis": "上昇トレンド (60日+18%)、10/14〜15 に証券各社が目標株価を2,600円へ引き上げ、自社株買い継続",
+      "risks": "資源・為替の変動、景気減速時の業績。10/23 に20株を保有開始 (2,336円)",
+      "next_earnings": "2026-11-04",
+      "added": "2026-10-20",
+      "held": 20,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 2241.0,
+        "ret_1d": -0.0645,
+        "ret_5d": -0.0347,
+        "ret_20d": 0.0368,
+        "ret_60d": 0.1018,
+        "sma20": 2283.675,
+        "sma50": 2242.38,
+        "sma200": 2060.3825,
+        "rsi14": 47.0261,
+        "atr14_pct": 0.0309,
+        "vol20_annual": 0.3925,
+        "gap_from_52w_high": -0.0645,
+        "volume_ratio": 1.512
+      }
+    },
+    {
+      "ticker": "6758.T",
+      "name": "ソニーグループ",
+      "thesis": "50日線の上を回復 (60日+14.5%)。平均目標株価4,845円に対し約3,960円、自社株買い継続",
+      "risks": "画像センサーの市況、ゲーム事業の勢い。年初来高値からは -16%",
+      "next_earnings": "2026-11-05 (Yahoo の予定日。会社発表は未確認)",
+      "added": "2026-10-20",
+      "held": 12,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 4142.0,
+        "ret_1d": -0.0164,
+        "ret_5d": 0.0523,
+        "ret_20d": 0.1066,
+        "ret_60d": 0.1423,
+        "sma20": 3974.7,
+        "sma50": 3858.92,
+        "sma200": 3553.575,
+        "rsi14": 62.8359,
+        "atr14_pct": 0.0325,
+        "vol20_annual": 0.3261,
+        "gap_from_52w_high": -0.1187,
+        "volume_ratio": 2.443
+      }
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce",
+      "thesis": "60日+48%で上昇トレンド。FY27 の EPS ガイダンスを引き上げ、BofA が Buy に格上げ (目標$285)。決算は12月で当面イベントが少ない",
+      "risks": "AI製品 (Koa) の収益化が遅れる可能性、買収の上乗せで本体の成長鈍化が見えにくい。10/27 に1株購入後、ソフトウェア株安で -4.8% (10/29)。60日リターンはプラスだがトレンド条件 (終値 > SMA50) を割り込んだ",
+      "next_earnings": "2026-12-01〜02 (未確認)",
+      "added": "2026-10-20",
+      "held": 0,
+      "lot_size": 1,
+      "currency": "USD",
+      "indicators": {
+        "date": "2026-11-05",
+        "close": 222.41,
+        "ret_1d": -0.0207,
+        "ret_5d": -0.0368,
+        "ret_20d": -0.0237,
+        "ret_60d": 0.1505,
+        "sma20": 236.9275,
+        "sma50": 240.2684,
+        "sma200": 198.289,
+        "rsi14": 39.2332,
+        "atr14_pct": 0.041,
+        "vol20_annual": 0.3501,
+        "gap_from_52w_high": -0.1646,
+        "volume_ratio": 1.1229
+      }
+    },
+    {
+      "ticker": "6098.T",
+      "name": "リクルートホールディングス",
+      "thesis": "Indeed が求人1件あたりの単価で稼げるようになり、8/7 の第1四半期決算で通期予想を大幅に上方修正 (8/10 ストップ高)。3,500億円の自社株買い。60日リターン +53% でスクリーニング1位",
+      "risks": "RSI 71 で過熱気味 (70未満に落ち着くまで買い条件を満たさない)。PBR 11倍と割高で、AI に求人仲介を置き換えられる懸念も指摘されている。決算 11/11 の前後は v3 で買わない",
+      "next_earnings": "2026-11-11",
+      "added": "2026-10-31",
+      "held": 2,
+      "lot_size": 1,
+      "currency": "JPY",
+      "indicators": {
+        "date": "2026-11-06",
+        "close": 17000.0,
+        "ret_1d": -0.0561,
+        "ret_5d": -0.1001,
+        "ret_20d": 0.0,
+        "ret_60d": 0.3235,
+        "sma20": 18396.5,
+        "sma50": 17356.0,
+        "sma200": 11435.775,
+        "rsi14": 40.3347,
+        "atr14_pct": 0.0428,
+        "vol20_annual": 0.3902,
+        "gap_from_52w_high": -0.1146,
+        "volume_ratio": 1.1525
+      }
+    }
+  ],
+  "rule_signals": {
+    "rules_version": 3,
+    "market_uptrend": {
+      "JPY": false,
+      "USD": true
+    },
+    "open_slots": 3,
+    "exits": [
+      {
+        "ticker": "6758.T",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.0235,
+        "rule_ref": 4047.0,
+        "return_from_ref": 0.0235,
+        "drawdown_from_peak": -0.0164
+      },
+      {
+        "ticker": "8001.T",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": -0.0407,
+        "rule_ref": 2336.0,
+        "return_from_ref": -0.0407,
+        "drawdown_from_peak": -0.0645
+      },
+      {
+        "ticker": "9434.T",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.0532,
+        "rule_ref": 247.2,
+        "return_from_ref": -0.0477,
+        "drawdown_from_peak": -0.0477
+      },
+      {
+        "ticker": "VRT",
+        "signal": "stop_loss",
+        "sell_qty": 1,
+        "return_from_cost": -0.3532,
+        "rule_ref": 206.08,
+        "return_from_ref": -0.1424,
+        "drawdown_from_peak": -0.2814
+      },
+      {
+        "ticker": "MSFT",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": 0.3857,
+        "rule_ref": 533.52,
+        "return_from_ref": 0.0045,
+        "drawdown_from_peak": -0.0358
+      },
+      {
+        "ticker": "6098.T",
+        "signal": null,
+        "sell_qty": 0,
+        "return_from_cost": -0.0556,
+        "rule_ref": 18000.0,
+        "return_from_ref": -0.0556,
+        "drawdown_from_peak": -0.0561
+      }
+    ],
+    "entries": [
+      {
+        "ticker": "CRM",
+        "ok": false,
+        "fails": [
+          "トレンド条件 (終値 > SMA50 > SMA200) を満たさない"
+        ],
+        "days_to_earnings": 19,
+        "rank_value": 0.1505,
+        "suggested_qty": 1
+      },
+      {
+        "ticker": "9432.T",
+        "ok": false,
+        "fails": [
+          "トレンド条件 (終値 > SMA50 > SMA200) を満たさない",
+          "市場全体が下降トレンド (指数 < SMA200)"
+        ],
+        "days_to_earnings": 64,
+        "rank_value": 0.0369,
+        "suggested_qty": 293
+      },
+      {
+        "ticker": "AMZN",
+        "ok": false,
+        "fails": [
+          "60日リターン -2.6% が基準未満"
+        ],
+        "days_to_earnings": 65,
+        "rank_value": -0.0265,
+        "suggested_qty": 1
+      }
+    ]
+  },
+  "risk_limits": {
+    "max_position_pct": 0.25,
+    "min_cash_pct": 0.05,
+    "max_orders_per_day": 5,
+    "max_drawdown_pct": 0.15,
+    "price_buffer": 0.03,
+    "max_limit_deviation": 0.1
+  }
+}
