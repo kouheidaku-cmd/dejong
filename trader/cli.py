@@ -147,7 +147,19 @@ def earnings_for(data: MarketData, tickers, rule_set: dict) -> dict[str, list]:
 
 
 def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None, earnings=None) -> dict:
-    """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。"""
+    """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。
+
+    別枠 (sleeves) があるときは、保有はその枠の売りルールで判定し、買い候補は本体 → 別枠の順に並べる
+    (別枠の候補には sleeve が付く。枠の空きは sleeve_slots)。
+    """
+    sets = rules.rule_sets(rule_set)
+    by_name = {name: rs for name, rs, _ in sets}
+    has_sleeves = len(sets) > 1
+
+    def sleeve_of(t):  # 保有がどの枠のものか (ルールから消えた枠は本体として扱う)
+        name = pf.positions[t].get("sleeve")
+        return name if name in by_name else None
+
     exits = []
     for t, pos in pf.positions.items():
         if t not in hist:
@@ -158,7 +170,7 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
         ref = pos.get("rule_ref") or pos["avg_cost"]  # 損切り・利確の基準価格 (既存保有は起点日の価格)
         peak = max(f.loc[f.index >= opened, "close"].max(), ref) if (f.index >= opened).any() else ref
         sig = rules.exit_check(f.iloc[-1].to_dict(), ref, peak, (pd.Timestamp(day) - opened).days,
-                               pos.get("took_profit", False), rule_set)
+                               pos.get("took_profit", False), by_name[sleeve_of(t)])
         exits.append({
             "ticker": t, "signal": sig[0] if sig else None,
             "sell_qty": rules.sell_qty(pos["qty"], sig[1]) if sig else 0,
@@ -166,33 +178,40 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
             "rule_ref": ref,
             "return_from_ref": round(prices[t] / ref - 1, 4),
             "drawdown_from_peak": round(prices[t] / peak - 1, 4),
+            **({"sleeve": sleeve_of(t)} if has_sleeves else {}),
         })
-    sz = rule_set["sizing"]
-    slots = sz["max_positions"] - len(pf.positions) + sum(1 for e in exits if e["signal"] and e["sell_qty"] == pf.qty(e["ticker"]))
-    entries = []
-    for w in watchlist:
-        t = w["ticker"]
-        if t in pf.positions or t not in hist:
-            continue
-        f = rules.features(hist[t])
-        if market and t in market:
-            f = rules.attach_market(f, market[t])
-        if earnings and t in earnings:
-            f = rules.attach_earnings(f, earnings[t])
-        row = f.iloc[-1].to_dict()
-        fails = rules.entry_check(row, rule_set)
-        if rule_set.get("earnings") and not (earnings and t in earnings):
-            fails.append("決算日を取得できない (決算前かどうか確認してから判断)")
-        unit = prices[t] * fx[config.currency(t, settings)]
-        dte = row.get("dte")
-        entries.append({"ticker": t, "ok": not fails, "fails": fails,
-                        "days_to_earnings": int(dte) if dte is not None and dte == dte else None,
-                        "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
-                        "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0})
-    entries.sort(key=lambda e: (not e["ok"], -e["rank_value"]))
+    leaving = {e["ticker"] for e in exits if e["signal"] and e["sell_qty"] == pf.qty(e["ticker"])}
+    entries, slots = [], {}
+    for name, rs, tickers in sets:
+        sz = rs["sizing"]
+        slots[name] = sz["max_positions"] - sum(1 for t in pf.positions if sleeve_of(t) == name and t not in leaving)
+        found = []
+        for w in watchlist:
+            t = w["ticker"]
+            if t in pf.positions or t not in hist or (tickers is not None and t not in tickers):
+                continue
+            f = rules.features(hist[t])
+            if market and t in market:
+                f = rules.attach_market(f, market[t])
+            if earnings and t in earnings:
+                f = rules.attach_earnings(f, earnings[t])
+            row = f.iloc[-1].to_dict()
+            fails = rules.entry_check(row, rs)
+            if rs.get("earnings") and not (earnings and t in earnings):
+                fails.append("決算日を取得できない (決算前かどうか確認してから判断)")
+            unit = prices[t] * fx[config.currency(t, settings)]
+            dte = row.get("dte")
+            found.append({"ticker": t, "ok": not fails, "fails": fails,
+                          "days_to_earnings": int(dte) if dte is not None and dte == dte else None,
+                          "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
+                          "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0,
+                          **({"sleeve": name} if name else {})})
+        entries += sorted(found, key=lambda e: (not e["ok"], -e["rank_value"]))
     market_ok = {config.currency(t, settings): bool(m.iloc[-1]) for t, m in (market or {}).items() if m.notna().iloc[-1]}
     return {"rules_version": rule_set.get("version"), "market_uptrend": market_ok,
-            "open_slots": max(slots, 0), "exits": exits, "entries": entries}
+            "open_slots": max(slots[None], 0),
+            **({"sleeve_slots": {n: max(v, 0) for n, v in slots.items() if n}} if has_sleeves else {}),
+            "exits": exits, "entries": entries}
 
 
 def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force: bool) -> dict:
@@ -225,20 +244,23 @@ def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force
 
 
 def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, qty: int,
-               price: float, rate: float | None, fee: float, take_profit: bool = False) -> dict:
-    """人が発注して約定した注文を記録する。対応する注文案があれば消す。"""
+               price: float, rate: float | None, fee: float, take_profit: bool = False,
+               sleeve: str | None = None) -> dict:
+    """人が発注して約定した注文を記録する。対応する注文案があれば消す。
+
+    sleeve: 別枠 (rules.yaml の sleeves) のシグナルで買ったときの枠の名前。省略時は注文案に付いていたものを使う。"""
     p, settings = Paths(root), config.load_settings(root)
     pf = Portfolio.load(p.portfolio)
     ccy = config.currency(ticker, settings)
     if rate is None:
         rate = fx_rates(data, [ticker], settings)[ccy]
-    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat(), take_profit)
-    if side == "buy" and not pf.positions[ticker].get("account"):
-        pf.positions[ticker]["account"] = settings.get("default_account")  # 新規の買いは既定の口座区分
-
     match = next((o for o in pf.pending if o["ticker"] == ticker and o["side"] == side), None)
     if match:
         pf.pending.remove(match)
+    pnl = apply_fill(pf, ticker, side, qty, price, ccy, rate, fee, day.isoformat(), take_profit,
+                     sleeve=sleeve or (match or {}).get("sleeve"))
+    if side == "buy" and not pf.positions[ticker].get("account"):
+        pf.positions[ticker]["account"] = settings.get("default_account")  # 新規の買いは既定の口座区分
     event = {**(match or {}), "date": day.isoformat(), "ticker": ticker, "side": side, "qty": qty,
              "status": "filled", "price": price, "currency": ccy, "fx": rate, "commission": fee,
              "realized_pnl": pnl}
@@ -302,6 +324,8 @@ def _apply_sync(pf: Portfolio, spec: dict, settings: dict) -> None:
             "rule_ref": float(v["rule_ref"]) if v.get("rule_ref") else prev.get("rule_ref"),
             "account": v.get("account") or prev.get("account"),  # 口座区分 (nisa_growth / tokutei など)
         }
+        if v.get("sleeve") or prev.get("sleeve"):
+            pf.positions[t]["sleeve"] = v.get("sleeve") or prev.get("sleeve")  # 別枠の保有はその枠のルールで売る
 
 
 def cmd_status(root: Path, data: MarketData) -> dict:
@@ -334,10 +358,13 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
                  tickers: list[str] | None, name: str) -> dict:
     """ルールを過去データで検証する。期間を学習用 (前半) と検証用 (後半) に分けて別々に走らせる。"""
     rule_set = rules.load_rules(rules_path)
-    frames, settings = _load_frames(root, data, tickers or config.load_universe(root), years * 365 + 300)
+    universe = list(tickers or config.load_universe(root))
+    frames, settings = _load_frames(root, data, _with_sleeves(universe, [rule_set]), years * 365 + 300)
+    frames, main_tickers = _scope(frames, universe, rule_set)
 
-    first = min(df.index[0] for df in frames.values()) + pd.Timedelta(days=300)  # SMA200 のウォームアップ
-    last = max(df.index[-1] for df in frames.values())
+    base = [df for t, df in frames.items() if t in universe]  # 期間は母集団だけで決める (別枠の有無で変わらない)
+    first = min(df.index[0] for df in base) + pd.Timedelta(days=300)  # SMA200 のウォームアップ
+    last = max(df.index[-1] for df in base)
     split_ts = pd.Timestamp(split) if split else first + (last - first) * 0.7
     ex = settings.get("execution", {})
     kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
@@ -350,16 +377,33 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
     if rule_set.get("earnings"):
         result["earnings_coverage"] = _earnings_coverage(earnings, frames)
     for label, a, b in [("in_sample", first, split_ts - pd.Timedelta(days=1)), ("out_of_sample", split_ts, last)]:
-        r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings, **kw)
+        r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings,
+                         main_tickers=main_tickers, **kw)
         pd.DataFrame(r.pop("trades")).to_csv(out_dir / f"trades_{label}.csv", index=False)
         r.pop("equity_curve").to_csv(out_dir / f"equity_{label}.csv")
         result[label] = r
     _write_json(out_dir / "result.json", result)
     for label in ("in_sample", "out_of_sample"):  # 画面には要点だけ出す
+        an = result[label]["analysis"]
         result[label] = {k: result[label][k] for k in ("period", "metrics", "benchmark", "yearly")} | {
-            "by_exit_reason": result[label]["analysis"].get("by_exit_reason")}
+            "by_exit_reason": an.get("by_exit_reason")} | ({"by_sleeve": an["by_sleeve"]} if an.get("by_sleeve") else {})
     result["output"] = str(out_dir)
     return result
+
+
+def _with_sleeves(universe: list[str], rule_sets: list[dict]) -> list[str]:
+    """母集団に、別枠 (sleeves) の対象銘柄のうち母集団にないものを足す。"""
+    return list(dict.fromkeys(universe + [t for rs in rule_sets for t in rules.sleeve_tickers(rs)]))
+
+
+def _scope(frames: dict, universe: list[str], rule_set: dict) -> tuple[dict, set[str] | None]:
+    """このルールで使う日足と、本体のルールで買う銘柄 (別枠がなければ None = 全部)。
+
+    別枠の銘柄は別枠だけが買う。本体は母集団だけを見るので、別枠の有無だけを比べられる。"""
+    extra = set(rules.sleeve_tickers(rule_set))
+    if not extra:
+        return {t: df for t, df in frames.items() if t in universe}, None
+    return {t: df for t, df in frames.items() if t in universe or t in extra}, set(universe)
 
 
 def _earnings_coverage(earnings: dict[str, list], frames: dict) -> dict:
@@ -394,7 +438,9 @@ def index_blend_curve(data: MarketData, days: int, start: pd.Timestamp, end: pd.
 def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int, until: date | None, name: str) -> dict:
     """暦年ごとに独立して (毎年100万円から) 走らせ、指数 50/50 と比べる。複数のルールを同じ条件で比較できる。"""
     days = years * 365 + 300
-    frames, settings = _load_frames(root, data, config.load_universe(root), days)
+    universe = config.load_universe(root)
+    all_frames, settings = _load_frames(root, data, _with_sleeves(universe, [rules.load_rules(rp) for rp in rules_paths]), days)
+    frames = all_frames  # 期間の決定と指数との比較は全銘柄の日足で行う
     first = min(df.index[0] for df in frames.values())
     last = max(df.index[-1] for df in frames.values())
     if until:
@@ -412,15 +458,20 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
                                       "max_drawdown": backtest._r((1 - c / c.cummax()).max())}
     for rp in rules_paths:
         rule_set = rules.load_rules(rp)
+        frames, main_tickers = _scope(all_frames, universe, rule_set)
         market = market_regimes(data, frames, rule_set, settings, days)
         earnings = earnings_for(data, frames, rule_set)
         if earnings:
             out.setdefault("earnings_coverage", _earnings_coverage(earnings, frames))
         per_year = {}
         for a, b in windows:
-            r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings, **kw)
+            r = backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings,
+                             main_tickers=main_tickers, **kw)
             m = r["metrics"]
             per_year[a.year] = {"return": m["total_return"], "max_drawdown": m["max_drawdown"], "trades": m["trades"]}
+            if r["analysis"].get("by_sleeve"):  # 別枠があるときは、本体と枠ごとの損益も残す
+                per_year[a.year]["by_sleeve"] = {n: {"trades": v["trades"], "total_pnl": v["total_pnl"]}
+                                                 for n, v in r["analysis"]["by_sleeve"].items()}
         rets = [v["return"] for v in per_year.values()]
         out["rules"][rp.stem] = {
             "years": per_year,
@@ -448,17 +499,20 @@ def cmd_forward(root: Path, data: MarketData) -> dict:
     spec = config.load_yaml(root / "config" / "forward.yaml")
     start = pd.Timestamp(spec["start"])
     days = 450 + (pd.Timestamp.today().normalize() - start).days  # SMA200・12か月モメンタムのウォームアップ込み
-    frames, settings = _load_frames(root, data, config.load_universe(root), days)
-    last = max(df.index[-1] for df in frames.values())
+    universe = config.load_universe(root)
+    rule_list = [rules.load_rules(root / item["path"]) for item in spec["rules"]]
+    all_frames, settings = _load_frames(root, data, _with_sleeves(universe, rule_list), days)
+    last = max(df.index[-1] for df in all_frames.values())
     ex = settings.get("execution", {})
     kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
 
     out = {"start": start.date().isoformat(), "until": last.date().isoformat(), "rules": {}}
-    for item in spec["rules"]:
-        rule_set = rules.load_rules(root / item["path"])
+    for item, rule_set in zip(spec["rules"], rule_list):
+        frames, main_tickers = _scope(all_frames, universe, rule_set)
         market = market_regimes(data, frames, rule_set, settings, days)
         earnings = earnings_for(data, frames, rule_set)
-        r = backtest.run(frames, rule_set, start.date(), last.date(), market=market, earnings=earnings, **kw)
+        r = backtest.run(frames, rule_set, start.date(), last.date(), market=market, earnings=earnings,
+                         main_tickers=main_tickers, **kw)
         m = r["metrics"]
         out["rules"][item["name"]] = {
             "label": item.get("label", ""),
@@ -507,6 +561,7 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--fx", type=float, help="約定時の為替レート (省略時は最新レート)")
     s.add_argument("--fee", type=float, default=0.0, help="手数料 (円)")
     s.add_argument("--take-profit", action="store_true", help="ルールの利確シグナルによる一部売りのとき")
+    s.add_argument("--sleeve", help="別枠 (rules.yaml の sleeves) のシグナルで買ったときの枠の名前 (例: dip)")
     s = sub.add_parser("cashflow", help="入金 (+金額) / 出金 (-金額) を記録")
     s.add_argument("amount", type=float, help="円。出金はマイナス (例: -20000)")
     s.add_argument("--note", default="", help="メモ")
@@ -539,7 +594,8 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "submit":
         out = cmd_submit(root, data, day, args.orders, args.force)
     elif args.cmd == "record":
-        out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee, args.take_profit)
+        out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee, args.take_profit,
+                         args.sleeve)
     elif args.cmd == "cashflow":
         out = cmd_cashflow(root, day, args.amount, args.note)
     elif args.cmd == "sync":

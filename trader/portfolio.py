@@ -16,7 +16,8 @@ from pathlib import Path
 class Portfolio:
     cash: float
     # ticker -> {qty, avg_cost, currency, opened (保有開始日), took_profit (一部利確済みか),
-    #            rule_ref (損切り・利確の基準価格。なければ avg_cost), account (口座区分)}
+    #            rule_ref (損切り・利確の基準価格。なければ avg_cost), account (口座区分),
+    #            sleeve (別枠のシグナルで買った保有だけ: 枠の名前。その枠のルールで売る)}
     positions: dict[str, dict] = field(default_factory=dict)
     pending: list[dict] = field(default_factory=list)
     peak_equity: float = 0.0
@@ -50,7 +51,7 @@ class Portfolio:
 
 def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
                ccy: str, rate: float, fee: float = 0.0, day: str | None = None,
-               take_profit: bool = False) -> float | None:
+               take_profit: bool = False, sleeve: str | None = None) -> float | None:
     """約定を口座に反映し、売りなら実現損益 (円) を返す。
 
     実現損益は取得単価を約定時のレートで円換算した概算 (為替差損益は区別しない)。
@@ -61,6 +62,8 @@ def apply_fill(pf: Portfolio, ticker: str, side: str, qty: int, price: float,
             ticker, {"qty": 0, "avg_cost": 0.0, "currency": ccy, "opened": day, "took_profit": False})
         pos["avg_cost"] = (pos["avg_cost"] * pos["qty"] + price * qty) / (pos["qty"] + qty)
         pos["qty"] += qty
+        if sleeve:
+            pos["sleeve"] = sleeve
         pf.cash -= gross + fee
         return None
     held = pf.qty(ticker)

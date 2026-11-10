@@ -1,0 +1,67 @@
+# 機械的に判定できる売買ルール。バックテスト (python -m trader backtest) と日次のシグナルが同じものを使う。
+# 変更は improve-rules スキルで検証してから、人の了承を得て行う。履歴は config/rules_changelog.md。
+# v2 = 構造案4 (トレンド崩れで売らない + 市場フィルター + 8銘柄に分散)。2026-10-22 に人の判断で採用
+# v3 = v2 + 決算の3営業日前〜当日は新規買いしない (検証 reports/rules/2026-10-24-earnings.md)。2026-10-24 に人の了承で採用
+version: 3  # 候補 2026-11-10-d3-dip15 (v3 + AI 半導体の押し目買いの別枠)
+updated: 2026-10-24
+
+entry:                        # 新規買い: すべて満たしたとき (保有中の銘柄は買い増ししない)
+  require_trend: true         # 終値 > SMA50 かつ SMA50 > SMA200
+  min_ret_60d: 0.0            # 60日リターンがこれ以上 (モメンタムがプラス)
+  max_rsi: 70                 # RSI14 がこれ未満 (過熱していない)
+  max_gap_above_sma20: 0.08   # 終値が SMA20 より 8% 以上上なら見送り (高値づかみ防止)
+  market_filter:              # 市場指数が SMA200 より下なら新規買いしない
+    sma: 200
+    indices: {JPY: "^N225", USD: "^GSPC"}
+
+exit:                         # 売り: 上から順に判定し、最初に当たったもの
+  stop_loss: 0.08             # 取得単価から -8% で全売却
+  trailing_stop: 0.15         # 保有中の最高終値から -15% で全売却
+  trend_break: false          # トレンド崩れでは売らない (損切りとトレーリングだけ)
+  trend_break_buffer: 0.02
+  max_hold_days: null         # 保有日数の上限 (null で無効)
+  take_profit: 0.20           # 取得単価から +20% で一部利確 (1回だけ)
+  take_profit_fraction: 0.5
+
+sizing:
+  max_positions: 8            # 同時保有を 5 → 8 に増やして分散
+  target_weight: 0.12         # 1銘柄の目標を 20% → 12%
+  rank_by: ret_60d            # 買い候補が枠より多いときの優先順 (大きい順)
+
+earnings:                     # 決算発表日 (Yahoo Finance) を使う判定
+  entry_blackout_days: 3      # 決算日の3営業日前〜当日に約定する新規買いをしない (保有中の銘柄は決算をまたいで持つ)
+
+sleeves:                        # 別枠: 決まった銘柄だけに、本体と違う買い方・売り方を当てはめる。現金は本体と共通
+  dip:                          # 押し目買い: 高値から -15% の下げを、トレンドを問わず、下げ止まってから買う
+    tickers:                    # AI 半導体 (設計・製造・製造装置・メモリ)。対象は検証の前に決めた (PROTOCOL-2026-11-10.md)
+      - NVDA      # NVIDIA
+      - AMD       # AMD
+      - AVGO      # Broadcom
+      - TSM       # TSMC (ADR)
+      - MU        # Micron
+      - MRVL      # Marvell
+      - ASML      # ASML (ADR)
+      - AMAT      # Applied Materials
+      - LRCX      # Lam Research
+      - KLAC      # KLA
+      - ARM       # Arm (2023-09 上場)
+      - INTC      # Intel (AI で出遅れた銘柄も入れる)
+      - 8035.T    # 東京エレクトロン
+      - 6857.T    # アドバンテスト
+      - 6146.T    # ディスコ
+      - 6920.T    # レーザーテック
+      - 285A.T    # キオクシアHD (2024-12 上場)
+    entry:
+      mode: dip
+      min_drop: 0.15            # 直近120営業日の最高終値から 15% 以上下げている
+      require_rebound: true     # 終値 > SMA5 (下げ止まりを確認してから買う。落ちている途中では買わない)
+      require_long_trend: false  # 長期トレンドは問わない (SMA200 の下でも買う)
+    exit:                       # 売り (本体と同じ順で判定)
+      stop_loss: 0.12           # 取得単価から -12% で全売却 (値動きが大きいので本体の -8% より広い)
+      trailing_stop: 0.15       # 保有中の最高終値から -15% で全売却
+      take_profit: 0.20         # 取得単価から +20% で半分利確 (1回だけ)
+      take_profit_fraction: 0.5
+    sizing:
+      max_positions: 3          # この枠で同時に持つのは3銘柄まで (本体の8銘柄とは別に数える)
+      target_weight: 0.08       # 1銘柄は総資産の 8% (損切りまでの損失が本体と同じ約1%になる大きさ)
+      rank_by: drop_120         # 候補が多いときは、高値からの下げが大きい順

@@ -25,6 +25,8 @@ def new_entry(pf: Portfolio, order: dict, placed_on: date, status: str) -> dict:
         "limit_price": order.get("limit_price"),
         "rationale": order.get("rationale", ""),
     }
+    if order.get("sleeve"):
+        entry["sleeve"] = order["sleeve"]  # 別枠 (rules.yaml の sleeves) のシグナルによる買い
     pf.next_order_id += 1
     pf.pending.append(entry)
     return entry
@@ -66,7 +68,7 @@ class PaperBroker:
             return {**ev, "status": "rejected:insufficient_cash"}
         try:
             pnl = apply_fill(self.pf, o["ticker"], o["side"], o["qty"], price, ccy, rate, fee, day,
-                             take_profit=o.get("reason") == "take_profit")
+                             take_profit=o.get("reason") == "take_profit", sleeve=o.get("sleeve"))
         except ValueError:
             return {**ev, "status": "rejected:insufficient_shares"}
         return {**ev, "status": "filled", "price": round(price, 4), "fx": rate,
