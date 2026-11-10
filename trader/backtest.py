@@ -15,7 +15,7 @@ import pandas as pd
 
 from .config import currency
 from .rules import (attach_earnings, attach_market, earnings_exit, entry_check, exit_check, features,
-                    rotation_targets, sell_qty)
+                    rotation_targets, rule_sets, sell_qty)
 
 
 def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], settings: dict) -> dict[str, pd.DataFrame]:
@@ -36,9 +36,14 @@ def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], 
 
 def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0,
-        market: dict[str, pd.Series] | None = None, earnings: dict[str, list] | None = None) -> dict:
+        market: dict[str, pd.Series] | None = None, earnings: dict[str, list] | None = None,
+        main_tickers: set[str] | None = None, halt: dict | None = None) -> dict:
     """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。
-    earnings: 銘柄ごとの過去の決算日。rules の earnings を使うときに渡す (ない銘柄は決算の判定をしない)。"""
+    earnings: 銘柄ごとの過去の決算日。rules の earnings を使うときに渡す (ない銘柄は決算の判定をしない)。
+    main_tickers: 本体のルールで買う銘柄 (None なら frames の全部)。別枠 (sleeves) だけの銘柄を frames に
+    足したときに渡すと、本体の売買とベンチマークは別枠なしのときと同じ母集団のままになる。
+    halt: ドローダウン停止 (settings.yaml の risk と同じ動き)。{"pct": 0.15, "window_days": 365} なら、
+    直近365日の最高値から 15% 以上下げている日は新規買いを出さない (window_days がなければ全期間の最高値)。"""
     slip, comm = slippage_bps / 10_000, commission_bps / 10_000
     feats = {}
     for t, df in frames.items():
@@ -57,6 +62,7 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
     pos: dict[str, dict] = {}
     orders: list[dict] = []
     trades, curve, last_close, last_row = [], [], {}, {}
+    halt_days = 0
 
     for d in dates:
         # 1. 前日のシグナルを寄付きで約定 (売りが先)
@@ -85,7 +91,8 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
                     continue
                 cash -= price * qty * (1 + comm)
                 pos[o["ticker"]] = {"qty": qty, "avg_cost": price * (1 + comm), "peak": row["open"],
-                                    "entry_date": d, "took_profit": False, "entry": o["entry"]}
+                                    "entry_date": d, "took_profit": False, "entry": o["entry"],
+                                    "sleeve": o.get("sleeve")}
         orders = waiting
 
         # 2. 終値で評価
@@ -101,10 +108,13 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
             if d in f:
                 last_row[t] = f[d]
         if rotation:
-            if d in month_ends:
-                orders += _rotation_orders(last_row, pos, orders, equity, rules)
+            new = _rotation_orders(last_row, pos, orders, equity, rules) if d in month_ends else []
         else:
-            orders += _swing_orders(d, feats, pos, orders, equity, rules)
+            new = _swing_orders(d, feats, pos, orders, equity, rules, main_tickers)
+        if halt and 1 - equity / _recent_peak(curve, d, halt.get("window_days")) >= halt["pct"]:
+            halt_days += 1
+            new = [o for o in new if o["side"] == "sell"]  # 停止中は売りだけ
+        orders += new
 
     eq = pd.DataFrame(curve).set_index("date") if curve else pd.DataFrame(columns=["equity", "invested"])
     open_positions = [
@@ -112,10 +122,11 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
          "unrealized_pct": _r(last_close.get(t, p["avg_cost"]) / p["avg_cost"] - 1)}
         for t, p in pos.items()
     ]
-    bh = buy_and_hold(frames, start_ts, end_ts)
+    bh = buy_and_hold({t: df for t, df in frames.items() if main_tickers is None or t in main_tickers},
+                      start_ts, end_ts)
     return {
         "period": {"start": start.isoformat(), "end": end.isoformat(), "days": len(dates)},
-        "metrics": metrics(eq, trades, initial_cash),
+        "metrics": metrics(eq, trades, initial_cash) | ({"halt_days": halt_days} if halt else {}),
         "benchmark": benchmark(bh),
         "yearly": yearly(eq["equity"] / initial_cash if not eq.empty else pd.Series(dtype=float), bh),
         "analysis": analyze(trades),
@@ -125,15 +136,37 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
     }
 
 
-ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1")
+def _recent_peak(curve: list[dict], d, window_days: int | None) -> float:
+    """直近 window_days 日 (暦日、当日を含む) の総資産の最高値。None なら最初からの最高値。"""
+    if window_days is None:
+        return max(c["equity"] for c in curve)
+    start = d - pd.Timedelta(days=window_days)
+    best = 0.0
+    for c in reversed(curve):
+        if c["date"] < start:
+            break
+        best = max(best, c["equity"])
+    return best
 
 
-def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
-    """スイング型: 毎日、売りルールと買いルールを判定する。"""
+ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1", "drop_120")
+
+
+def _swing_orders(d, feats, pos, orders, equity, rules, main_tickers=None) -> list[dict]:
+    """スイング型: 毎日、売りルールと買いルールを判定する。本体 → 別枠 (sleeves) の順で、現金は共通。"""
+    new = []
+    for name, rs, tickers in rule_sets(rules):
+        new += _set_orders(d, feats, pos, orders + new, equity, rs, name, main_tickers if name is None else tickers)
+    return new
+
+
+def _set_orders(d, feats, pos, orders, equity, rules, sleeve, tickers) -> list[dict]:
+    """1つの枠 (本体は sleeve=None) の売りと買い。枠の保有だけを売り、枠の対象銘柄 (tickers) だけを買う。"""
     sz, new = rules["sizing"], []
+    own = {t: p for t, p in pos.items() if p.get("sleeve") == sleeve}
     selling = {o["ticker"] for o in orders if o["side"] == "sell"}
     full_exits = 0
-    for t, p in pos.items():
+    for t, p in own.items():
         row = feats[t].get(d)
         if row is None or t in selling:
             continue
@@ -149,8 +182,9 @@ def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
             new.append({"ticker": t, "side": "sell", "qty": qty, "reason": sig[0]})
             full_exits += qty == p["qty"]
 
-    buying = {o["ticker"] for o in orders if o["side"] == "buy"}
-    slots = sz["max_positions"] - (len(pos) - full_exits) - len(buying)
+    buys = [o for o in orders if o["side"] == "buy"]
+    buying = {o["ticker"] for o in buys}  # どの枠の注文でも、同じ銘柄を重ねて買わない
+    slots = sz["max_positions"] - (len(own) - full_exits) - sum(o.get("sleeve") == sleeve for o in buys)
     swap = rules.get("swap")
     if slots <= 0 and not swap:
         return new
@@ -158,16 +192,19 @@ def _swing_orders(d, feats, pos, orders, equity, rules) -> list[dict]:
     candidates = []
     for t, f in feats.items():
         row = f.get(d)
+        if tickers is not None and t not in tickers:
+            continue
         if t in pos or t in buying or row is None or entry_check(row, rules):
             continue
         candidates.append((row.get(rank_by) or 0, t, row))
     candidates.sort(reverse=True)
     if slots <= 0:
-        return new + _swap_orders(d, feats, pos, selling | {o["ticker"] for o in new}, candidates, equity, rules)
+        return new + _swap_orders(d, feats, own, selling | {o["ticker"] for o in new}, candidates, equity, rules)
     for _, t, row in candidates[:slots]:
         qty = int(sz["target_weight"] * equity // row["close"])
         if qty > 0:
-            new.append({"ticker": t, "side": "buy", "qty": qty, "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
+            new.append({"ticker": t, "side": "buy", "qty": qty, "sleeve": sleeve,
+                        "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
     return new
 
 
@@ -220,7 +257,7 @@ def _trade(ticker, p, qty, price, proceeds, d, reason) -> dict:
         "ticker": ticker, "entry_date": p["entry_date"].date().isoformat(), "exit_date": d.date().isoformat(),
         "qty": qty, "entry_price": _r(p["avg_cost"]), "exit_price": _r(price),
         "pnl": _r(proceeds - cost), "pnl_pct": _r(proceeds / cost - 1),
-        "holding_days": (d - p["entry_date"]).days, "exit_reason": reason,
+        "holding_days": (d - p["entry_date"]).days, "exit_reason": reason, "sleeve": p.get("sleeve"),
         **{f"entry_{k}": v for k, v in p["entry"].items()},
     }
 
@@ -302,8 +339,15 @@ def analyze(trades: list[dict]) -> dict:
     compare["entry_gap_sma20"] = {"losers": _r(df.loc[df["pnl"] <= 0, "entry_gap_sma20"].mean()),
                                   "winners": _r(df.loc[df["pnl"] > 0, "entry_gap_sma20"].mean())}
     worst = df.nsmallest(10, "pnl")
+    by_sleeve = {}
+    if df["sleeve"].notna().any():  # 別枠があるときだけ: 本体 (main) と枠ごとの成績
+        for name, g in df.groupby(df["sleeve"].fillna("main")):
+            by_sleeve[name] = {"trades": len(g), "win_rate": _r((g["pnl"] > 0).mean()), "total_pnl": _r(g["pnl"].sum()),
+                               "avg_pnl_pct": _r(g["pnl_pct"].mean()),
+                               "pnl_by_ticker": {t: _r(v) for t, v in g.groupby("ticker")["pnl"].sum().sort_values().items()}}
     return {
         "by_exit_reason": by_reason,
+        **({"by_sleeve": by_sleeve} if by_sleeve else {}),
         "entry_features_losers_vs_winners": compare,
         "worst_tickers": {t: _r(v) for t, v in by_ticker.head(5).items()},
         "best_tickers": {t: _r(v) for t, v in by_ticker.tail(5)[::-1].items()},

@@ -28,6 +28,10 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 2. **機械ルール** (`rules.yaml`) — いつ買う・売る・何株。毎日のシグナルとバックテストが同じコード (`trader/rules.py`) を使う
 3. **裁量** — Claude はシグナルの見送りと、仮説が崩れたときの売りだけできる
 
+`rules.yaml` には `sleeves` (別枠) も書ける: 決まった銘柄だけに、本体と違う買い方・売り方を当てはめる枠
+(例: AI 半導体の押し目買い `entry.mode: dip`)。同時保有の数は枠ごと、現金は本体と共通。
+書き方は `rules/candidates/2026-11-10-d1-dip15-trend.yaml`、検証は `reports/rules/2026-11-10-dip.md` (今は採用していない)。
+
 | 担当 | 内容 |
 |---|---|
 | Claude (スキル) | 銘柄調査、投資仮説、売買判断、レポート、スクショの読み取り |
@@ -35,7 +39,7 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 | 人 | 発注、ルール変更の了承 (`strategy.md`・`rules.yaml`・`settings.yaml`)、緊急停止 (`STOP`) |
 
 `trader/risk.py` がコードとして強制する主なルール: 1銘柄25%まで / 買付後に現金5%以上 /
-ドローダウン15%で新規買い停止 / ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
+ ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
 
 ## ディレクトリ
 
@@ -69,13 +73,14 @@ trader/           Python パッケージ
 pip install -r requirements.txt
 python -m trader prep                                  # 日次の準備
 python -m trader submit reports/daily/<日付>/orders.json
-python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録
+python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録 (別枠の買いは --sleeve dip を付ける)
 python -m trader sync state/sync/<日付>.yaml            # 保有一覧で上書き
 python -m trader status
 python -m trader screen                                 # 週次スクリーニング
 python -m trader backtest --years 8                     # 過去データで仮想売買 (学習/検証に分割)
 python -m trader backtest --rules rules/candidates/x.yaml --name x
 python -m trader yearly config/rules.yaml rules/candidates/x.yaml --name y   # 暦年ごとに比較 (指数50/50つき)
+python -m trader phases config/rules.yaml rules/candidates/x.yaml --name z   # 採用の基準 (12通りの区切り・同じ持ち高の指数)
 python -m trader forward                                # 決めた日以降の実データで記録 (フォワードテスト)
 python -m pytest -q
 ```

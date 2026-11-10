@@ -1,0 +1,226 @@
+{
+  "v2 → v3 (採用された変更)": {
+    "in_sample": {
+      "sharpe_a": 1.102,
+      "sharpe_b": 1.222,
+      "diff": 0.12,
+      "diff_ci90": [
+        -0.02,
+        0.28
+      ],
+      "prob_b_better": 0.922,
+      "sharpe_a_ci90": [
+        0.36,
+        1.86
+      ],
+      "days": 1451
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.152,
+      "sharpe_b": 0.291,
+      "diff": 0.138,
+      "diff_ci90": [
+        -0.11,
+        0.4
+      ],
+      "prob_b_better": 0.804,
+      "sharpe_a_ci90": [
+        -0.83,
+        1.17
+      ],
+      "days": 624
+    }
+  },
+  "v3 → a1 (決算翌日は買わない)": {
+    "in_sample": {
+      "sharpe_a": 1.225,
+      "sharpe_b": 1.246,
+      "diff": 0.022,
+      "diff_ci90": [
+        -0.1,
+        0.14
+      ],
+      "prob_b_better": 0.617,
+      "sharpe_a_ci90": [
+        0.49,
+        1.97
+      ],
+      "days": 1451
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.187,
+      "sharpe_b": -0.018,
+      "diff": -0.205,
+      "diff_ci90": [
+        -0.48,
+        0.04
+      ],
+      "prob_b_better": 0.086,
+      "sharpe_a_ci90": [
+        -0.86,
+        1.27
+      ],
+      "days": 624
+    }
+  },
+  "v3 → a3 (決算後5日は買わない)": {
+    "in_sample": {
+      "sharpe_a": 1.225,
+      "sharpe_b": 1.39,
+      "diff": 0.165,
+      "diff_ci90": [
+        -0.05,
+        0.39
+      ],
+      "prob_b_better": 0.895,
+      "sharpe_a_ci90": [
+        0.49,
+        1.97
+      ],
+      "days": 1451
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.187,
+      "sharpe_b": -0.085,
+      "diff": -0.271,
+      "diff_ci90": [
+        -0.57,
+        0.05
+      ],
+      "prob_b_better": 0.085,
+      "sharpe_a_ci90": [
+        -0.86,
+        1.27
+      ],
+      "days": 624
+    }
+  },
+  "v3 → d1 (押し目買い)": {
+    "in_sample": {
+      "sharpe_a": 1.256,
+      "sharpe_b": 1.454,
+      "diff": 0.198,
+      "diff_ci90": [
+        -0.05,
+        0.45
+      ],
+      "prob_b_better": 0.908,
+      "sharpe_a_ci90": [
+        0.51,
+        2.02
+      ],
+      "days": 1453
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.23,
+      "sharpe_b": 0.401,
+      "diff": 0.171,
+      "diff_ci90": [
+        -0.44,
+        0.77
+      ],
+      "prob_b_better": 0.676,
+      "sharpe_a_ci90": [
+        -0.74,
+        1.34
+      ],
+      "days": 624
+    }
+  },
+  "v3 → d2": {
+    "in_sample": {
+      "sharpe_a": 1.256,
+      "sharpe_b": 1.436,
+      "diff": 0.18,
+      "diff_ci90": [
+        -0.13,
+        0.48
+      ],
+      "prob_b_better": 0.838,
+      "sharpe_a_ci90": [
+        0.51,
+        2.02
+      ],
+      "days": 1453
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.23,
+      "sharpe_b": 0.115,
+      "diff": -0.115,
+      "diff_ci90": [
+        -0.6,
+        0.37
+      ],
+      "prob_b_better": 0.335,
+      "sharpe_a_ci90": [
+        -0.74,
+        1.34
+      ],
+      "days": 624
+    }
+  },
+  "v3 → d3": {
+    "in_sample": {
+      "sharpe_a": 1.256,
+      "sharpe_b": 1.349,
+      "diff": 0.093,
+      "diff_ci90": [
+        -0.15,
+        0.33
+      ],
+      "prob_b_better": 0.743,
+      "sharpe_a_ci90": [
+        0.51,
+        2.02
+      ],
+      "days": 1453
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.23,
+      "sharpe_b": 0.279,
+      "diff": 0.049,
+      "diff_ci90": [
+        -0.49,
+        0.61
+      ],
+      "prob_b_better": 0.543,
+      "sharpe_a_ci90": [
+        -0.74,
+        1.34
+      ],
+      "days": 624
+    }
+  },
+  "v3 → 指数 50/50": {
+    "in_sample": {
+      "sharpe_a": 1.256,
+      "sharpe_b": 0.939,
+      "diff": -0.317,
+      "diff_ci90": [
+        -0.83,
+        0.26
+      ],
+      "prob_b_better": 0.193,
+      "sharpe_a_ci90": [
+        0.51,
+        2.02
+      ],
+      "days": 1453
+    },
+    "out_of_sample": {
+      "sharpe_a": 0.23,
+      "sharpe_b": 0.96,
+      "diff": 0.73,
+      "diff_ci90": [
+        -0.22,
+        1.64
+      ],
+      "prob_b_better": 0.907,
+      "sharpe_a_ci90": [
+        -0.74,
+        1.34
+      ],
+      "days": 624
+    }
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "period": [
+    "2018-11-12",
+    "2026-11-10"
+  ],
+  "runs": {
+    "v3_100万": {
+      "total_return": 1.2837,
+      "cagr": 0.1088,
+      "vol": 0.1316,
+      "sharpe": 0.827,
+      "max_drawdown": 0.2047,
+      "exposure": 0.6899,
+      "trades": 213,
+      "win_rate": 0.5258,
+      "profit_factor": 1.6587,
+      "halt_days": 0,
+      "days": 2079,
+      "by_year": {
+        "2018": {
+          "return": -0.0914,
+          "max_drawdown": 0.0924
+        },
+        "2019": {
+          "return": 0.1345,
+          "max_drawdown": 0.0715
+        },
+        "2020": {
+          "return": 0.1324,
+          "max_drawdown": 0.1655
+        },
+        "2021": {
+          "return": 0.2313,
+          "max_drawdown": 0.0755
+        },
+        "2022": {
+          "return": 0.0746,
+          "max_drawdown": 0.0874
+        },
+        "2023": {
+          "return": 0.242,
+          "max_drawdown": 0.0558
+        },
+        "2024": {
+          "return": 0.1718,
+          "max_drawdown": 0.1866
+        },
+        "2025": {
+          "return": -0.0649,
+          "max_drawdown": 0.1482
+        },
+        "2026": {
+          "return": 0.0865,
+          "max_drawdown": 0.1019
+        }
+      }
+    },
+    "v3_100万_停止15%": {
+      "total_return": -0.0926,
+      "cagr": -0.0121,
+      "vol": 0.0533,
+      "sharpe": -0.194,
+      "max_drawdown": 0.1655,
+      "exposure": 0.1162,
+      "trades": 33,
+      "win_rate": 0.3939,
+      "profit_factor": 0.533,
+      "halt_days": 1735,
+      "days": 2079,
+      "by_year": {
+        "2018": {
+          "return": -0.0914,
+          "max_drawdown": 0.0924
+        },
+        "2019": {
+          "return": 0.1345,
+          "max_drawdown": 0.0715
+        },
+        "2020": {
+          "return": -0.1197,
+          "max_drawdown": 0.1655
+        },
+        "2021": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2022": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2023": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2024": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2025": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2026": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        }
+      }
+    },
+    "v3_40万": {
+      "total_return": 1.4811,
+      "cagr": 0.1204,
+      "vol": 0.1295,
+      "sharpe": 0.916,
+      "max_drawdown": 0.2105,
+      "exposure": 0.665,
+      "trades": 222,
+      "win_rate": 0.527,
+      "profit_factor": 1.7906,
+      "halt_days": 0,
+      "days": 2079,
+      "by_year": {
+        "2018": {
+          "return": -0.0859,
+          "max_drawdown": 0.0867
+        },
+        "2019": {
+          "return": 0.1438,
+          "max_drawdown": 0.0674
+        },
+        "2020": {
+          "return": 0.1202,
+          "max_drawdown": 0.187
+        },
+        "2021": {
+          "return": 0.2146,
+          "max_drawdown": 0.0728
+        },
+        "2022": {
+          "return": 0.0745,
+          "max_drawdown": 0.0862
+        },
+        "2023": {
+          "return": 0.2204,
+          "max_drawdown": 0.0543
+        },
+        "2024": {
+          "return": 0.1858,
+          "max_drawdown": 0.1919
+        },
+        "2025": {
+          "return": -0.0574,
+          "max_drawdown": 0.1472
+        },
+        "2026": {
+          "return": 0.1899,
+          "max_drawdown": 0.077
+        }
+      }
+    },
+    "v3_40万_停止15%": {
+      "total_return": -0.0877,
+      "cagr": -0.0114,
+      "vol": 0.0517,
+      "sharpe": -0.189,
+      "max_drawdown": 0.187,
+      "exposure": 0.1091,
+      "trades": 39,
+      "win_rate": 0.3846,
+      "profit_factor": 0.6409,
+      "halt_days": 1736,
+      "days": 2079,
+      "by_year": {
+        "2018": {
+          "return": -0.0859,
+          "max_drawdown": 0.0867
+        },
+        "2019": {
+          "return": 0.1438,
+          "max_drawdown": 0.0674
+        },
+        "2020": {
+          "return": -0.1275,
+          "max_drawdown": 0.187
+        },
+        "2021": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2022": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2023": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2024": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2025": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        },
+        "2026": {
+          "return": 0.0,
+          "max_drawdown": 0.0
+        }
+      }
+    }
+  },
+  "index_50_50": {
+    "total_return": 2.2827,
+    "cagr": 0.1603,
+    "vol": 0.1667,
+    "sharpe": 0.949,
+    "max_drawdown": 0.3144,
+    "by_year": {
+      "2018": {
+        "return": -0.1051,
+        "max_drawdown": 0.1645
+      },
+      "2019": {
+        "return": 0.2267,
+        "max_drawdown": 0.0904
+      },
+      "2020": {
+        "return": 0.1297,
+        "max_drawdown": 0.3144
+      },
+      "2021": {
+        "return": 0.2336,
+        "max_drawdown": 0.0553
+      },
+      "2022": {
+        "return": -0.0797,
+        "max_drawdown": 0.1399
+      },
+      "2023": {
+        "return": 0.3055,
+        "max_drawdown": 0.0698
+      },
+      "2024": {
+        "return": 0.2966,
+        "max_drawdown": 0.2
+      },
+      "2025": {
+        "return": 0.198,
+        "max_drawdown": 0.2272
+      },
+      "2026": {
+        "return": 0.1498,
+        "max_drawdown": 0.1162
+      }
+    }
+  },
+  "index_at_v3_exposure": {
+    "k": 0.6899,
+    "total_return": 1.3275,
+    "cagr": 0.1115,
+    "vol": 0.115,
+    "sharpe": 0.949,
+    "max_drawdown": 0.2271,
+    "by_year": {
+      "2018": {
+        "return": -0.0731,
+        "max_drawdown": 0.1163
+      },
+      "2019": {
+        "return": 0.1529,
+        "max_drawdown": 0.0631
+      },
+      "2020": {
+        "return": 0.0951,
+        "max_drawdown": 0.2271
+      },
+      "2021": {
+        "return": 0.1579,
+        "max_drawdown": 0.0384
+      },
+      "2022": {
+        "return": -0.0519,
+        "max_drawdown": 0.0981
+      },
+      "2023": {
+        "return": 0.2038,
+        "max_drawdown": 0.0485
+      },
+      "2024": {
+        "return": 0.2,
+        "max_drawdown": 0.1416
+      },
+      "2025": {
+        "return": 0.1361,
+        "max_drawdown": 0.1619
+      },
+      "2026": {
+        "return": 0.1038,
+        "max_drawdown": 0.0813
+      }
+    }
+  },
+  "universe_buy_and_hold": {
+    "total_return": 5.6517,
+    "cagr": 0.2675,
+    "vol": 0.2049,
+    "sharpe": 1.225,
+    "max_drawdown": 0.3159
+  },
+  "no_skill_vs_4_criteria": {
+    "index_50pct": {
+      "positive_years": 7,
+      "worst_year": -0.0434,
+      "chained_return": 0.9894,
+      "avg_max_drawdown": 0.0807
+    },
+    "index_70pct": {
+      "positive_years": 7,
+      "worst_year": -0.0625,
+      "chained_return": 1.5782,
+      "avg_max_drawdown": 0.1111
+    },
+    "index_90pct": {
+      "positive_years": 7,
+      "worst_year": -0.0824,
+      "chained_return": 2.311,
+      "avg_max_drawdown": 0.1404
+    }
+  }
+}

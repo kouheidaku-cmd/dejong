@@ -21,6 +21,7 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({
         "open": df["Open"],
         "close": c,
+        "sma5": c.rolling(5).mean(),
         "sma20": c.rolling(20).mean(),
         "sma50": c.rolling(50).mean(),
         "sma200": c.rolling(200).mean(),
@@ -28,6 +29,7 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
         "ret_60d": c / c.shift(60) - 1,
         "mom_12_1": c.shift(21) / c.shift(252) - 1,  # 過去12か月 (直近1か月を除く) のリターン
         "mom_6_1": c.shift(21) / c.shift(126) - 1,
+        "drop_120": 1 - c / c.rolling(120).max(),  # 直近120営業日の最高終値からの下落率 (0.2 = -20%)
     }, index=df.index)
 
 
@@ -123,9 +125,26 @@ def _missing(row, *keys) -> bool:
     return any(row.get(k) is None or math.isnan(row[k]) for k in keys)
 
 
-def entry_check(row: dict, rules: dict) -> list[str]:
-    """新規買いの条件のうち満たしていないものを返す。空なら買い条件成立。"""
-    e = rules["entry"]
+def rule_sets(rules: dict) -> list[tuple[str | None, dict, set[str] | None]]:
+    """本体のルールと別枠 (sleeves) を (枠の名前, ルール, 対象銘柄) の並びで返す。本体は名前も対象銘柄も None。
+
+    別枠は、決まった銘柄だけに本体と違う買い方・売り方を当てはめる (例: 急落後の反発を狙う押し目買い)。
+    枠ごとに entry / exit / sizing を持ち、同時保有の数も枠ごとに数える。現金は本体と共通。
+    earnings は書かなければ本体のものを使う。
+    """
+    out = [(None, rules, None)]
+    for name, s in (rules.get("sleeves") or {}).items():
+        out.append((name, {"earnings": rules.get("earnings"), **s}, {str(t) for t in s["tickers"]}))
+    return out
+
+
+def sleeve_tickers(rules: dict) -> list[str]:
+    """別枠の対象銘柄 (重複なし、書いてある順)。"""
+    return list(dict.fromkeys(str(t) for s in (rules.get("sleeves") or {}).values() for t in s["tickers"]))
+
+
+def _trend_fails(row: dict, e: dict) -> list[str]:
+    """順張り (既定): 上昇トレンドの銘柄を、過熱していないときに買う。"""
     if _missing(row, "close", "sma20", "sma50", "sma200", "rsi14", "ret_60d"):
         return ["データ不足"]
     fails = []
@@ -138,6 +157,30 @@ def entry_check(row: dict, rules: dict) -> list[str]:
     gap = row["close"] / row["sma20"] - 1
     if gap > e.get("max_gap_above_sma20", math.inf):
         fails.append(f"SMA20 から +{gap:.1%} 乖離")
+    return fails
+
+
+def _dip_fails(row: dict, e: dict) -> list[str]:
+    """押し目買い (mode: dip): 直近の高値から大きく下げた銘柄を、下げ止まりを確認してから買う。"""
+    need = ["close", "sma5", "drop_120"] + (["sma200"] if e.get("require_long_trend") else [])
+    if _missing(row, *need):
+        return ["データ不足"]
+    fails = []
+    if row["drop_120"] < e["min_drop"]:
+        fails.append(f"高値からの下落 {row['drop_120']:.1%} が基準 {e['min_drop']:.0%} に届かない")
+    if e.get("require_rebound") and not row["close"] > row["sma5"]:
+        fails.append("下げ止まりを確認できない (終値 <= SMA5)")
+    if e.get("require_long_trend") and not row["close"] > row["sma200"]:
+        fails.append("長期トレンドが崩れている (終値 <= SMA200)")
+    return fails
+
+
+def entry_check(row: dict, rules: dict) -> list[str]:
+    """新規買いの条件のうち満たしていないものを返す。空なら買い条件成立。"""
+    e = rules["entry"]
+    fails = _dip_fails(row, e) if e.get("mode") == "dip" else _trend_fails(row, e)
+    if fails == ["データ不足"]:
+        return fails
     mf = e.get("market_filter")
     if mf:
         ok = row.get("market_ok")

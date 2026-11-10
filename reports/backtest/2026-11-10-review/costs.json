@@ -1,0 +1,42 @@
+{
+  "片道0.1%": {
+    "total_return": 1.2837,
+    "cagr": 0.1088,
+    "vol": 0.1316,
+    "sharpe": 0.827,
+    "max_drawdown": 0.2047,
+    "trades": 213
+  },
+  "片道0.3%": {
+    "total_return": 1.1941,
+    "cagr": 0.1033,
+    "vol": 0.1358,
+    "sharpe": 0.77,
+    "max_drawdown": 0.2353,
+    "trades": 223
+  },
+  "片道0.5%": {
+    "total_return": 1.2918,
+    "cagr": 0.1093,
+    "vol": 0.1376,
+    "sharpe": 0.8,
+    "max_drawdown": 0.2564,
+    "trades": 225
+  },
+  "片道1.0%": {
+    "total_return": 0.7275,
+    "cagr": 0.0708,
+    "vol": 0.1361,
+    "sharpe": 0.556,
+    "max_drawdown": 0.2924,
+    "trades": 223
+  },
+  "片道1.5%": {
+    "total_return": 0.2703,
+    "cagr": 0.0304,
+    "vol": 0.1467,
+    "sharpe": 0.272,
+    "max_drawdown": 0.38,
+    "trades": 251
+  }
+}

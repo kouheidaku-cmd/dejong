@@ -1,0 +1,327 @@
+{
+  "tickers": [
+    "285A.T",
+    "6146.T",
+    "6857.T",
+    "6920.T",
+    "8035.T",
+    "AMAT",
+    "AMD",
+    "ARM",
+    "ASML",
+    "AVGO",
+    "INTC",
+    "KLAC",
+    "LRCX",
+    "MRVL",
+    "MU",
+    "NVDA",
+    "TSM"
+  ],
+  "until": "2026-11-10",
+  "ai_semis_2019_on": {
+    "drop_15": {
+      "events": 233,
+      "events_by_ticker": {
+        "NVDA": 16,
+        "AMD": 18,
+        "AVGO": 10,
+        "TSM": 14,
+        "MU": 18,
+        "MRVL": 16,
+        "ASML": 12,
+        "AMAT": 13,
+        "LRCX": 16,
+        "KLAC": 13,
+        "ARM": 7,
+        "INTC": 17,
+        "8035.T": 11,
+        "6857.T": 18,
+        "6146.T": 15,
+        "6920.T": 15,
+        "285A.T": 4
+      },
+      "forward_return": {
+        "20": {
+          "n": 230,
+          "positive": 0.565,
+          "median": 0.0372,
+          "p10": -0.1338,
+          "worst": -0.4185
+        },
+        "60": {
+          "n": 226,
+          "positive": 0.65,
+          "median": 0.1006,
+          "p10": -0.1704,
+          "worst": -0.4595
+        },
+        "120": {
+          "n": 212,
+          "positive": 0.745,
+          "median": 0.2644,
+          "p10": -0.2297,
+          "worst": -0.5211
+        },
+        "250": {
+          "n": 185,
+          "positive": 0.73,
+          "median": 0.4789,
+          "p10": -0.2292,
+          "worst": -0.6131
+        }
+      },
+      "further_fall_within_120d": {
+        "n": 212,
+        "positive": 0.151,
+        "median": -0.1083,
+        "p10": -0.3449,
+        "worst": -0.5331
+      },
+      "recovered_high_within_250d": 0.811
+    },
+    "drop_25": {
+      "events": 147,
+      "events_by_ticker": {
+        "NVDA": 7,
+        "AMD": 12,
+        "AVGO": 8,
+        "TSM": 5,
+        "MU": 12,
+        "MRVL": 12,
+        "ASML": 7,
+        "AMAT": 8,
+        "LRCX": 7,
+        "KLAC": 7,
+        "ARM": 8,
+        "INTC": 13,
+        "8035.T": 7,
+        "6857.T": 13,
+        "6146.T": 6,
+        "6920.T": 12,
+        "285A.T": 3
+      },
+      "forward_return": {
+        "20": {
+          "n": 139,
+          "positive": 0.576,
+          "median": 0.0264,
+          "p10": -0.1624,
+          "worst": -0.4625
+        },
+        "60": {
+          "n": 136,
+          "positive": 0.676,
+          "median": 0.1218,
+          "p10": -0.1821,
+          "worst": -0.3806
+        },
+        "120": {
+          "n": 122,
+          "positive": 0.738,
+          "median": 0.2783,
+          "p10": -0.1878,
+          "worst": -0.5584
+        },
+        "250": {
+          "n": 113,
+          "positive": 0.805,
+          "median": 0.5419,
+          "p10": -0.1553,
+          "worst": -0.4847
+        }
+      },
+      "further_fall_within_120d": {
+        "n": 122,
+        "positive": 0.057,
+        "median": -0.141,
+        "p10": -0.3749,
+        "worst": -0.5643
+      },
+      "recovered_high_within_250d": 0.699
+    },
+    "any_day": {
+      "forward_return": {
+        "20": {
+          "n": 30288,
+          "positive": 0.605,
+          "median": 0.0307,
+          "p10": -0.1256,
+          "worst": -0.572
+        },
+        "60": {
+          "n": 29608,
+          "positive": 0.659,
+          "median": 0.0899,
+          "p10": -0.1702,
+          "worst": -0.6083
+        },
+        "120": {
+          "n": 28588,
+          "positive": 0.73,
+          "median": 0.2053,
+          "p10": -0.2041,
+          "worst": -0.6012
+        },
+        "250": {
+          "n": 26378,
+          "positive": 0.783,
+          "median": 0.434,
+          "p10": -0.2323,
+          "worst": -0.7534
+        }
+      }
+    }
+  },
+  "sox_index": {
+    "first_bar": "1994-05-04",
+    "longest_underwater": {
+      "days": 6462,
+      "years": 17.7,
+      "from": "2000-03-13",
+      "to": "2017-11-21",
+      "recovered": true,
+      "max_fall": -0.8715
+    },
+    "before_2017": {
+      "drop_15": {
+        "events": 29,
+        "events_by_ticker": {
+          "^SOX": 29
+        },
+        "forward_return": {
+          "20": {
+            "n": 29,
+            "positive": 0.517,
+            "median": 0.007,
+            "p10": -0.1417,
+            "worst": -0.2239
+          },
+          "60": {
+            "n": 29,
+            "positive": 0.448,
+            "median": -0.0335,
+            "p10": -0.2287,
+            "worst": -0.3186
+          },
+          "120": {
+            "n": 29,
+            "positive": 0.379,
+            "median": -0.0731,
+            "p10": -0.341,
+            "worst": -0.5398
+          },
+          "250": {
+            "n": 29,
+            "positive": 0.517,
+            "median": 0.0681,
+            "p10": -0.4674,
+            "worst": -0.5022
+          }
+        },
+        "further_fall_within_120d": {
+          "n": 29,
+          "positive": 0.069,
+          "median": -0.1823,
+          "p10": -0.4546,
+          "worst": -0.5994
+        },
+        "recovered_high_within_250d": 0.448
+      },
+      "drop_25": {
+        "events": 17,
+        "events_by_ticker": {
+          "^SOX": 17
+        },
+        "forward_return": {
+          "20": {
+            "n": 17,
+            "positive": 0.529,
+            "median": 0.009,
+            "p10": -0.0987,
+            "worst": -0.1622
+          },
+          "60": {
+            "n": 17,
+            "positive": 0.471,
+            "median": -0.0325,
+            "p10": -0.2447,
+            "worst": -0.3404
+          },
+          "120": {
+            "n": 17,
+            "positive": 0.588,
+            "median": 0.0434,
+            "p10": -0.3097,
+            "worst": -0.4114
+          },
+          "250": {
+            "n": 17,
+            "positive": 0.647,
+            "median": 0.0304,
+            "p10": -0.4171,
+            "worst": -0.5295
+          }
+        },
+        "further_fall_within_120d": {
+          "n": 17,
+          "positive": 0.0,
+          "median": -0.2212,
+          "p10": -0.442,
+          "worst": -0.5476
+        },
+        "recovered_high_within_250d": 0.294
+      },
+      "any_day": {
+        "forward_return": {
+          "20": {
+            "n": 5688,
+            "positive": 0.561,
+            "median": 0.0129,
+            "p10": -0.1084,
+            "worst": -0.4022
+          },
+          "60": {
+            "n": 5648,
+            "positive": 0.615,
+            "median": 0.0397,
+            "p10": -0.1822,
+            "worst": -0.5225
+          },
+          "120": {
+            "n": 5588,
+            "positive": 0.602,
+            "median": 0.0661,
+            "p10": -0.2585,
+            "worst": -0.6401
+          },
+          "250": {
+            "n": 5458,
+            "positive": 0.596,
+            "median": 0.0787,
+            "p10": -0.3647,
+            "worst": -0.6295
+          }
+        }
+      }
+    }
+  },
+  "longest_underwater": {
+    "INTC": {
+      "days": 9366,
+      "years": 25.6,
+      "from": "2000-09-01",
+      "to": "2026-04-24",
+      "recovered": true,
+      "max_fall": -0.8387
+    },
+    "NVDA": {
+      "days": 3130,
+      "years": 8.6,
+      "from": "2007-10-18",
+      "to": "2016-05-13",
+      "recovered": true,
+      "max_fall": -0.8508
+    }
+  }
+}

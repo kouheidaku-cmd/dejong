@@ -97,7 +97,7 @@ def _check_one(o, prices, fx, watchlist, settings, held, sellable, cash, equity,
 
     if ticker not in watchlist:
         return "ウォッチリスト外の銘柄は新規買い不可"
-    if drawdown >= r["max_drawdown_pct"]:
+    if r.get("max_drawdown_pct") and drawdown >= r["max_drawdown_pct"]:  # null なら停止しない
         return f"ドローダウン {drawdown:.1%} が上限 {r['max_drawdown_pct']:.0%} に達しているため新規買い停止"
     cost = qty * _est_price(o, prices, r) * rate
     position_after = held.get(ticker, 0) * last * rate + cost

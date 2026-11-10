@@ -118,12 +118,14 @@ def test_risk_rules():
     )
     assert buy is None and sell is None
 
-    # ドローダウン超過中は買いだけ止まる
+    # ドローダウン停止を設定していれば、超過中は買いだけ止まる。設定なし (null) なら止まらない
     pf.cash, pf.peak_equity = 200_000, 1_000_000
-    [(_, buy), (_, sell)] = check_orders(
-        [o(ticker="6758.T", qty=10), o(ticker="7203.T", qty=100, side="sell")], pf, prices, FX, wl, SETTINGS
-    )
+    orders = [o(ticker="6758.T", qty=10), o(ticker="7203.T", qty=100, side="sell")]
+    halting = {**SETTINGS, "risk": {**SETTINGS["risk"], "max_drawdown_pct": 0.15}}
+    [(_, buy), (_, sell)] = check_orders(orders, pf, prices, FX, wl, halting)
     assert "ドローダウン" in buy and sell is None
+    off = {**SETTINGS, "risk": {**SETTINGS["risk"], "max_drawdown_pct": None}}
+    assert [r for _, r in check_orders(orders, pf, prices, FX, wl, off)] == [None, None]
 
     [(_, r)] = check_orders([o(ticker="6758.T", qty=10)], pf, prices, FX, wl, SETTINGS, stopped=True)
     assert "STOP" in r
@@ -468,3 +470,139 @@ def test_entry_after_earnings_blackout():
     assert rules.entry_check({**row, "dte": 40, "dse": 2}, r2) == []  # 約定は3営業日後 → 可
     v3 = {**RULES, "earnings": {"entry_blackout_days": 3}}
     assert rules.entry_check({**row, "dte": 40, "dse": 0}, v3) == []  # v3 は決算翌朝の買いを許す
+
+
+DIP = {"tickers": ["CHIP"],
+       "entry": {"mode": "dip", "min_drop": 0.2, "require_rebound": True},
+       "exit": {"stop_loss": 0.12, "trailing_stop": 0.5},
+       "sizing": {"max_positions": 1, "target_weight": 0.1, "rank_by": "drop_120"}}
+
+
+def crash_then_rebound(bottom=140.0, end=190.0):
+    """200 で横ばい → 20日で bottom まで急落 → 60日で end まで戻す。"""
+    return bars(np.concatenate([np.full(300, 200.0), np.linspace(200, bottom, 20), np.linspace(bottom, end, 60)]),
+                start="2018-01-01")
+
+
+def test_dip_entry_waits_for_rebound():
+    from trader import rules
+    rs = {"entry": {"mode": "dip", "min_drop": 0.2, "require_rebound": True, "require_long_trend": True}}
+    row = {"close": 75, "sma5": 72, "sma200": 70, "drop_120": 0.25}
+    assert rules.entry_check(row, rs) == []
+    assert "届かない" in rules.entry_check({**row, "drop_120": 0.1}, rs)[0]  # 下げが浅い
+    assert "下げ止まり" in rules.entry_check({**row, "sma5": 80}, rs)[0]  # まだ下げている途中
+    assert "長期トレンド" in rules.entry_check({**row, "sma200": 90}, rs)[0]
+    assert rules.entry_check({**row, "sma200": 90}, {"entry": {**rs["entry"], "require_long_trend": False}}) == []
+    assert rules.entry_check({**row, "sma5": float("nan")}, rs) == ["データ不足"]
+    assert rules.entry_check({**row, "dte": 2}, {**rs, "earnings": {"entry_blackout_days": 3}})  # 決算前は押し目でも買わない
+
+    f = rules.features(crash_then_rebound())
+    assert f["drop_120"].iloc[299] == 0 and f["drop_120"].iloc[319] == pytest.approx(0.3)
+    falling, rising = f.iloc[315].to_dict(), f.iloc[325].to_dict()
+    assert rules.entry_check(falling, {"entry": DIP["entry"]})  # 急落の途中は買わない
+    assert rules.entry_check(rising, {"entry": DIP["entry"]}) == []  # 反発を確認してから買う
+
+
+def test_dip_sleeve_trades_only_its_tickers_with_its_own_exits():
+    from trader import backtest
+    # FAIL: 急落 → 少し戻す (ここで買い条件を満たす) → さらに下げる。「下がったら必ず戻る」が外れる場合
+    dead_cat = np.concatenate([np.full(300, 200.0), np.linspace(200, 140, 20), np.linspace(140, 155, 10), np.linspace(155, 90, 50)])
+    frames = {"CHIP": crash_then_rebound(), "FAIL": bars(dead_cat, start="2018-01-01"), "UP": rise_then_crash(380, 0)}
+    rules_ = {**RULES, "sleeves": {"dip": {**DIP, "tickers": ["CHIP", "FAIL"], "sizing": {**DIP["sizing"], "max_positions": 2}}}}
+    start, end = frames["CHIP"].index[220].date(), frames["CHIP"].index[-1].date()
+    kw = {"slippage_bps": 0, "main_tickers": {"UP"}}
+    r = backtest.run(frames, rules_, start, end, **kw)
+    base = backtest.run({"UP": frames["UP"]}, RULES, start, end, slippage_bps=0)
+
+    held = {p["ticker"]: p for p in r["open_positions"]}
+    assert held["CHIP"]["unrealized_pct"] > 0.2  # 反発を取れている (v1 の +20% の利確は別枠には効かない)
+    fail = [t for t in r["trades"] if t["ticker"] == "FAIL"]
+    assert fail and all(t["exit_reason"] == "stop_loss" and t["sleeve"] == "dip" for t in fail)  # 戻らない銘柄は損切り
+    assert all(t["pnl_pct"] < -0.1 for t in fail)  # 別枠の損切り幅 (-12%) で切っている (本体は -8%)
+    assert r["analysis"]["by_sleeve"]["dip"]["trades"] == len(fail)
+    # 本体の売買とベンチマークは、別枠がないときと同じ (本体は別枠の銘柄を買わない)
+    main = [t for t in r["trades"] if t["sleeve"] is None]
+    assert {t["ticker"] for t in main} <= {"UP"}
+    assert [(t["ticker"], t["entry_date"], t["exit_date"]) for t in main] == \
+           [(t["ticker"], t["entry_date"], t["exit_date"]) for t in base["trades"]]
+    assert r["benchmark"] == base["benchmark"]
+    assert "by_sleeve" not in base["analysis"]
+    # 枠の上限が1銘柄なら、同じ日に条件を満たした2銘柄のうち1つしか持たない
+    one = backtest.run(frames, {**RULES, "sleeves": {"dip": {**DIP, "tickers": ["CHIP", "FAIL"]}}}, start, end, **kw)
+    opened = sorted([(t["entry_date"], t["exit_date"]) for t in one["trades"] if t["sleeve"] == "dip"])
+    assert all(a[1] <= b[0] for a, b in zip(opened, opened[1:]))  # 保有期間が重ならない
+
+
+def test_rule_signals_with_dip_sleeve(tmp_path):
+    chip = crash_then_rebound()
+    hist = {"CHIP": chip.iloc[:326], "HELD": chip.iloc[:326], "UP": rise_then_crash(326, 0)}
+    rule_set = {**RULES, "sleeves": {"dip": {**DIP, "tickers": ["CHIP", "HELD"]}}}
+    day = hist["CHIP"].index[-1].date()
+    prices = {t: float(df["Close"].iloc[-1]) for t, df in hist.items()}
+    watch = [{"ticker": "CHIP"}, {"ticker": "UP"}]
+    sig = cli.rule_signals(Portfolio(cash=1_000_000), hist, prices, FX, 1_000_000, watch, rule_set, SETTINGS, day)
+    dip = [e for e in sig["entries"] if e.get("sleeve") == "dip"]
+    assert [e["ticker"] for e in dip] == ["CHIP"] and dip[0]["ok"]  # 別枠は対象銘柄だけ
+    assert dip[0]["suggested_qty"] == int(0.1 * 1_000_000 // (prices["CHIP"] * 150))
+    main = {e["ticker"]: e for e in sig["entries"] if "sleeve" not in e}
+    assert not main["CHIP"]["ok"]  # 本体 (順張り) では急落した銘柄は買い条件を満たさない
+    assert sig["sleeve_slots"] == {"dip": 1}
+
+    # 別枠で買った保有は別枠の損切り幅で判定する: 取得 160 → 終値 約144 (-9.9%) は本体なら損切り、別枠は継続
+    pos = {"qty": 10, "avg_cost": 160.0, "currency": "USD", "opened": day.isoformat(), "took_profit": False}
+    pf = Portfolio(cash=0, positions={"HELD": {**pos, "sleeve": "dip"}})
+    sig = cli.rule_signals(pf, hist, prices, FX, 1_000_000, watch, rule_set, SETTINGS, day)
+    assert sig["exits"][0]["signal"] is None and sig["exits"][0]["sleeve"] == "dip"
+    assert sig["sleeve_slots"] == {"dip": 0} and sig["open_slots"] == RULES["sizing"]["max_positions"]
+    pf = Portfolio(cash=0, positions={"HELD": pos})
+    assert cli.rule_signals(pf, hist, prices, FX, 1_000_000, watch, rule_set, SETTINGS, day)["exits"][0]["signal"] == "stop_loss"
+    assert "sleeve_slots" not in cli.rule_signals(pf, hist, prices, FX, 1_000_000, watch, RULES, SETTINGS, day)
+
+
+def test_record_tags_sleeve_and_sync_keeps_it(tmp_path):
+    root = make_root(tmp_path, "manual")
+    frames = frames_for()
+    day = frames["MSFT"].index[-1].date()
+    cli.cmd_record(root, FakeData(frames), day, "MSFT", "buy", 1, 400.0, 150.0, 0.0, sleeve="dip")
+    cli.cmd_record(root, FakeData(frames), day, "7203.T", "buy", 10, 1500.0, None, 0.0)
+    pf = Portfolio.load(root / "state" / "portfolio.json")
+    assert pf.positions["MSFT"]["sleeve"] == "dip" and "sleeve" not in pf.positions["7203.T"]
+    src = root / "s.yaml"
+    src.write_text(yaml.safe_dump({"cash_jpy": 0, "positions": {"MSFT": {"qty": 1, "avg_cost": 400},
+                                                               "7203.T": {"qty": 10, "avg_cost": 1500}}}))
+    cli.cmd_sync(root, day, src)
+    pf = Portfolio.load(root / "state" / "portfolio.json")
+    assert pf.positions["MSFT"]["sleeve"] == "dip" and "sleeve" not in pf.positions["7203.T"]
+
+
+def test_drawdown_peak_uses_recent_window(tmp_path):
+    from trader.portfolio import append_journal, recent_peak, record_equity
+    eq, journal = tmp_path / "equity.csv", tmp_path / "trades.csv"
+    for day, v in [("2025-01-10", 1_000_000), ("2025-06-01", 800_000), ("2026-02-01", 820_000)]:
+        record_equity(eq, day, 0, v)
+    assert recent_peak(eq, journal, "2025-06-01", 365) == 1_000_000  # -20%: 停止
+    assert recent_peak(eq, journal, "2026-02-01", 365) == 820_000  # 1年たつと古い最高値が外れ、再開できる
+    assert recent_peak(eq, journal, "2026-02-01", 365, since="2026-02-01") == 820_000
+    # 出金は値下がりと見なさない: 出金より前の日の資産から同じ額を引いて比べる
+    append_journal(journal, [{"date": "2025-03-01", "ticker": "CASH", "status": "cashflow", "price": -100_000}])
+    assert recent_peak(eq, journal, "2025-06-01", 365) == 900_000
+
+
+def test_backtest_drawdown_halt_resumes_only_with_window():
+    from trader import backtest
+    n = 900
+    wave = 2 * np.sin(np.arange(n))
+    # 上昇 → 急落 (保有はすべて損切り) → 長い上昇
+    path = np.concatenate([np.linspace(100, 160, 300), np.linspace(160, 80, 20), np.linspace(80, 200, n - 320)]) + wave
+    frames = {t: bars(path, start="2018-01-01") for t in ["A", "B", "C"]}
+    rs = {**RULES, "entry": {"require_trend": True, "max_rsi": 101}, "exit": {"stop_loss": 0.08},
+          "sizing": {"max_positions": 3, "target_weight": 0.3, "rank_by": "ret_60d"}}
+    start, end = frames["A"].index[220].date(), frames["A"].index[-1].date()
+    run = lambda halt: backtest.run(frames, rs, start, end, slippage_bps=0, halt=halt)
+    free, forever, window = run(None), run({"pct": 0.15}), run({"pct": 0.15, "window_days": 365})
+    crash = frames["A"].index[320]
+    after = lambda r: [t for t in r["trades"] if pd.Timestamp(t["entry_date"]) > crash] + r["open_positions"]
+    assert after(free) and not after(forever)  # 全期間の最高値だと、現金だけになったあと二度と買えない
+    assert forever["metrics"]["halt_days"] > window["metrics"]["halt_days"] > 0
+    assert after(window)  # 直近1年の最高値なら、時間がたてば再開する
+    assert "halt_days" not in free["metrics"]
