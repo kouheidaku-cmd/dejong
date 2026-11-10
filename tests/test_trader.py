@@ -118,12 +118,14 @@ def test_risk_rules():
     )
     assert buy is None and sell is None
 
-    # ドローダウン超過中は買いだけ止まる
+    # ドローダウン停止を設定していれば、超過中は買いだけ止まる。設定なし (null) なら止まらない
     pf.cash, pf.peak_equity = 200_000, 1_000_000
-    [(_, buy), (_, sell)] = check_orders(
-        [o(ticker="6758.T", qty=10), o(ticker="7203.T", qty=100, side="sell")], pf, prices, FX, wl, SETTINGS
-    )
+    orders = [o(ticker="6758.T", qty=10), o(ticker="7203.T", qty=100, side="sell")]
+    halting = {**SETTINGS, "risk": {**SETTINGS["risk"], "max_drawdown_pct": 0.15}}
+    [(_, buy), (_, sell)] = check_orders(orders, pf, prices, FX, wl, halting)
     assert "ドローダウン" in buy and sell is None
+    off = {**SETTINGS, "risk": {**SETTINGS["risk"], "max_drawdown_pct": None}}
+    assert [r for _, r in check_orders(orders, pf, prices, FX, wl, off)] == [None, None]
 
     [(_, r)] = check_orders([o(ticker="6758.T", qty=10)], pf, prices, FX, wl, SETTINGS, stopped=True)
     assert "STOP" in r
