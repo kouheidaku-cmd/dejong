@@ -10,6 +10,7 @@
   python -m trader screen               週次: 母集団をスクリーニング
   python -m trader backtest             config/rules.yaml のルールを過去の日足で仮想売買
   python -m trader yearly RULES...      暦年ごとに独立して走らせ、指数 50/50 と比べる
+  python -m trader phases RULES...      採用の基準: 12通りの年の区切りで、同じ持ち高の指数と比べる
   python -m trader forward              決めた日以降の実データでルールを記録 (フォワードテスト)
 """
 from __future__ import annotations
@@ -26,7 +27,7 @@ import pandas as pd
 from . import backtest, config, indicators, rules
 from .broker import get_broker
 from .data import CachedData, MarketData, YahooData, fx_rates, last_closes
-from .portfolio import Portfolio, append_journal, apply_fill, record_equity
+from .portfolio import Portfolio, append_journal, apply_fill, recent_peak, record_equity
 from .risk import check_orders
 
 
@@ -71,8 +72,12 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
 
     prices = last_closes(hist)
     equity = pf.equity(prices, fx)
-    pf.peak_equity = max(pf.peak_equity, equity)
     record_equity(p.equity, day.isoformat(), pf.cash, equity)
+    window = settings["risk"].get("drawdown_window_days")
+    if window:  # ドローダウンは直近 window 日の最高値から測る (止まっても時間がたてば再開できる)
+        pf.peak_equity = max(recent_peak(p.equity, p.journal, day.isoformat(), window, pf.peak_since), equity)
+    else:
+        pf.peak_equity = max(pf.peak_equity, equity)
     pf.save(p.portfolio)
 
     rule_set = rules.load_rules(root / "config" / "rules.yaml")
@@ -302,6 +307,7 @@ def cmd_sync(root: Path, day: date, source: Path) -> dict:
                           "qty": abs(d), "status": "sync", "rationale": f"口座との照合 ({source.name})"})
     if spec.get("reset_peak"):
         pf.peak_equity = 0.0  # 次の prep で現在の総資産になる (入出金があったとき用)
+        pf.peak_since = day.isoformat()  # これより前の資産推移は最高値に使わない
     pf.save(p.portfolio)
     append_journal(p.journal, diffs)
     return {"cash_before": round(cash_before), "cash_after": round(pf.cash), "position_changes": diffs}
@@ -366,8 +372,7 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
     first = min(df.index[0] for df in base) + pd.Timedelta(days=300)  # SMA200 のウォームアップ
     last = max(df.index[-1] for df in base)
     split_ts = pd.Timestamp(split) if split else first + (last - first) * 0.7
-    ex = settings.get("execution", {})
-    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+    kw = _run_kw(settings)
 
     market = market_regimes(data, frames, rule_set, settings, years * 365 + 300)
     earnings = earnings_for(data, frames, rule_set)
@@ -389,6 +394,15 @@ def cmd_backtest(root: Path, data: MarketData, rules_path: Path, years: int, spl
             "by_exit_reason": an.get("by_exit_reason")} | ({"by_sleeve": an["by_sleeve"]} if an.get("by_sleeve") else {})
     result["output"] = str(out_dir)
     return result
+
+
+def _run_kw(settings: dict) -> dict:
+    """仮想売買の条件を settings.yaml から作る: 約定コストと、実際の口座と同じドローダウン停止。"""
+    ex, r = settings.get("execution", {}), settings.get("risk", {})
+    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+    if r.get("max_drawdown_pct"):
+        kw["halt"] = {"pct": r["max_drawdown_pct"], "window_days": r.get("drawdown_window_days")}
+    return kw
 
 
 def _with_sleeves(universe: list[str], rule_sets: list[dict]) -> list[str]:
@@ -447,8 +461,7 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
         last = min(last, pd.Timestamp(until))
     warm = first + pd.Timedelta(days=380)  # SMA200 と12か月モメンタムのウォームアップ
     first_year = warm.year if warm.month == 1 and warm.day <= 15 else warm.year + 1
-    ex = settings.get("execution", {})
-    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+    kw = _run_kw(settings)
 
     windows = [(pd.Timestamp(y, 1, 1), min(pd.Timestamp(y, 12, 31), last)) for y in range(first_year, last.year + 1)]
     out = {"until": last.date().isoformat(), "index_50_50": {}, "rules": {}}
@@ -494,6 +507,77 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
     return out
 
 
+def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int, name: str) -> dict:
+    """採用の基準の計算: 1年の区切りを1月〜12月始まりの12通りに変えて、同じ持ち高の指数と比べる。
+
+    区切りごとに、丸1年ある期間をそれぞれ独立に100万円から走らせる。「同じ持ち高の指数」は、指数 50/50 を
+    その期間のルールの平均の株の比率だけ持ち、残りを現金にしたもの (株を持つ量が少ないだけの差を除く)。
+    最初のルールを現行として、2つ目以降はそれとも比べる。
+    """
+    days = years * 365 + 300
+    universe = config.load_universe(root)
+    rule_list = [rules.load_rules(rp) for rp in rules_paths]
+    all_frames, settings = _load_frames(root, data, _with_sleeves(universe, rule_list), days)
+    base = [df for t, df in all_frames.items() if t in universe]
+    warm = min(df.index[0] for df in base) + pd.Timedelta(days=380)
+    last = max(df.index[-1] for df in base)
+    kw = _run_kw(settings)
+    year = pd.DateOffset(years=1)
+
+    phases = {}
+    for m in range(1, 13):
+        a = pd.Timestamp(warm.year + (pd.Timestamp(warm.year, m, 1) < warm), m, 1)
+        phases[m] = []
+        while a + year - pd.Timedelta(days=1) <= last:
+            phases[m].append((a, a + year - pd.Timedelta(days=1)))
+            a += year
+    index = {w: index_blend_curve(data, days, *w).pct_change().fillna(0) for ws in phases.values() for w in ws}
+
+    def summary(rets, dds):
+        return {"positive_years": int(sum(r > 0 for r in rets)), "worst_year": backtest._r(min(rets)),
+                "chained_return": backtest._r(np.prod([1 + r for r in rets]) - 1), "avg_max_drawdown": backtest._r(np.mean(dds))}
+
+    def held(w, k):  # 指数を資産の k 倍だけ持ち、残りは現金 (毎日その比率に戻す)
+        c = (1 + k * index[w]).cumprod()
+        return c.iloc[-1] - 1, (1 - c / c.cummax()).max()
+
+    out = {"until": last.date().isoformat(), "halt": kw.get("halt"), "rules": {}}
+    for rp, rule_set in zip(rules_paths, rule_list):
+        frames, main_tickers = _scope(all_frames, universe, rule_set)
+        market = market_regimes(data, frames, rule_set, settings, days)
+        earnings = earnings_for(data, frames, rule_set)
+        per = {}
+        for m, ws in phases.items():
+            ms = [backtest.run(frames, rule_set, a.date(), b.date(), market=market, earnings=earnings,
+                               main_tickers=main_tickers, **kw)["metrics"] for a, b in ws]
+            matched = [held(w, x["exposure"]) for w, x in zip(ws, ms)]
+            full = [held(w, 1.0) for w in ws]
+            row = {"years": len(ws), "exposure": backtest._r(np.mean([x["exposure"] for x in ms])),
+                   "rule": summary([x["total_return"] for x in ms], [x["max_drawdown"] for x in ms]),
+                   "index_same_exposure": summary(*zip(*matched)), "index": summary(*zip(*full))}
+            r, i = row["rule"], row["index_same_exposure"]
+            row["beats_index_same_exposure"] = bool(r["chained_return"] > i["chained_return"]
+                                                    and r["avg_max_drawdown"] <= i["avg_max_drawdown"])
+            per[m] = row
+        out["rules"][rp.stem] = {"phases": per, "beats_index_same_exposure": sum(v["beats_index_same_exposure"] for v in per.values())}
+    names = list(out["rules"])
+    cur = out["rules"][names[0]]["phases"]
+    for n in names[1:]:
+        ph = out["rules"][n]["phases"]
+        out["rules"][n]["vs_" + names[0]] = {
+            "return_higher": sum(ph[m]["rule"]["chained_return"] > cur[m]["rule"]["chained_return"] for m in ph),
+            "drawdown_not_larger": sum(ph[m]["rule"]["avg_max_drawdown"] <= cur[m]["rule"]["avg_max_drawdown"] for m in ph),
+            "avg_drawdown_diff": backtest._r(np.mean([ph[m]["rule"]["avg_max_drawdown"] - cur[m]["rule"]["avg_max_drawdown"] for m in ph]))}
+    out_dir = root / "reports" / "backtest" / name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(out_dir / "phases.json", out)
+    brief = {"until": out["until"], "halt": out["halt"], "output": str(out_dir), "rules": {}}
+    for n, v in out["rules"].items():  # 画面には要点だけ出す
+        brief["rules"][n] = {k: x for k, x in v.items() if k != "phases"} | {
+            "phases": {m: {"rule": x["rule"], "index_same_exposure": x["index_same_exposure"]} for m, x in v["phases"].items()}}
+    return brief
+
+
 def cmd_forward(root: Path, data: MarketData) -> dict:
     """config/forward.yaml のルールを、start の日から最新のデータまで仮想売買する (毎回最初から計算し直す)。"""
     spec = config.load_yaml(root / "config" / "forward.yaml")
@@ -503,8 +587,7 @@ def cmd_forward(root: Path, data: MarketData) -> dict:
     rule_list = [rules.load_rules(root / item["path"]) for item in spec["rules"]]
     all_frames, settings = _load_frames(root, data, _with_sleeves(universe, rule_list), days)
     last = max(df.index[-1] for df in all_frames.values())
-    ex = settings.get("execution", {})
-    kw = {"slippage_bps": ex.get("slippage_bps", 10), "commission_bps": ex.get("commission_bps", 0)}
+    kw = _run_kw(settings)
 
     out = {"start": start.date().isoformat(), "until": last.date().isoformat(), "rules": {}}
     for item, rule_set in zip(spec["rules"], rule_list):
@@ -577,6 +660,10 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--tickers", nargs="+", help="既定: config/universe.yaml")
     s.add_argument("--name", help="出力先 reports/backtest/<name> (既定: 日付-ルール名)")
     sub.add_parser("forward", help="config/forward.yaml のルールを、決めた日以降の実データで記録する")
+    s = sub.add_parser("phases", help="採用の基準: 12通りの年の区切りで、同じ持ち高の指数・現行ルールと比べる")
+    s.add_argument("rules", type=Path, nargs="+", help="ルールファイル (最初が現行)")
+    s.add_argument("--years", type=int, default=9)
+    s.add_argument("--name", required=True, help="出力先 reports/backtest/<name>")
     s = sub.add_parser("yearly", help="暦年ごとに独立して走らせ、指数 50/50 と比べる")
     s.add_argument("rules", type=Path, nargs="+", help="比較するルールファイル")
     s.add_argument("--years", type=int, default=8)
@@ -604,6 +691,8 @@ def main(argv: list[str] | None = None) -> None:
         out = cmd_status(root, data)
     elif args.cmd == "forward":
         out = cmd_forward(root, CachedData(data, root / "data" / "cache"))
+    elif args.cmd == "phases":
+        out = cmd_phases(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.name)
     elif args.cmd == "yearly":
         out = cmd_yearly(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.until, args.name)
     elif args.cmd == "screen":

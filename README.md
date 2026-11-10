@@ -39,7 +39,7 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 | 人 | 発注、ルール変更の了承 (`strategy.md`・`rules.yaml`・`settings.yaml`)、緊急停止 (`STOP`) |
 
 `trader/risk.py` がコードとして強制する主なルール: 1銘柄25%まで / 買付後に現金5%以上 /
-ドローダウン15%で新規買い停止 / ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
+直近365日の最高値から15%下げたら新規買い停止 (バックテストにも同じ停止が入る) / ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
 
 ## ディレクトリ
 
@@ -80,6 +80,7 @@ python -m trader screen                                 # 週次スクリーニ�
 python -m trader backtest --years 8                     # 過去データで仮想売買 (学習/検証に分割)
 python -m trader backtest --rules rules/candidates/x.yaml --name x
 python -m trader yearly config/rules.yaml rules/candidates/x.yaml --name y   # 暦年ごとに比較 (指数50/50つき)
+python -m trader phases config/rules.yaml rules/candidates/x.yaml --name z   # 採用の基準 (12通りの区切り・同じ持ち高の指数)
 python -m trader forward                                # 決めた日以降の実データで記録 (フォワードテスト)
 python -m pytest -q
 ```

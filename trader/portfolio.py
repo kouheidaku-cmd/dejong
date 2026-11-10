@@ -23,6 +23,7 @@ class Portfolio:
     peak_equity: float = 0.0
     next_order_id: int = 1
     other_assets: float = 0.0  # 投資信託など売買対象外の資産 (表示用)
+    peak_since: str | None = None  # この日より前の資産推移はドローダウンの最高値に使わない (sync の reset_peak で入る)
 
     @classmethod
     def load(cls, path: Path) -> "Portfolio":
@@ -96,6 +97,28 @@ def append_journal(path: Path, events: list[dict]) -> None:
         if new:
             w.writeheader()
         w.writerows(events)
+
+
+def recent_peak(equity_path: Path, journal_path: Path, day: str, window_days: int, since: str | None = None) -> float:
+    """直近 window_days 日 (暦日、day を含む) の総資産の最高値。ドローダウン停止の基準になる。
+
+    古い最高値は窓から外れていくので、停止しても時間がたてば再開できる。
+    途中の入出金 (trades.csv の cashflow) は、それより前の日の資産に足し引きして、出金を値下がりと見なさない。
+    """
+    from datetime import date, timedelta
+    start = (date.fromisoformat(day) - timedelta(days=window_days)).isoformat()
+    start = max(start, since) if since else start
+    flows = []
+    if journal_path.exists():
+        with open(journal_path, encoding="utf-8") as f:
+            flows = [(r["date"], float(r["price"])) for r in csv.DictReader(f) if r["status"] == "cashflow"]
+    best = 0.0
+    if equity_path.exists():
+        with open(equity_path, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if start <= r["date"] <= day:
+                    best = max(best, float(r["equity"]) + sum(a for d, a in flows if d > r["date"]))
+    return best
 
 
 def record_equity(path: Path, day: str, cash: float, equity: float) -> None:

@@ -571,3 +571,36 @@ def test_record_tags_sleeve_and_sync_keeps_it(tmp_path):
     cli.cmd_sync(root, day, src)
     pf = Portfolio.load(root / "state" / "portfolio.json")
     assert pf.positions["MSFT"]["sleeve"] == "dip" and "sleeve" not in pf.positions["7203.T"]
+
+
+def test_drawdown_peak_uses_recent_window(tmp_path):
+    from trader.portfolio import append_journal, recent_peak, record_equity
+    eq, journal = tmp_path / "equity.csv", tmp_path / "trades.csv"
+    for day, v in [("2025-01-10", 1_000_000), ("2025-06-01", 800_000), ("2026-02-01", 820_000)]:
+        record_equity(eq, day, 0, v)
+    assert recent_peak(eq, journal, "2025-06-01", 365) == 1_000_000  # -20%: 停止
+    assert recent_peak(eq, journal, "2026-02-01", 365) == 820_000  # 1年たつと古い最高値が外れ、再開できる
+    assert recent_peak(eq, journal, "2026-02-01", 365, since="2026-02-01") == 820_000
+    # 出金は値下がりと見なさない: 出金より前の日の資産から同じ額を引いて比べる
+    append_journal(journal, [{"date": "2025-03-01", "ticker": "CASH", "status": "cashflow", "price": -100_000}])
+    assert recent_peak(eq, journal, "2025-06-01", 365) == 900_000
+
+
+def test_backtest_drawdown_halt_resumes_only_with_window():
+    from trader import backtest
+    n = 900
+    wave = 2 * np.sin(np.arange(n))
+    # 上昇 → 急落 (保有はすべて損切り) → 長い上昇
+    path = np.concatenate([np.linspace(100, 160, 300), np.linspace(160, 80, 20), np.linspace(80, 200, n - 320)]) + wave
+    frames = {t: bars(path, start="2018-01-01") for t in ["A", "B", "C"]}
+    rs = {**RULES, "entry": {"require_trend": True, "max_rsi": 101}, "exit": {"stop_loss": 0.08},
+          "sizing": {"max_positions": 3, "target_weight": 0.3, "rank_by": "ret_60d"}}
+    start, end = frames["A"].index[220].date(), frames["A"].index[-1].date()
+    run = lambda halt: backtest.run(frames, rs, start, end, slippage_bps=0, halt=halt)
+    free, forever, window = run(None), run({"pct": 0.15}), run({"pct": 0.15, "window_days": 365})
+    crash = frames["A"].index[320]
+    after = lambda r: [t for t in r["trades"] if pd.Timestamp(t["entry_date"]) > crash] + r["open_positions"]
+    assert after(free) and not after(forever)  # 全期間の最高値だと、現金だけになったあと二度と買えない
+    assert forever["metrics"]["halt_days"] > window["metrics"]["halt_days"] > 0
+    assert after(window)  # 直近1年の最高値なら、時間がたてば再開する
+    assert "halt_days" not in free["metrics"]

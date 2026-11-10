@@ -18,6 +18,7 @@ risk:
   min_cash_pct: 0.05         # 買付後に残す現金比率
   max_orders_per_day: 5
   max_drawdown_pct: 0.15     # 最高値からこれ以上下落したら新規買いを停止 (売りは可)
+  drawdown_window_days: 365  # 「最高値」は直近この日数 (暦日) のもの。止まっても、古い最高値が外れれば再開する (2026-11-10 から)
   price_buffer: 0.03         # 成行の見積りに使う不利方向の価格変動幅
   max_limit_deviation: 0.10  # 指値が前日終値から離れすぎていたら拒否
 

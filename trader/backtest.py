@@ -37,11 +37,13 @@ def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], 
 def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0,
         market: dict[str, pd.Series] | None = None, earnings: dict[str, list] | None = None,
-        main_tickers: set[str] | None = None) -> dict:
+        main_tickers: set[str] | None = None, halt: dict | None = None) -> dict:
     """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。
     earnings: 銘柄ごとの過去の決算日。rules の earnings を使うときに渡す (ない銘柄は決算の判定をしない)。
     main_tickers: 本体のルールで買う銘柄 (None なら frames の全部)。別枠 (sleeves) だけの銘柄を frames に
-    足したときに渡すと、本体の売買とベンチマークは別枠なしのときと同じ母集団のままになる。"""
+    足したときに渡すと、本体の売買とベンチマークは別枠なしのときと同じ母集団のままになる。
+    halt: ドローダウン停止 (settings.yaml の risk と同じ動き)。{"pct": 0.15, "window_days": 365} なら、
+    直近365日の最高値から 15% 以上下げている日は新規買いを出さない (window_days がなければ全期間の最高値)。"""
     slip, comm = slippage_bps / 10_000, commission_bps / 10_000
     feats = {}
     for t, df in frames.items():
@@ -60,6 +62,7 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
     pos: dict[str, dict] = {}
     orders: list[dict] = []
     trades, curve, last_close, last_row = [], [], {}, {}
+    halt_days = 0
 
     for d in dates:
         # 1. 前日のシグナルを寄付きで約定 (売りが先)
@@ -105,10 +108,13 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
             if d in f:
                 last_row[t] = f[d]
         if rotation:
-            if d in month_ends:
-                orders += _rotation_orders(last_row, pos, orders, equity, rules)
+            new = _rotation_orders(last_row, pos, orders, equity, rules) if d in month_ends else []
         else:
-            orders += _swing_orders(d, feats, pos, orders, equity, rules, main_tickers)
+            new = _swing_orders(d, feats, pos, orders, equity, rules, main_tickers)
+        if halt and 1 - equity / _recent_peak(curve, d, halt.get("window_days")) >= halt["pct"]:
+            halt_days += 1
+            new = [o for o in new if o["side"] == "sell"]  # 停止中は売りだけ
+        orders += new
 
     eq = pd.DataFrame(curve).set_index("date") if curve else pd.DataFrame(columns=["equity", "invested"])
     open_positions = [
@@ -120,7 +126,7 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
                       start_ts, end_ts)
     return {
         "period": {"start": start.isoformat(), "end": end.isoformat(), "days": len(dates)},
-        "metrics": metrics(eq, trades, initial_cash),
+        "metrics": metrics(eq, trades, initial_cash) | ({"halt_days": halt_days} if halt else {}),
         "benchmark": benchmark(bh),
         "yearly": yearly(eq["equity"] / initial_cash if not eq.empty else pd.Series(dtype=float), bh),
         "analysis": analyze(trades),
@@ -128,6 +134,19 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         "trades": trades,
         "equity_curve": eq,
     }
+
+
+def _recent_peak(curve: list[dict], d, window_days: int | None) -> float:
+    """直近 window_days 日 (暦日、当日を含む) の総資産の最高値。None なら最初からの最高値。"""
+    if window_days is None:
+        return max(c["equity"] for c in curve)
+    start = d - pd.Timedelta(days=window_days)
+    best = 0.0
+    for c in reversed(curve):
+        if c["date"] < start:
+            break
+        best = max(best, c["equity"])
+    return best
 
 
 ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1", "drop_120")
