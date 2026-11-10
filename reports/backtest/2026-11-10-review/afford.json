@@ -1,0 +1,458 @@
+{
+  "equity": 401390,
+  "target_yen": 48167,
+  "cap_yen": 100347,
+  "fx": 158.11,
+  "buyable_at_target": 44,
+  "of": 61,
+  "one_share_within_cap": 57,
+  "not_buyable": [
+    "6861.T",
+    "9983.T",
+    "6273.T",
+    "AAPL",
+    "MSFT",
+    "META",
+    "AVGO",
+    "TSLA",
+    "BRK-B",
+    "JPM",
+    "V",
+    "MA",
+    "LLY",
+    "UNH",
+    "COST",
+    "HD",
+    "AMD"
+  ],
+  "avg_weight_of_buyable": 0.107,
+  "rows": [
+    {
+      "ticker": "7203.T",
+      "yen_per_share": 3414,
+      "qty_at_target": 14,
+      "weight": 0.119,
+      "within_cap": true
+    },
+    {
+      "ticker": "6758.T",
+      "yen_per_share": 4237,
+      "qty_at_target": 11,
+      "weight": 0.116,
+      "within_cap": true
+    },
+    {
+      "ticker": "9984.T",
+      "yen_per_share": 3872,
+      "qty_at_target": 12,
+      "weight": 0.116,
+      "within_cap": true
+    },
+    {
+      "ticker": "8306.T",
+      "yen_per_share": 3435,
+      "qty_at_target": 14,
+      "weight": 0.12,
+      "within_cap": true
+    },
+    {
+      "ticker": "8316.T",
+      "yen_per_share": 3228,
+      "qty_at_target": 14,
+      "weight": 0.113,
+      "within_cap": true
+    },
+    {
+      "ticker": "6861.T",
+      "yen_per_share": 75200,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "9983.T",
+      "yen_per_share": 81570,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "8035.T",
+      "yen_per_share": 9006,
+      "qty_at_target": 5,
+      "weight": 0.112,
+      "within_cap": true
+    },
+    {
+      "ticker": "6098.T",
+      "yen_per_share": 17960,
+      "qty_at_target": 2,
+      "weight": 0.089,
+      "within_cap": true
+    },
+    {
+      "ticker": "4063.T",
+      "yen_per_share": 5658,
+      "qty_at_target": 8,
+      "weight": 0.113,
+      "within_cap": true
+    },
+    {
+      "ticker": "9432.T",
+      "yen_per_share": 164,
+      "qty_at_target": 292,
+      "weight": 0.12,
+      "within_cap": true
+    },
+    {
+      "ticker": "9433.T",
+      "yen_per_share": 2839,
+      "qty_at_target": 16,
+      "weight": 0.113,
+      "within_cap": true
+    },
+    {
+      "ticker": "9434.T",
+      "yen_per_share": 234,
+      "qty_at_target": 206,
+      "weight": 0.12,
+      "within_cap": true
+    },
+    {
+      "ticker": "8058.T",
+      "yen_per_share": 5311,
+      "qty_at_target": 9,
+      "weight": 0.119,
+      "within_cap": true
+    },
+    {
+      "ticker": "8001.T",
+      "yen_per_share": 2356,
+      "qty_at_target": 20,
+      "weight": 0.117,
+      "within_cap": true
+    },
+    {
+      "ticker": "8031.T",
+      "yen_per_share": 4979,
+      "qty_at_target": 9,
+      "weight": 0.112,
+      "within_cap": true
+    },
+    {
+      "ticker": "7974.T",
+      "yen_per_share": 8452,
+      "qty_at_target": 5,
+      "weight": 0.105,
+      "within_cap": true
+    },
+    {
+      "ticker": "6501.T",
+      "yen_per_share": 4864,
+      "qty_at_target": 9,
+      "weight": 0.109,
+      "within_cap": true
+    },
+    {
+      "ticker": "6702.T",
+      "yen_per_share": 3440,
+      "qty_at_target": 14,
+      "weight": 0.12,
+      "within_cap": true
+    },
+    {
+      "ticker": "4502.T",
+      "yen_per_share": 6593,
+      "qty_at_target": 7,
+      "weight": 0.115,
+      "within_cap": true
+    },
+    {
+      "ticker": "4568.T",
+      "yen_per_share": 2804,
+      "qty_at_target": 17,
+      "weight": 0.119,
+      "within_cap": true
+    },
+    {
+      "ticker": "4519.T",
+      "yen_per_share": 7162,
+      "qty_at_target": 6,
+      "weight": 0.107,
+      "within_cap": true
+    },
+    {
+      "ticker": "6367.T",
+      "yen_per_share": 22930,
+      "qty_at_target": 2,
+      "weight": 0.114,
+      "within_cap": true
+    },
+    {
+      "ticker": "7267.T",
+      "yen_per_share": 1853,
+      "qty_at_target": 25,
+      "weight": 0.115,
+      "within_cap": true
+    },
+    {
+      "ticker": "6902.T",
+      "yen_per_share": 1911,
+      "qty_at_target": 25,
+      "weight": 0.119,
+      "within_cap": true
+    },
+    {
+      "ticker": "6954.T",
+      "yen_per_share": 5530,
+      "qty_at_target": 8,
+      "weight": 0.11,
+      "within_cap": true
+    },
+    {
+      "ticker": "6981.T",
+      "yen_per_share": 5274,
+      "qty_at_target": 9,
+      "weight": 0.118,
+      "within_cap": true
+    },
+    {
+      "ticker": "6273.T",
+      "yen_per_share": 60160,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "6146.T",
+      "yen_per_share": 45320,
+      "qty_at_target": 1,
+      "weight": 0.113,
+      "within_cap": true
+    },
+    {
+      "ticker": "7741.T",
+      "yen_per_share": 23515,
+      "qty_at_target": 2,
+      "weight": 0.117,
+      "within_cap": true
+    },
+    {
+      "ticker": "8766.T",
+      "yen_per_share": 584,
+      "qty_at_target": 82,
+      "weight": 0.119,
+      "within_cap": true
+    },
+    {
+      "ticker": "AAPL",
+      "yen_per_share": 55449,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "MSFT",
+      "yen_per_share": 86201,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "NVDA",
+      "yen_per_share": 28250,
+      "qty_at_target": 1,
+      "weight": 0.07,
+      "within_cap": true
+    },
+    {
+      "ticker": "AMZN",
+      "yen_per_share": 42205,
+      "qty_at_target": 1,
+      "weight": 0.105,
+      "within_cap": true
+    },
+    {
+      "ticker": "GOOGL",
+      "yen_per_share": 45561,
+      "qty_at_target": 1,
+      "weight": 0.114,
+      "within_cap": true
+    },
+    {
+      "ticker": "META",
+      "yen_per_share": 101410,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": false
+    },
+    {
+      "ticker": "AVGO",
+      "yen_per_share": 50514,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "TSLA",
+      "yen_per_share": 59775,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "BRK-B",
+      "yen_per_share": 90955,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "JPM",
+      "yen_per_share": 54088,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "V",
+      "yen_per_share": 66749,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "MA",
+      "yen_per_share": 103693,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": false
+    },
+    {
+      "ticker": "LLY",
+      "yen_per_share": 223249,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": false
+    },
+    {
+      "ticker": "UNH",
+      "yen_per_share": 62869,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "XOM",
+      "yen_per_share": 26046,
+      "qty_at_target": 1,
+      "weight": 0.065,
+      "within_cap": true
+    },
+    {
+      "ticker": "COST",
+      "yen_per_share": 168578,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": false
+    },
+    {
+      "ticker": "WMT",
+      "yen_per_share": 19869,
+      "qty_at_target": 2,
+      "weight": 0.099,
+      "within_cap": true
+    },
+    {
+      "ticker": "HD",
+      "yen_per_share": 55881,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "PG",
+      "yen_per_share": 26614,
+      "qty_at_target": 1,
+      "weight": 0.066,
+      "within_cap": true
+    },
+    {
+      "ticker": "KO",
+      "yen_per_share": 15184,
+      "qty_at_target": 3,
+      "weight": 0.113,
+      "within_cap": true
+    },
+    {
+      "ticker": "NFLX",
+      "yen_per_share": 10111,
+      "qty_at_target": 4,
+      "weight": 0.101,
+      "within_cap": true
+    },
+    {
+      "ticker": "AMD",
+      "yen_per_share": 80414,
+      "qty_at_target": 0,
+      "weight": null,
+      "within_cap": true
+    },
+    {
+      "ticker": "ORCL",
+      "yen_per_share": 18940,
+      "qty_at_target": 2,
+      "weight": 0.094,
+      "within_cap": true
+    },
+    {
+      "ticker": "CRM",
+      "yen_per_share": 33985,
+      "qty_at_target": 1,
+      "weight": 0.085,
+      "within_cap": true
+    },
+    {
+      "ticker": "ADBE",
+      "yen_per_share": 37524,
+      "qty_at_target": 1,
+      "weight": 0.093,
+      "within_cap": true
+    },
+    {
+      "ticker": "CSCO",
+      "yen_per_share": 15598,
+      "qty_at_target": 3,
+      "weight": 0.117,
+      "within_cap": true
+    },
+    {
+      "ticker": "ABBV",
+      "yen_per_share": 46375,
+      "qty_at_target": 1,
+      "weight": 0.116,
+      "within_cap": true
+    },
+    {
+      "ticker": "MRK",
+      "yen_per_share": 23521,
+      "qty_at_target": 2,
+      "weight": 0.117,
+      "within_cap": true
+    },
+    {
+      "ticker": "VRT",
+      "yen_per_share": 31697,
+      "qty_at_target": 1,
+      "weight": 0.079,
+      "within_cap": true
+    },
+    {
+      "ticker": "ANET",
+      "yen_per_share": 29436,
+      "qty_at_target": 1,
+      "weight": 0.073,
+      "within_cap": true
+    }
+  ]
+}

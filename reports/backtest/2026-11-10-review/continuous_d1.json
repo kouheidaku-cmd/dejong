@@ -1,0 +1,38 @@
+{
+  "d1_100万": {
+    "total_return": 2.2448,
+    "cagr": 0.1586,
+    "vol": 0.1618,
+    "sharpe": 0.964,
+    "max_drawdown": 0.2956,
+    "exposure": 0.8064,
+    "trades": 344,
+    "by_sleeve": {
+      "dip": {
+        "trades": 134,
+        "total_pnl": 638726.6727
+      },
+      "main": {
+        "trades": 210,
+        "total_pnl": 1293635.975
+      }
+    }
+  },
+  "index_at_d1_exposure": {
+    "k": 0.8064,
+    "total_return": 1.6554,
+    "cagr": 0.1299,
+    "vol": 0.1344,
+    "sharpe": 0.949,
+    "max_drawdown": 0.2609
+  },
+  "d1_100万_停止15%": {
+    "total_return": -0.0586,
+    "cagr": -0.0075,
+    "vol": 0.0605,
+    "sharpe": -0.09,
+    "max_drawdown": 0.193,
+    "halt_days": 1736,
+    "trades": 48
+  }
+}
