@@ -28,6 +28,10 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 2. **機械ルール** (`rules.yaml`) — いつ買う・売る・何株。毎日のシグナルとバックテストが同じコード (`trader/rules.py`) を使う
 3. **裁量** — Claude はシグナルの見送りと、仮説が崩れたときの売りだけできる
 
+`rules.yaml` には `sleeves` (別枠) も書ける: 決まった銘柄だけに、本体と違う買い方・売り方を当てはめる枠
+(例: AI 半導体の押し目買い `entry.mode: dip`)。同時保有の数は枠ごと、現金は本体と共通。
+書き方は `rules/candidates/2026-11-10-d1-dip15-trend.yaml`、検証は `reports/rules/2026-11-10-dip.md` (今は採用していない)。
+
 | 担当 | 内容 |
 |---|---|
 | Claude (スキル) | 銘柄調査、投資仮説、売買判断、レポート、スクショの読み取り |
@@ -69,7 +73,7 @@ trader/           Python パッケージ
 pip install -r requirements.txt
 python -m trader prep                                  # 日次の準備
 python -m trader submit reports/daily/<日付>/orders.json
-python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録
+python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録 (別枠の買いは --sleeve dip を付ける)
 python -m trader sync state/sync/<日付>.yaml            # 保有一覧で上書き
 python -m trader status
 python -m trader screen                                 # 週次スクリーニング

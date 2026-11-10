@@ -18,3 +18,6 @@ rules:
   - name: swap-gap20
     path: rules/candidates/2026-10-24-w1-swap-gap20.yaml
     label: 参考 (v3 + 弱い保有の入れ替え。リターンは大きく上がったが下落の基準が未達。2026-10-24 から追加)
+  - name: dip15-trend
+    path: rules/candidates/2026-11-10-d1-dip15-trend.yaml
+    label: 参考 (v3 + AI 半導体の押し目買いの別枠。リターンは増えたが下落の基準が未達。2026-11-10 から追加なので 10/21〜11/10 の分は後付け)

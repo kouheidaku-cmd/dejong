@@ -1,0 +1,536 @@
+{
+  "until": "2026-11-09",
+  "index_50_50": {
+    "2019": {
+      "return": 0.2436,
+      "max_drawdown": 0.0903
+    },
+    "2020": {
+      "return": 0.1382,
+      "max_drawdown": 0.3134
+    },
+    "2021": {
+      "return": 0.2458,
+      "max_drawdown": 0.0553
+    },
+    "2022": {
+      "return": -0.0927,
+      "max_drawdown": 0.1418
+    },
+    "2023": {
+      "return": 0.325,
+      "max_drawdown": 0.0721
+    },
+    "2024": {
+      "return": 0.289,
+      "max_drawdown": 0.2078
+    },
+    "2025": {
+      "return": 0.2187,
+      "max_drawdown": 0.2259
+    },
+    "2026": {
+      "return": 0.1229,
+      "max_drawdown": 0.1307
+    }
+  },
+  "rules": {
+    "rules": {
+      "years": {
+        "2019": {
+          "return": 0.1426,
+          "max_drawdown": 0.0726,
+          "trades": 11
+        },
+        "2020": {
+          "return": 0.116,
+          "max_drawdown": 0.2365,
+          "trades": 41
+        },
+        "2021": {
+          "return": 0.2798,
+          "max_drawdown": 0.0743,
+          "trades": 25
+        },
+        "2022": {
+          "return": -0.0192,
+          "max_drawdown": 0.1493,
+          "trades": 34
+        },
+        "2023": {
+          "return": 0.276,
+          "max_drawdown": 0.0861,
+          "trades": 20
+        },
+        "2024": {
+          "return": 0.0662,
+          "max_drawdown": 0.2392,
+          "trades": 44
+        },
+        "2025": {
+          "return": -0.1086,
+          "max_drawdown": 0.2126,
+          "trades": 31
+        },
+        "2026": {
+          "return": 0.0911,
+          "max_drawdown": 0.1027,
+          "trades": 41
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.1086,
+      "chained_return": 1.1179,
+      "avg_max_drawdown": 0.1467
+    },
+    "2026-11-10-d1-dip15-trend": {
+      "years": {
+        "2019": {
+          "return": 0.2786,
+          "max_drawdown": 0.0823,
+          "trades": 16,
+          "by_sleeve": {
+            "dip": {
+              "trades": 7,
+              "total_pnl": 63435.2756
+            },
+            "main": {
+              "trades": 9,
+              "total_pnl": 18998.7735
+            }
+          }
+        },
+        "2020": {
+          "return": 0.274,
+          "max_drawdown": 0.2415,
+          "trades": 51,
+          "by_sleeve": {
+            "dip": {
+              "trades": 12,
+              "total_pnl": 63926.4451
+            },
+            "main": {
+              "trades": 39,
+              "total_pnl": 41036.5307
+            }
+          }
+        },
+        "2021": {
+          "return": 0.2744,
+          "max_drawdown": 0.0847,
+          "trades": 32,
+          "by_sleeve": {
+            "dip": {
+              "trades": 5,
+              "total_pnl": 98586.522
+            },
+            "main": {
+              "trades": 27,
+              "total_pnl": 32828.8962
+            }
+          }
+        },
+        "2022": {
+          "return": -0.0728,
+          "max_drawdown": 0.1941,
+          "trades": 50,
+          "by_sleeve": {
+            "dip": {
+              "trades": 16,
+              "total_pnl": -50306.9901
+            },
+            "main": {
+              "trades": 34,
+              "total_pnl": -102463.2812
+            }
+          }
+        },
+        "2023": {
+          "return": 0.3175,
+          "max_drawdown": 0.0877,
+          "trades": 28,
+          "by_sleeve": {
+            "dip": {
+              "trades": 8,
+              "total_pnl": -6240.6044
+            },
+            "main": {
+              "trades": 20,
+              "total_pnl": 93139.5863
+            }
+          }
+        },
+        "2024": {
+          "return": 0.0459,
+          "max_drawdown": 0.289,
+          "trades": 66,
+          "by_sleeve": {
+            "dip": {
+              "trades": 21,
+              "total_pnl": -16122.6138
+            },
+            "main": {
+              "trades": 45,
+              "total_pnl": 34674.6983
+            }
+          }
+        },
+        "2025": {
+          "return": -0.0769,
+          "max_drawdown": 0.2466,
+          "trades": 47,
+          "by_sleeve": {
+            "dip": {
+              "trades": 16,
+              "total_pnl": 6955.1174
+            },
+            "main": {
+              "trades": 31,
+              "total_pnl": -178616.5107
+            }
+          }
+        },
+        "2026": {
+          "return": 0.1245,
+          "max_drawdown": 0.1295,
+          "trades": 76,
+          "by_sleeve": {
+            "dip": {
+              "trades": 36,
+              "total_pnl": 52967.9348
+            },
+            "main": {
+              "trades": 40,
+              "total_pnl": -2789.9287
+            }
+          }
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.0769,
+      "chained_return": 1.7532,
+      "avg_max_drawdown": 0.1694
+    },
+    "2026-11-10-d2-dip25": {
+      "years": {
+        "2019": {
+          "return": 0.2524,
+          "max_drawdown": 0.0883,
+          "trades": 19,
+          "by_sleeve": {
+            "dip": {
+              "trades": 10,
+              "total_pnl": 65982.8812
+            },
+            "main": {
+              "trades": 9,
+              "total_pnl": 7057.2503
+            }
+          }
+        },
+        "2020": {
+          "return": 0.2884,
+          "max_drawdown": 0.2365,
+          "trades": 48,
+          "by_sleeve": {
+            "dip": {
+              "trades": 9,
+              "total_pnl": 109811.1491
+            },
+            "main": {
+              "trades": 39,
+              "total_pnl": 38103.5634
+            }
+          }
+        },
+        "2021": {
+          "return": 0.2798,
+          "max_drawdown": 0.0743,
+          "trades": 25
+        },
+        "2022": {
+          "return": -0.1029,
+          "max_drawdown": 0.1911,
+          "trades": 66,
+          "by_sleeve": {
+            "dip": {
+              "trades": 32,
+              "total_pnl": -55181.197
+            },
+            "main": {
+              "trades": 34,
+              "total_pnl": -120731.0137
+            }
+          }
+        },
+        "2023": {
+          "return": 0.3725,
+          "max_drawdown": 0.079,
+          "trades": 28,
+          "by_sleeve": {
+            "dip": {
+              "trades": 8,
+              "total_pnl": 34054.5574
+            },
+            "main": {
+              "trades": 20,
+              "total_pnl": 107199.7953
+            }
+          }
+        },
+        "2024": {
+          "return": 0.0467,
+          "max_drawdown": 0.2887,
+          "trades": 64,
+          "by_sleeve": {
+            "dip": {
+              "trades": 20,
+              "total_pnl": -891.5275
+            },
+            "main": {
+              "trades": 44,
+              "total_pnl": 15656.1876
+            }
+          }
+        },
+        "2025": {
+          "return": -0.0898,
+          "max_drawdown": 0.2509,
+          "trades": 52,
+          "by_sleeve": {
+            "dip": {
+              "trades": 22,
+              "total_pnl": 43266.8813
+            },
+            "main": {
+              "trades": 30,
+              "total_pnl": -184666.4847
+            }
+          }
+        },
+        "2026": {
+          "return": -0.0123,
+          "max_drawdown": 0.1336,
+          "trades": 66,
+          "by_sleeve": {
+            "dip": {
+              "trades": 25,
+              "total_pnl": -102671.242
+            },
+            "main": {
+              "trades": 41,
+              "total_pnl": 1370.9286
+            }
+          }
+        }
+      },
+      "positive_years": 5,
+      "worst_year": -0.1029,
+      "chained_return": 1.3926,
+      "avg_max_drawdown": 0.1678
+    },
+    "2026-11-10-d3-dip15": {
+      "years": {
+        "2019": {
+          "return": 0.2021,
+          "max_drawdown": 0.089,
+          "trades": 20,
+          "by_sleeve": {
+            "dip": {
+              "trades": 11,
+              "total_pnl": 63383.9695
+            },
+            "main": {
+              "trades": 9,
+              "total_pnl": 3695.6041
+            }
+          }
+        },
+        "2020": {
+          "return": 0.2372,
+          "max_drawdown": 0.2417,
+          "trades": 52,
+          "by_sleeve": {
+            "dip": {
+              "trades": 12,
+              "total_pnl": 34017.0309
+            },
+            "main": {
+              "trades": 40,
+              "total_pnl": 43249.7618
+            }
+          }
+        },
+        "2021": {
+          "return": 0.3077,
+          "max_drawdown": 0.0765,
+          "trades": 35,
+          "by_sleeve": {
+            "dip": {
+              "trades": 8,
+              "total_pnl": 115508.9324
+            },
+            "main": {
+              "trades": 27,
+              "total_pnl": 28519.0979
+            }
+          }
+        },
+        "2022": {
+          "return": -0.077,
+          "max_drawdown": 0.191,
+          "trades": 64,
+          "by_sleeve": {
+            "dip": {
+              "trades": 30,
+              "total_pnl": -24122.511
+            },
+            "main": {
+              "trades": 34,
+              "total_pnl": -120164.0548
+            }
+          }
+        },
+        "2023": {
+          "return": 0.4477,
+          "max_drawdown": 0.0784,
+          "trades": 29,
+          "by_sleeve": {
+            "dip": {
+              "trades": 11,
+              "total_pnl": 124901.7215
+            },
+            "main": {
+              "trades": 18,
+              "total_pnl": 54398.7917
+            }
+          }
+        },
+        "2024": {
+          "return": 0.08,
+          "max_drawdown": 0.2849,
+          "trades": 65,
+          "by_sleeve": {
+            "dip": {
+              "trades": 21,
+              "total_pnl": 25229.7277
+            },
+            "main": {
+              "trades": 44,
+              "total_pnl": 24875.2609
+            }
+          }
+        },
+        "2025": {
+          "return": -0.0785,
+          "max_drawdown": 0.259,
+          "trades": 56,
+          "by_sleeve": {
+            "dip": {
+              "trades": 26,
+              "total_pnl": 53501.9705
+            },
+            "main": {
+              "trades": 30,
+              "total_pnl": -184629.8863
+            }
+          }
+        },
+        "2026": {
+          "return": 0.0497,
+          "max_drawdown": 0.1555,
+          "trades": 77,
+          "by_sleeve": {
+            "dip": {
+              "trades": 38,
+              "total_pnl": 19381.4624
+            },
+            "main": {
+              "trades": 39,
+              "total_pnl": -42158.1848
+            }
+          }
+        }
+      },
+      "positive_years": 6,
+      "worst_year": -0.0785,
+      "chained_return": 1.7149,
+      "avg_max_drawdown": 0.172
+    }
+  },
+  "earnings_coverage": {
+    "tickers": 61,
+    "of": 61,
+    "missing": [],
+    "latest_first_date": "2020-05-05",
+    "first_dates": {
+      "4063.T": "2006-05-15",
+      "4502.T": "2006-07-31",
+      "4519.T": "2005-04-22",
+      "4568.T": "2006-07-31",
+      "6098.T": "2015-08-10",
+      "6146.T": "2004-11-08",
+      "6273.T": "2008-05-14",
+      "6367.T": "2008-05-14",
+      "6501.T": "2004-07-29",
+      "6702.T": "2004-07-29",
+      "6758.T": "2004-07-28",
+      "6861.T": "2008-05-09",
+      "6902.T": "2004-12-16",
+      "6954.T": "2006-04-24",
+      "6981.T": "2004-08-10",
+      "7203.T": "2004-08-03",
+      "7267.T": "2004-07-28",
+      "7741.T": "2004-10-20",
+      "7974.T": "2013-07-31",
+      "8001.T": "2004-11-09",
+      "8031.T": "2005-02-04",
+      "8035.T": "2005-05-31",
+      "8058.T": "2004-11-05",
+      "8306.T": "2010-02-03",
+      "8316.T": "2009-01-28",
+      "8766.T": "2010-08-11",
+      "9432.T": "2004-08-05",
+      "9433.T": "2004-07-29",
+      "9434.T": "2019-02-05",
+      "9983.T": "2008-04-10",
+      "9984.T": "2006-11-08",
+      "AAPL": "2002-07-16",
+      "ABBV": "2013-03-15",
+      "ADBE": "2002-03-14",
+      "AMD": "2002-04-17",
+      "AMZN": "2002-07-23",
+      "ANET": "2014-08-07",
+      "AVGO": "2009-12-03",
+      "BRK-B": "2010-05-07",
+      "COST": "2002-03-05",
+      "CRM": "2004-08-19",
+      "CSCO": "2002-05-07",
+      "GOOGL": "2004-10-21",
+      "HD": "2002-02-26",
+      "JPM": "2002-04-17",
+      "KO": "2002-04-16",
+      "LLY": "2002-04-15",
+      "MA": "2006-08-02",
+      "META": "2012-07-26",
+      "MRK": "2002-04-18",
+      "MSFT": "2002-04-18",
+      "NFLX": "2002-07-24",
+      "NVDA": "2002-05-22",
+      "ORCL": "2002-06-18",
+      "PG": "2002-04-30",
+      "TSLA": "2010-11-09",
+      "UNH": "2002-04-18",
+      "V": "2008-04-28",
+      "VRT": "2020-05-05",
+      "WMT": "2002-05-14",
+      "XOM": "2002-04-23"
+    }
+  },
+  "index_summary": {
+    "positive_years": 7,
+    "worst_year": -0.0927,
+    "chained_return": 2.7394,
+    "avg_max_drawdown": 0.1547
+  }
+}
