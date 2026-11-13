@@ -1,0 +1,1145 @@
+{
+  "until": "2026-11-13",
+  "halt": null,
+  "rules": {
+    "rules": {
+      "phases": {
+        "1": {
+          "years": 7,
+          "exposure": 0.7263,
+          "rule": {
+            "positive_years": 5,
+            "worst_year": -0.1086,
+            "chained_return": 0.9411,
+            "avg_max_drawdown": 0.1529
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.063,
+            "chained_return": 1.4787,
+            "avg_max_drawdown": 0.1154
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0927,
+            "chained_return": 2.3301,
+            "avg_max_drawdown": 0.1581
+          },
+          "beats_index_same_exposure": false
+        },
+        "2": {
+          "years": 7,
+          "exposure": 0.7536,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0876,
+            "chained_return": 0.9956,
+            "avg_max_drawdown": 0.1419
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0125,
+            "chained_return": 1.3889,
+            "avg_max_drawdown": 0.1208
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0127,
+            "chained_return": 2.078,
+            "avg_max_drawdown": 0.1604
+          },
+          "beats_index_same_exposure": false
+        },
+        "3": {
+          "years": 8,
+          "exposure": 0.741,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.1266,
+            "chained_return": 1.2905,
+            "avg_max_drawdown": 0.1293
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0079,
+            "chained_return": 1.2548,
+            "avg_max_drawdown": 0.1163
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.0863,
+            "avg_max_drawdown": 0.1561
+          },
+          "beats_index_same_exposure": false
+        },
+        "4": {
+          "years": 8,
+          "exposure": 0.7366,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1874,
+            "chained_return": 1.2969,
+            "avg_max_drawdown": 0.1291
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0933,
+            "chained_return": 1.1937,
+            "avg_max_drawdown": 0.1216
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.1216,
+            "chained_return": 2.1422,
+            "avg_max_drawdown": 0.1586
+          },
+          "beats_index_same_exposure": false
+        },
+        "5": {
+          "years": 8,
+          "exposure": 0.7416,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0589,
+            "chained_return": 1.6693,
+            "avg_max_drawdown": 0.1339
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0395,
+            "chained_return": 1.4964,
+            "avg_max_drawdown": 0.1174
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0628,
+            "chained_return": 2.2828,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "6": {
+          "years": 8,
+          "exposure": 0.7411,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1824,
+            "chained_return": 1.4404,
+            "avg_max_drawdown": 0.1288
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0202,
+            "chained_return": 1.6169,
+            "avg_max_drawdown": 0.1163
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0294,
+            "chained_return": 2.52,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "7": {
+          "years": 8,
+          "exposure": 0.7527,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.1752,
+            "chained_return": 1.5692,
+            "avg_max_drawdown": 0.1395
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0011,
+            "chained_return": 1.7513,
+            "avg_max_drawdown": 0.1157
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0018,
+            "chained_return": 2.5917,
+            "avg_max_drawdown": 0.1541
+          },
+          "beats_index_same_exposure": false
+        },
+        "8": {
+          "years": 8,
+          "exposure": 0.7401,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0953,
+            "chained_return": 1.489,
+            "avg_max_drawdown": 0.1284
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0078,
+            "chained_return": 1.542,
+            "avg_max_drawdown": 0.1154
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0126,
+            "chained_return": 2.3332,
+            "avg_max_drawdown": 0.1564
+          },
+          "beats_index_same_exposure": false
+        },
+        "9": {
+          "years": 8,
+          "exposure": 0.7625,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1638,
+            "chained_return": 1.1685,
+            "avg_max_drawdown": 0.1474
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0455,
+            "chained_return": 1.6203,
+            "avg_max_drawdown": 0.1308
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0601,
+            "chained_return": 2.4053,
+            "avg_max_drawdown": 0.1708
+          },
+          "beats_index_same_exposure": false
+        },
+        "10": {
+          "years": 8,
+          "exposure": 0.7313,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1583,
+            "chained_return": 1.4814,
+            "avg_max_drawdown": 0.1467
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0539,
+            "chained_return": 1.3936,
+            "avg_max_drawdown": 0.1234
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0686,
+            "chained_return": 2.1619,
+            "avg_max_drawdown": 0.1687
+          },
+          "beats_index_same_exposure": false
+        },
+        "11": {
+          "years": 8,
+          "exposure": 0.7487,
+          "rule": {
+            "positive_years": 8,
+            "worst_year": 0.0029,
+            "chained_return": 1.7379,
+            "avg_max_drawdown": 0.1338
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0093,
+            "chained_return": 1.5257,
+            "avg_max_drawdown": 0.1226
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.2873,
+            "avg_max_drawdown": 0.1623
+          },
+          "beats_index_same_exposure": false
+        },
+        "12": {
+          "years": 7,
+          "exposure": 0.7329,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0585,
+            "chained_return": 1.4215,
+            "avg_max_drawdown": 0.15
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0419,
+            "chained_return": 1.1672,
+            "avg_max_drawdown": 0.1263
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0542,
+            "chained_return": 1.7445,
+            "avg_max_drawdown": 0.1714
+          },
+          "beats_index_same_exposure": false
+        }
+      },
+      "beats_index_same_exposure": 0
+    },
+    "2026-11-13-s1-atr2": {
+      "phases": {
+        "1": {
+          "years": 7,
+          "exposure": 0.7055,
+          "rule": {
+            "positive_years": 5,
+            "worst_year": -0.0698,
+            "chained_return": 0.9438,
+            "avg_max_drawdown": 0.1625
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0608,
+            "chained_return": 1.4155,
+            "avg_max_drawdown": 0.1118
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0927,
+            "chained_return": 2.3301,
+            "avg_max_drawdown": 0.1581
+          },
+          "beats_index_same_exposure": false
+        },
+        "2": {
+          "years": 7,
+          "exposure": 0.7278,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0713,
+            "chained_return": 0.8246,
+            "avg_max_drawdown": 0.1561
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0123,
+            "chained_return": 1.3149,
+            "avg_max_drawdown": 0.1158
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0127,
+            "chained_return": 2.078,
+            "avg_max_drawdown": 0.1604
+          },
+          "beats_index_same_exposure": false
+        },
+        "3": {
+          "years": 8,
+          "exposure": 0.7089,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.1347,
+            "chained_return": 1.4631,
+            "avg_max_drawdown": 0.1268
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0077,
+            "chained_return": 1.1784,
+            "avg_max_drawdown": 0.1113
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.0863,
+            "avg_max_drawdown": 0.1561
+          },
+          "beats_index_same_exposure": false
+        },
+        "4": {
+          "years": 8,
+          "exposure": 0.7169,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1002,
+            "chained_return": 1.9855,
+            "avg_max_drawdown": 0.119
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0908,
+            "chained_return": 1.2158,
+            "avg_max_drawdown": 0.1179
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.1216,
+            "chained_return": 2.1422,
+            "avg_max_drawdown": 0.1586
+          },
+          "beats_index_same_exposure": false
+        },
+        "5": {
+          "years": 8,
+          "exposure": 0.7166,
+          "rule": {
+            "positive_years": 5,
+            "worst_year": -0.1711,
+            "chained_return": 1.2659,
+            "avg_max_drawdown": 0.1396
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0403,
+            "chained_return": 1.4047,
+            "avg_max_drawdown": 0.1147
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0628,
+            "chained_return": 2.2828,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "6": {
+          "years": 8,
+          "exposure": 0.7291,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.2906,
+            "chained_return": 1.0786,
+            "avg_max_drawdown": 0.1511
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.02,
+            "chained_return": 1.5903,
+            "avg_max_drawdown": 0.1146
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0294,
+            "chained_return": 2.52,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "7": {
+          "years": 8,
+          "exposure": 0.7379,
+          "rule": {
+            "positive_years": 5,
+            "worst_year": -0.2549,
+            "chained_return": 1.5478,
+            "avg_max_drawdown": 0.154
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0014,
+            "chained_return": 1.6943,
+            "avg_max_drawdown": 0.1141
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0018,
+            "chained_return": 2.5917,
+            "avg_max_drawdown": 0.1541
+          },
+          "beats_index_same_exposure": false
+        },
+        "8": {
+          "years": 8,
+          "exposure": 0.7241,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1431,
+            "chained_return": 1.6294,
+            "avg_max_drawdown": 0.1434
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0075,
+            "chained_return": 1.489,
+            "avg_max_drawdown": 0.1131
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0126,
+            "chained_return": 2.3332,
+            "avg_max_drawdown": 0.1564
+          },
+          "beats_index_same_exposure": false
+        },
+        "9": {
+          "years": 8,
+          "exposure": 0.7406,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1228,
+            "chained_return": 1.152,
+            "avg_max_drawdown": 0.1612
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0436,
+            "chained_return": 1.5755,
+            "avg_max_drawdown": 0.1264
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0601,
+            "chained_return": 2.4053,
+            "avg_max_drawdown": 0.1708
+          },
+          "beats_index_same_exposure": false
+        },
+        "10": {
+          "years": 8,
+          "exposure": 0.7137,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1716,
+            "chained_return": 1.4472,
+            "avg_max_drawdown": 0.1555
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0492,
+            "chained_return": 1.3625,
+            "avg_max_drawdown": 0.1207
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0686,
+            "chained_return": 2.1619,
+            "avg_max_drawdown": 0.1687
+          },
+          "beats_index_same_exposure": false
+        },
+        "11": {
+          "years": 8,
+          "exposure": 0.7281,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0582,
+            "chained_return": 1.6451,
+            "avg_max_drawdown": 0.1505
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0093,
+            "chained_return": 1.4852,
+            "avg_max_drawdown": 0.1193
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.2873,
+            "avg_max_drawdown": 0.1623
+          },
+          "beats_index_same_exposure": false
+        },
+        "12": {
+          "years": 7,
+          "exposure": 0.7058,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": 0.0345,
+            "chained_return": 1.3687,
+            "avg_max_drawdown": 0.1565
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0415,
+            "chained_return": 1.0943,
+            "avg_max_drawdown": 0.1228
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0542,
+            "chained_return": 1.7445,
+            "avg_max_drawdown": 0.1714
+          },
+          "beats_index_same_exposure": false
+        }
+      },
+      "beats_index_same_exposure": 0,
+      "vs_rules": {
+        "return_higher": 4,
+        "drawdown_not_larger": 2,
+        "avg_drawdown_diff": 0.0095
+      }
+    },
+    "2026-11-13-s2-atr3": {
+      "phases": {
+        "1": {
+          "years": 7,
+          "exposure": 0.7206,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1314,
+            "chained_return": 1.184,
+            "avg_max_drawdown": 0.1567
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0613,
+            "chained_return": 1.4718,
+            "avg_max_drawdown": 0.1141
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0927,
+            "chained_return": 2.3301,
+            "avg_max_drawdown": 0.1581
+          },
+          "beats_index_same_exposure": false
+        },
+        "2": {
+          "years": 7,
+          "exposure": 0.7378,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1268,
+            "chained_return": 1.3522,
+            "avg_max_drawdown": 0.1463
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0124,
+            "chained_return": 1.3535,
+            "avg_max_drawdown": 0.1185
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0127,
+            "chained_return": 2.078,
+            "avg_max_drawdown": 0.1604
+          },
+          "beats_index_same_exposure": false
+        },
+        "3": {
+          "years": 8,
+          "exposure": 0.717,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.0449,
+            "chained_return": 1.8297,
+            "avg_max_drawdown": 0.1317
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0077,
+            "chained_return": 1.204,
+            "avg_max_drawdown": 0.1129
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.0863,
+            "avg_max_drawdown": 0.1561
+          },
+          "beats_index_same_exposure": false
+        },
+        "4": {
+          "years": 8,
+          "exposure": 0.7248,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0506,
+            "chained_return": 2.2236,
+            "avg_max_drawdown": 0.1124
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0956,
+            "chained_return": 1.1578,
+            "avg_max_drawdown": 0.1204
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.1216,
+            "chained_return": 2.1422,
+            "avg_max_drawdown": 0.1586
+          },
+          "beats_index_same_exposure": true
+        },
+        "5": {
+          "years": 8,
+          "exposure": 0.7243,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.061,
+            "chained_return": 2.1262,
+            "avg_max_drawdown": 0.1222
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0384,
+            "chained_return": 1.4343,
+            "avg_max_drawdown": 0.1153
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0628,
+            "chained_return": 2.2828,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "6": {
+          "years": 8,
+          "exposure": 0.7384,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.189,
+            "chained_return": 1.6701,
+            "avg_max_drawdown": 0.1255
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0202,
+            "chained_return": 1.6188,
+            "avg_max_drawdown": 0.1161
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0294,
+            "chained_return": 2.52,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "7": {
+          "years": 8,
+          "exposure": 0.7549,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.1993,
+            "chained_return": 1.7217,
+            "avg_max_drawdown": 0.1393
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0011,
+            "chained_return": 1.7457,
+            "avg_max_drawdown": 0.1163
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0018,
+            "chained_return": 2.5917,
+            "avg_max_drawdown": 0.1541
+          },
+          "beats_index_same_exposure": false
+        },
+        "8": {
+          "years": 8,
+          "exposure": 0.7349,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.0983,
+            "chained_return": 1.7709,
+            "avg_max_drawdown": 0.1352
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0077,
+            "chained_return": 1.5315,
+            "avg_max_drawdown": 0.1145
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0126,
+            "chained_return": 2.3332,
+            "avg_max_drawdown": 0.1564
+          },
+          "beats_index_same_exposure": false
+        },
+        "9": {
+          "years": 8,
+          "exposure": 0.7535,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1482,
+            "chained_return": 1.2174,
+            "avg_max_drawdown": 0.1516
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0455,
+            "chained_return": 1.5883,
+            "avg_max_drawdown": 0.1296
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0601,
+            "chained_return": 2.4053,
+            "avg_max_drawdown": 0.1708
+          },
+          "beats_index_same_exposure": false
+        },
+        "10": {
+          "years": 8,
+          "exposure": 0.7261,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1521,
+            "chained_return": 1.7151,
+            "avg_max_drawdown": 0.1479
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0525,
+            "chained_return": 1.3807,
+            "avg_max_drawdown": 0.1227
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0686,
+            "chained_return": 2.1619,
+            "avg_max_drawdown": 0.1687
+          },
+          "beats_index_same_exposure": false
+        },
+        "11": {
+          "years": 8,
+          "exposure": 0.7421,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.0393,
+            "chained_return": 1.8994,
+            "avg_max_drawdown": 0.1507
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0093,
+            "chained_return": 1.5039,
+            "avg_max_drawdown": 0.1218
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.2873,
+            "avg_max_drawdown": 0.1623
+          },
+          "beats_index_same_exposure": false
+        },
+        "12": {
+          "years": 7,
+          "exposure": 0.7279,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.018,
+            "chained_return": 1.9295,
+            "avg_max_drawdown": 0.1457
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0414,
+            "chained_return": 1.153,
+            "avg_max_drawdown": 0.1254
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0542,
+            "chained_return": 1.7445,
+            "avg_max_drawdown": 0.1714
+          },
+          "beats_index_same_exposure": false
+        }
+      },
+      "beats_index_same_exposure": 1,
+      "vs_rules": {
+        "return_higher": 12,
+        "drawdown_not_larger": 5,
+        "avg_drawdown_diff": 0.0003
+      }
+    },
+    "2026-11-13-s3-atr4": {
+      "phases": {
+        "1": {
+          "years": 7,
+          "exposure": 0.7246,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1384,
+            "chained_return": 1.323,
+            "avg_max_drawdown": 0.1566
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0636,
+            "chained_return": 1.4683,
+            "avg_max_drawdown": 0.1152
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0927,
+            "chained_return": 2.3301,
+            "avg_max_drawdown": 0.1581
+          },
+          "beats_index_same_exposure": false
+        },
+        "2": {
+          "years": 7,
+          "exposure": 0.7481,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1164,
+            "chained_return": 1.1509,
+            "avg_max_drawdown": 0.1566
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0124,
+            "chained_return": 1.3804,
+            "avg_max_drawdown": 0.1196
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0127,
+            "chained_return": 2.078,
+            "avg_max_drawdown": 0.1604
+          },
+          "beats_index_same_exposure": false
+        },
+        "3": {
+          "years": 8,
+          "exposure": 0.7253,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.0893,
+            "chained_return": 1.6523,
+            "avg_max_drawdown": 0.1355
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0078,
+            "chained_return": 1.1913,
+            "avg_max_drawdown": 0.1141
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.0863,
+            "avg_max_drawdown": 0.1561
+          },
+          "beats_index_same_exposure": false
+        },
+        "4": {
+          "years": 8,
+          "exposure": 0.7247,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1833,
+            "chained_return": 1.6592,
+            "avg_max_drawdown": 0.1244
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.0935,
+            "chained_return": 1.1268,
+            "avg_max_drawdown": 0.1205
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.1216,
+            "chained_return": 2.1422,
+            "avg_max_drawdown": 0.1586
+          },
+          "beats_index_same_exposure": false
+        },
+        "5": {
+          "years": 8,
+          "exposure": 0.7181,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0643,
+            "chained_return": 1.9651,
+            "avg_max_drawdown": 0.1249
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.036,
+            "chained_return": 1.4405,
+            "avg_max_drawdown": 0.1133
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0628,
+            "chained_return": 2.2828,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "6": {
+          "years": 8,
+          "exposure": 0.7378,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.2071,
+            "chained_return": 1.4282,
+            "avg_max_drawdown": 0.137
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0203,
+            "chained_return": 1.6115,
+            "avg_max_drawdown": 0.1161
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0294,
+            "chained_return": 2.52,
+            "avg_max_drawdown": 0.1559
+          },
+          "beats_index_same_exposure": false
+        },
+        "7": {
+          "years": 8,
+          "exposure": 0.7502,
+          "rule": {
+            "positive_years": 7,
+            "worst_year": -0.2032,
+            "chained_return": 2.1126,
+            "avg_max_drawdown": 0.1435
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0009,
+            "chained_return": 1.7243,
+            "avg_max_drawdown": 0.1153
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0018,
+            "chained_return": 2.5917,
+            "avg_max_drawdown": 0.1541
+          },
+          "beats_index_same_exposure": false
+        },
+        "8": {
+          "years": 8,
+          "exposure": 0.7373,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0974,
+            "chained_return": 1.7284,
+            "avg_max_drawdown": 0.1382
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0077,
+            "chained_return": 1.5302,
+            "avg_max_drawdown": 0.1149
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0126,
+            "chained_return": 2.3332,
+            "avg_max_drawdown": 0.1564
+          },
+          "beats_index_same_exposure": false
+        },
+        "9": {
+          "years": 8,
+          "exposure": 0.7546,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1904,
+            "chained_return": 1.1764,
+            "avg_max_drawdown": 0.159
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": -0.0458,
+            "chained_return": 1.5952,
+            "avg_max_drawdown": 0.1294
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": -0.0601,
+            "chained_return": 2.4053,
+            "avg_max_drawdown": 0.1708
+          },
+          "beats_index_same_exposure": false
+        },
+        "10": {
+          "years": 8,
+          "exposure": 0.7348,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.1454,
+            "chained_return": 1.5377,
+            "avg_max_drawdown": 0.1448
+          },
+          "index_same_exposure": {
+            "positive_years": 6,
+            "worst_year": -0.053,
+            "chained_return": 1.4095,
+            "avg_max_drawdown": 0.1239
+          },
+          "index": {
+            "positive_years": 6,
+            "worst_year": -0.0686,
+            "chained_return": 2.1619,
+            "avg_max_drawdown": 0.1687
+          },
+          "beats_index_same_exposure": false
+        },
+        "11": {
+          "years": 8,
+          "exposure": 0.7506,
+          "rule": {
+            "positive_years": 8,
+            "worst_year": 0.0125,
+            "chained_return": 1.9477,
+            "avg_max_drawdown": 0.1409
+          },
+          "index_same_exposure": {
+            "positive_years": 8,
+            "worst_year": 0.0093,
+            "chained_return": 1.5222,
+            "avg_max_drawdown": 0.1229
+          },
+          "index": {
+            "positive_years": 8,
+            "worst_year": 0.0082,
+            "chained_return": 2.2873,
+            "avg_max_drawdown": 0.1623
+          },
+          "beats_index_same_exposure": false
+        },
+        "12": {
+          "years": 7,
+          "exposure": 0.7237,
+          "rule": {
+            "positive_years": 6,
+            "worst_year": -0.0216,
+            "chained_return": 2.2235,
+            "avg_max_drawdown": 0.149
+          },
+          "index_same_exposure": {
+            "positive_years": 7,
+            "worst_year": 0.0419,
+            "chained_return": 1.1433,
+            "avg_max_drawdown": 0.1253
+          },
+          "index": {
+            "positive_years": 7,
+            "worst_year": 0.0542,
+            "chained_return": 1.7445,
+            "avg_max_drawdown": 0.1714
+          },
+          "beats_index_same_exposure": false
+        }
+      },
+      "beats_index_same_exposure": 0,
+      "vs_rules": {
+        "return_higher": 11,
+        "drawdown_not_larger": 4,
+        "avg_drawdown_diff": 0.0041
+      }
+    }
+  }
+}

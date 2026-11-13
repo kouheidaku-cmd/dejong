@@ -606,3 +606,18 @@ def test_backtest_drawdown_halt_resumes_only_with_window():
     assert forever["metrics"]["halt_days"] > window["metrics"]["halt_days"] > 0
     assert after(window)  # 直近1年の最高値なら、時間がたてば再開する
     assert "halt_days" not in free["metrics"]
+
+
+def test_atr_stop_scales_with_volatility():
+    from trader import rules
+    calm = bars(np.full(40, 100.0))  # High/Low は終値の ±1% → ATR 約2%
+    f = rules.features(calm)
+    assert f["atr14_pct"].iloc[-1] == pytest.approx(0.02, rel=0.05)
+    r = {**RULES, "exit": {**RULES["exit"], "stop_loss": 0.08, "stop_atr_mult": 3, "take_profit": None,
+                           "trailing_stop": None, "trend_break": False}}
+    row = {"close": 95.0, "sma50": 100.0}
+    assert rules.stop_pct(r, 0.02) == pytest.approx(0.06)
+    assert rules.exit_check(row, 100.0, 100.0, 5, False, r, entry_atr_pct=0.02) is None  # -5% は幅 6% の内側
+    assert rules.exit_check({**row, "close": 93.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=0.02) == ("stop_loss", 1.0)
+    assert rules.exit_check({**row, "close": 93.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=0.05) is None  # 値動きが大きい銘柄は幅 15%
+    assert rules.exit_check({**row, "close": 91.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=None) == ("stop_loss", 1.0)  # ATR がなければ -8%

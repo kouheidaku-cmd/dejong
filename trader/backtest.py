@@ -149,7 +149,7 @@ def _recent_peak(curve: list[dict], d, window_days: int | None) -> float:
     return best
 
 
-ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1", "drop_120")
+ENTRY_KEYS = ("close", "rsi14", "ret_60d", "sma20", "sma50", "mom_12_1", "mom_6_1", "drop_120", "atr14_pct")
 
 
 def _swing_orders(d, feats, pos, orders, equity, rules, main_tickers=None) -> list[dict]:
@@ -171,7 +171,8 @@ def _set_orders(d, feats, pos, orders, equity, rules, sleeve, tickers) -> list[d
         if row is None or t in selling:
             continue
         p["peak"] = max(p["peak"], row["close"])
-        sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules)
+        sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules,
+                         entry_atr_pct=(p.get("entry") or {}).get("atr14_pct"))
         if not sig:
             frac = earnings_exit(row, rules)
             if frac and p.get("earnings_cut") != row["earn_id"]:

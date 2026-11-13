@@ -30,7 +30,17 @@ def features(df: pd.DataFrame) -> pd.DataFrame:
         "mom_12_1": c.shift(21) / c.shift(252) - 1,  # 過去12か月 (直近1か月を除く) のリターン
         "mom_6_1": c.shift(21) / c.shift(126) - 1,
         "drop_120": 1 - c / c.rolling(120).max(),  # 直近120営業日の最高終値からの下落率 (0.2 = -20%)
+        "atr14_pct": _atr_pct(df),
     }, index=df.index)
+
+
+def _atr_pct(df: pd.DataFrame, n: int = 14) -> pd.Series:
+    """ATR (直近 n 日の真の値幅の平均) を終値で割ったもの。高値・安値がなければ NaN。"""
+    if not {"High", "Low"} <= set(df.columns):
+        return pd.Series(np.nan, index=df.index)
+    pc = df["Close"].shift()
+    tr = pd.concat([df["High"] - df["Low"], (df["High"] - pc).abs(), (df["Low"] - pc).abs()], axis=1).max(axis=1)
+    return tr.rolling(n).mean() / df["Close"]
 
 
 def days_to_earnings(index: pd.DatetimeIndex, dates) -> pd.Series:
@@ -201,13 +211,23 @@ def entry_check(row: dict, rules: dict) -> list[str]:
     return fails
 
 
+def stop_pct(rules: dict, entry_atr_pct: float | None = None) -> float | None:
+    """損切り幅。exit.stop_atr_mult があれば「買った日の ATR% × 倍率」、ATR が分からなければ exit.stop_loss。"""
+    x = rules["exit"]
+    k = x.get("stop_atr_mult")
+    if k and entry_atr_pct is not None and entry_atr_pct == entry_atr_pct and entry_atr_pct > 0:
+        return k * entry_atr_pct
+    return x.get("stop_loss")
+
+
 def exit_check(row: dict, avg_cost: float, peak_close: float, held_days: int,
-               took_profit: bool, rules: dict) -> tuple[str, float] | None:
-    """売りシグナル (理由, 売る割合) を返す。なければ None。"""
+               took_profit: bool, rules: dict, entry_atr_pct: float | None = None) -> tuple[str, float] | None:
+    """売りシグナル (理由, 売る割合) を返す。なければ None。entry_atr_pct は買った日の ATR% (ATR 損切りのとき)。"""
     x = rules["exit"]
     close = row["close"]
     ret = close / avg_cost - 1
-    if x.get("stop_loss") and ret <= -x["stop_loss"]:
+    stop = stop_pct(rules, entry_atr_pct)
+    if stop and ret <= -stop:
         return "stop_loss", 1.0
     if x.get("trailing_stop") and close <= peak_close * (1 - x["trailing_stop"]):
         return "trailing_stop", 1.0
