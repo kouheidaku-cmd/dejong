@@ -37,17 +37,21 @@ def to_base_currency(frames: dict[str, pd.DataFrame], fx: dict[str, pd.Series], 
 def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
         initial_cash: float = 1_000_000, slippage_bps: float = 10, commission_bps: float = 0,
         market: dict[str, pd.Series] | None = None, earnings: dict[str, list] | None = None,
-        main_tickers: set[str] | None = None, halt: dict | None = None) -> dict:
+        main_tickers: set[str] | None = None, halt: dict | None = None,
+        signal_frames: dict[str, pd.DataFrame] | None = None) -> dict:
     """market: 銘柄ごとの市場指数の判定 (rules.market_regime)。entry.market_filter を使うときに渡す。
     earnings: 銘柄ごとの過去の決算日。rules の earnings を使うときに渡す (ない銘柄は決算の判定をしない)。
     main_tickers: 本体のルールで買う銘柄 (None なら frames の全部)。別枠 (sleeves) だけの銘柄を frames に
     足したときに渡すと、本体の売買とベンチマークは別枠なしのときと同じ母集団のままになる。
     halt: ドローダウン停止 (settings.yaml の risk と同じ動き)。{"pct": 0.15, "window_days": 365} なら、
-    直近365日の最高値から 15% 以上下げている日は新規買いを出さない (window_days がなければ全期間の最高値)。"""
+    直近365日の最高値から 15% 以上下げている日は新規買いを出さない (window_days がなければ全期間の最高値)。
+    signal_frames: 売買の判定に使う日足 (現地通貨)。渡すと、移動平均・リターン・損切りなどの判定は現地通貨の価格で行い、
+    約定と評価だけ frames (円換算) で行う。日次のシグナル (cli.rule_signals) と同じ計算になる。渡さなければ今までどおり。"""
     slip, comm = slippage_bps / 10_000, commission_bps / 10_000
     feats = {}
     for t, df in frames.items():
-        f = features(df)
+        f = features(signal_frames[t] if signal_frames and t in signal_frames else df)
+        f["px_open"], f["px_close"] = df["Open"].reindex(f.index), df["Close"].reindex(f.index)  # 約定・評価の価格 (円)
         if market and t in market:
             f = attach_market(f, market[t])
         if earnings and t in earnings:
@@ -75,7 +79,7 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
             if o["side"] == "sell":
                 p = pos[o["ticker"]]
                 qty = min(o["qty"], p["qty"])
-                price = row["open"] * (1 - slip)
+                price = row["px_open"] * (1 - slip)
                 proceeds = price * qty * (1 - comm)
                 cash += proceeds
                 trades.append(_trade(o["ticker"], p, qty, price, proceeds, d, o["reason"]))
@@ -85,20 +89,22 @@ def run(frames: dict[str, pd.DataFrame], rules: dict, start: date, end: date,
                 if p["qty"] == 0:
                     del pos[o["ticker"]]
             else:
-                price = row["open"] * (1 + slip)
+                price = row["px_open"] * (1 + slip)
                 qty = min(o["qty"], int(cash // (price * (1 + comm))))
                 if qty <= 0:
                     continue
                 cash -= price * qty * (1 + comm)
+                # ref は判定用の取得単価 (判定と同じ通貨)。円換算で判定するときは avg_cost と同じ値
                 pos[o["ticker"]] = {"qty": qty, "avg_cost": price * (1 + comm), "peak": row["open"],
+                                    "ref": row["open"] * (1 + slip) * (1 + comm),
                                     "entry_date": d, "took_profit": False, "entry": o["entry"],
                                     "sleeve": o.get("sleeve")}
         orders = waiting
 
         # 2. 終値で評価
         for t, f in feats.items():
-            if d in f and not math.isnan(f[d]["close"]):
-                last_close[t] = f[d]["close"]
+            if d in f and not math.isnan(f[d]["px_close"]):
+                last_close[t] = f[d]["px_close"]
         invested = sum(p["qty"] * last_close.get(t, p["avg_cost"]) for t, p in pos.items())
         curve.append({"date": d, "equity": cash + invested, "invested": invested})
         equity = cash + invested
@@ -171,7 +177,7 @@ def _set_orders(d, feats, pos, orders, equity, rules, sleeve, tickers) -> list[d
         if row is None or t in selling:
             continue
         p["peak"] = max(p["peak"], row["close"])
-        sig = exit_check(row, p["avg_cost"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules,
+        sig = exit_check(row, p["ref"], p["peak"], (d - p["entry_date"]).days, p["took_profit"], rules,
                          entry_atr_pct=(p.get("entry") or {}).get("atr14_pct"))
         if not sig:
             frac = earnings_exit(row, rules)
@@ -202,7 +208,7 @@ def _set_orders(d, feats, pos, orders, equity, rules, sleeve, tickers) -> list[d
     if slots <= 0:
         return new + _swap_orders(d, feats, own, selling | {o["ticker"] for o in new}, candidates, equity, rules)
     for _, t, row in candidates[:slots]:
-        qty = int(sz["target_weight"] * equity // row["close"])
+        qty = int(sz["target_weight"] * equity // row["px_close"])
         if qty > 0:
             new.append({"ticker": t, "side": "buy", "qty": qty, "sleeve": sleeve,
                         "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
@@ -228,7 +234,7 @@ def _swap_orders(d, feats, pos, selling, candidates, equity, rules) -> list[dict
     best_v, best_t, best_row = candidates[0]
     if best_v - weak_v < sw["min_gap"] or (sw.get("only_negative") and weak_v >= 0):
         return []
-    qty = int(sz["target_weight"] * equity // best_row["close"])
+    qty = int(sz["target_weight"] * equity // best_row["px_close"])
     if qty <= 0:
         return []
     return [{"ticker": weak_t, "side": "sell", "qty": pos[weak_t]["qty"], "reason": "swap_out"},
@@ -246,7 +252,7 @@ def _rotation_orders(last_row, pos, orders, equity, rules) -> list[dict]:
         if t in pos or t in pending:
             continue
         row = last_row[t]
-        qty = int(per // row["close"])
+        qty = int(per // row["px_close"])
         if qty > 0:
             new.append({"ticker": t, "side": "buy", "qty": qty, "entry": {k: _r(row.get(k)) for k in ENTRY_KEYS}})
     return new

@@ -1,0 +1,692 @@
+{
+  "holdout_2005_2018": {
+    "period": [
+      "2005-02-01",
+      "2018-10-31"
+    ],
+    "rules": {
+      "v3": {
+        "total_return": 2.4709,
+        "cagr": 0.0948,
+        "max_drawdown": 0.2501,
+        "four_months": {
+          "median": 0.0372,
+          "p_ge_20": 0.0186,
+          "p_ge_10": 0.2167,
+          "p_lt_0": 0.2821,
+          "p_le_m10": 0.0645,
+          "p05": -0.1152,
+          "worst": -0.2354
+        },
+        "sharpe": 0.7768,
+        "exposure": 0.6123,
+        "trades": 266,
+        "win_rate": 0.5602,
+        "by_exit_reason": {
+          "stop_loss": 95,
+          "take_profit": 75,
+          "trailing_stop": 96
+        },
+        "universe_same_exposure": {
+          "total_return": 3.5889,
+          "cagr": 0.1172,
+          "max_drawdown": 0.3977,
+          "four_months": {
+            "median": 0.0546,
+            "p_ge_20": 0.0338,
+            "p_ge_10": 0.2405,
+            "p_lt_0": 0.2635,
+            "p_le_m10": 0.0576,
+            "p05": -0.1046,
+            "worst": -0.3207
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.7189,
+          "cagr": 0.0402,
+          "max_drawdown": 0.4414,
+          "four_months": {
+            "median": 0.0235,
+            "p_ge_20": 0.004,
+            "p_ge_10": 0.0927,
+            "p_lt_0": 0.3505,
+            "p_le_m10": 0.0525,
+            "p05": -0.1042,
+            "worst": -0.2973
+          }
+        }
+      },
+      "v3 (local signals)": {
+        "total_return": 3.7167,
+        "cagr": 0.1195,
+        "max_drawdown": 0.2572,
+        "four_months": {
+          "median": 0.0397,
+          "p_ge_20": 0.0401,
+          "p_ge_10": 0.2199,
+          "p_lt_0": 0.2861,
+          "p_le_m10": 0.0444,
+          "p05": -0.0948,
+          "worst": -0.1556
+        },
+        "sharpe": 0.929,
+        "exposure": 0.6379,
+        "trades": 222,
+        "win_rate": 0.6171,
+        "by_exit_reason": {
+          "stop_loss": 65,
+          "take_profit": 71,
+          "trailing_stop": 86
+        },
+        "universe_same_exposure": {
+          "total_return": 3.864,
+          "cagr": 0.122,
+          "max_drawdown": 0.4111,
+          "four_months": {
+            "median": 0.0568,
+            "p_ge_20": 0.037,
+            "p_ge_10": 0.2615,
+            "p_lt_0": 0.2635,
+            "p_le_m10": 0.0651,
+            "p05": -0.1089,
+            "worst": -0.332
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.7514,
+          "cagr": 0.0416,
+          "max_drawdown": 0.4558,
+          "four_months": {
+            "median": 0.0245,
+            "p_ge_20": 0.0072,
+            "p_ge_10": 0.1068,
+            "p_lt_0": 0.3505,
+            "p_le_m10": 0.0577,
+            "p05": -0.1084,
+            "worst": -0.3079
+          }
+        }
+      },
+      "s2": {
+        "total_return": 3.3911,
+        "cagr": 0.1137,
+        "max_drawdown": 0.2254,
+        "four_months": {
+          "median": 0.0373,
+          "p_ge_20": 0.0272,
+          "p_ge_10": 0.2305,
+          "p_lt_0": 0.2735,
+          "p_le_m10": 0.0416,
+          "p05": -0.0906,
+          "worst": -0.1845
+        },
+        "sharpe": 0.9138,
+        "exposure": 0.6067,
+        "trades": 261,
+        "win_rate": 0.5632,
+        "by_exit_reason": {
+          "stop_loss": 83,
+          "take_profit": 76,
+          "trailing_stop": 102
+        },
+        "universe_same_exposure": {
+          "total_return": 3.5306,
+          "cagr": 0.1162,
+          "max_drawdown": 0.3948,
+          "four_months": {
+            "median": 0.0541,
+            "p_ge_20": 0.0333,
+            "p_ge_10": 0.2339,
+            "p_lt_0": 0.2635,
+            "p_le_m10": 0.0562,
+            "p05": -0.1036,
+            "worst": -0.3182
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.7118,
+          "cagr": 0.0399,
+          "max_drawdown": 0.4383,
+          "four_months": {
+            "median": 0.0233,
+            "p_ge_20": 0.004,
+            "p_ge_10": 0.0896,
+            "p_lt_0": 0.3505,
+            "p_le_m10": 0.0522,
+            "p05": -0.1033,
+            "worst": -0.2949
+          }
+        }
+      },
+      "w1": {
+        "total_return": 4.697,
+        "cagr": 0.135,
+        "max_drawdown": 0.2815,
+        "four_months": {
+          "median": 0.0399,
+          "p_ge_20": 0.0869,
+          "p_ge_10": 0.305,
+          "p_lt_0": 0.2987,
+          "p_le_m10": 0.0774,
+          "p05": -0.1239,
+          "worst": -0.1828
+        },
+        "sharpe": 0.8854,
+        "exposure": 0.7048,
+        "trades": 611,
+        "win_rate": 0.5794,
+        "by_exit_reason": {
+          "stop_loss": 169,
+          "swap_out": 239,
+          "take_profit": 119,
+          "trailing_stop": 84
+        },
+        "universe_same_exposure": {
+          "total_return": 4.6514,
+          "cagr": 0.1343,
+          "max_drawdown": 0.4449,
+          "four_months": {
+            "median": 0.0626,
+            "p_ge_20": 0.051,
+            "p_ge_10": 0.3157,
+            "p_lt_0": 0.2646,
+            "p_le_m10": 0.0808,
+            "p05": -0.12,
+            "worst": -0.3606
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.8364,
+          "cagr": 0.0452,
+          "max_drawdown": 0.4918,
+          "four_months": {
+            "median": 0.0268,
+            "p_ge_20": 0.0152,
+            "p_ge_10": 0.1392,
+            "p_lt_0": 0.3513,
+            "p_le_m10": 0.0689,
+            "p05": -0.1193,
+            "worst": -0.3351
+          }
+        }
+      },
+      "v4-draft": {
+        "total_return": 4.0413,
+        "cagr": 0.1249,
+        "max_drawdown": 0.2789,
+        "four_months": {
+          "median": 0.037,
+          "p_ge_20": 0.0814,
+          "p_ge_10": 0.2772,
+          "p_lt_0": 0.3048,
+          "p_le_m10": 0.0829,
+          "p05": -0.1254,
+          "worst": -0.1896
+        },
+        "sharpe": 0.8155,
+        "exposure": 0.7074,
+        "trades": 622,
+        "win_rate": 0.5482,
+        "by_exit_reason": {
+          "stop_loss": 189,
+          "swap_out": 223,
+          "take_profit": 118,
+          "trailing_stop": 92
+        },
+        "universe_same_exposure": {
+          "total_return": 4.6842,
+          "cagr": 0.1348,
+          "max_drawdown": 0.4462,
+          "four_months": {
+            "median": 0.0628,
+            "p_ge_20": 0.0525,
+            "p_ge_10": 0.3177,
+            "p_lt_0": 0.2646,
+            "p_le_m10": 0.0811,
+            "p05": -0.1205,
+            "worst": -0.3617
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.8397,
+          "cagr": 0.0454,
+          "max_drawdown": 0.4932,
+          "four_months": {
+            "median": 0.0269,
+            "p_ge_20": 0.0155,
+            "p_ge_10": 0.1409,
+            "p_lt_0": 0.3513,
+            "p_le_m10": 0.0692,
+            "p05": -0.1198,
+            "worst": -0.3362
+          }
+        }
+      },
+      "v4-draft (local signals)": {
+        "total_return": 4.7063,
+        "cagr": 0.1351,
+        "max_drawdown": 0.2622,
+        "four_months": {
+          "median": 0.0431,
+          "p_ge_20": 0.0763,
+          "p_ge_10": 0.3159,
+          "p_lt_0": 0.3174,
+          "p_le_m10": 0.0731,
+          "p05": -0.1145,
+          "worst": -0.1874
+        },
+        "sharpe": 0.848,
+        "exposure": 0.7403,
+        "trades": 616,
+        "win_rate": 0.5455,
+        "by_exit_reason": {
+          "stop_loss": 173,
+          "swap_out": 242,
+          "take_profit": 110,
+          "trailing_stop": 91
+        },
+        "universe_same_exposure": {
+          "total_return": 5.1124,
+          "cagr": 0.1408,
+          "max_drawdown": 0.4622,
+          "four_months": {
+            "median": 0.0656,
+            "p_ge_20": 0.0593,
+            "p_ge_10": 0.3351,
+            "p_lt_0": 0.2652,
+            "p_le_m10": 0.086,
+            "p05": -0.1259,
+            "worst": -0.3753
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 0.8816,
+          "cagr": 0.0471,
+          "max_drawdown": 0.5102,
+          "four_months": {
+            "median": 0.0281,
+            "p_ge_20": 0.0184,
+            "p_ge_10": 0.1559,
+            "p_lt_0": 0.3516,
+            "p_le_m10": 0.0772,
+            "p05": -0.1251,
+            "worst": -0.3492
+          }
+        }
+      }
+    },
+    "universe_full": {
+      "total_return": 9.5732,
+      "cagr": 0.1872,
+      "max_drawdown": 0.5757,
+      "four_months": {
+        "median": 0.0878,
+        "p_ge_20": 0.1537,
+        "p_ge_10": 0.4567,
+        "p_lt_0": 0.2675,
+        "p_le_m10": 0.1236,
+        "p05": -0.1695,
+        "worst": -0.4747
+      }
+    },
+    "index_full": {
+      "total_return": 1.2062,
+      "cagr": 0.0593,
+      "max_drawdown": 0.6286,
+      "four_months": {
+        "median": 0.037,
+        "p_ge_20": 0.0479,
+        "p_ge_10": 0.2494,
+        "p_lt_0": 0.3556,
+        "p_le_m10": 0.1208,
+        "p05": -0.1678,
+        "worst": -0.445
+      }
+    }
+  },
+  "recent_2018_2026": {
+    "period": [
+      "2018-11-12",
+      "2026-11-13"
+    ],
+    "rules": {
+      "v3": {
+        "total_return": 1.2879,
+        "cagr": 0.109,
+        "max_drawdown": 0.2047,
+        "four_months": {
+          "median": 0.0408,
+          "p_ge_20": 0.0271,
+          "p_ge_10": 0.1881,
+          "p_lt_0": 0.2472,
+          "p_le_m10": 0.0537,
+          "p05": -0.1019,
+          "worst": -0.1479
+        },
+        "sharpe": 0.8285,
+        "exposure": 0.69,
+        "trades": 213,
+        "win_rate": 0.5258,
+        "by_exit_reason": {
+          "stop_loss": 75,
+          "take_profit": 59,
+          "trailing_stop": 79
+        },
+        "universe_same_exposure": {
+          "total_return": 2.8692,
+          "cagr": 0.1842,
+          "max_drawdown": 0.2284,
+          "four_months": {
+            "median": 0.0628,
+            "p_ge_20": 0.0326,
+            "p_ge_10": 0.3666,
+            "p_lt_0": 0.2041,
+            "p_le_m10": 0.0186,
+            "p05": -0.0693,
+            "worst": -0.1927
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.3398,
+          "cagr": 0.1121,
+          "max_drawdown": 0.2272,
+          "four_months": {
+            "median": 0.0411,
+            "p_ge_20": 0.003,
+            "p_ge_10": 0.2046,
+            "p_lt_0": 0.2227,
+            "p_le_m10": 0.0251,
+            "p05": -0.0639,
+            "worst": -0.1918
+          }
+        }
+      },
+      "v3 (local signals)": {
+        "total_return": 1.5564,
+        "cagr": 0.1244,
+        "max_drawdown": 0.2516,
+        "four_months": {
+          "median": 0.0467,
+          "p_ge_20": 0.0517,
+          "p_ge_10": 0.2467,
+          "p_lt_0": 0.2548,
+          "p_le_m10": 0.0752,
+          "p05": -0.1349,
+          "worst": -0.1923
+        },
+        "sharpe": 0.8638,
+        "exposure": 0.7428,
+        "trades": 216,
+        "win_rate": 0.5509,
+        "by_exit_reason": {
+          "stop_loss": 74,
+          "take_profit": 59,
+          "trailing_stop": 83
+        },
+        "universe_same_exposure": {
+          "total_return": 3.2619,
+          "cagr": 0.1986,
+          "max_drawdown": 0.2439,
+          "four_months": {
+            "median": 0.0675,
+            "p_ge_20": 0.0677,
+            "p_ge_10": 0.3912,
+            "p_lt_0": 0.2061,
+            "p_le_m10": 0.0246,
+            "p05": -0.0747,
+            "worst": -0.2063
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.4858,
+          "cagr": 0.1205,
+          "max_drawdown": 0.2426,
+          "four_months": {
+            "median": 0.0442,
+            "p_ge_20": 0.0035,
+            "p_ge_10": 0.2462,
+            "p_lt_0": 0.2232,
+            "p_le_m10": 0.0336,
+            "p05": -0.0689,
+            "worst": -0.2053
+          }
+        }
+      },
+      "s2": {
+        "total_return": 1.767,
+        "cagr": 0.1356,
+        "max_drawdown": 0.2758,
+        "four_months": {
+          "median": 0.0517,
+          "p_ge_20": 0.0507,
+          "p_ge_10": 0.2773,
+          "p_lt_0": 0.2212,
+          "p_le_m10": 0.0883,
+          "p05": -0.1188,
+          "worst": -0.1902
+        },
+        "sharpe": 0.9483,
+        "exposure": 0.7016,
+        "trades": 224,
+        "win_rate": 0.5446,
+        "by_exit_reason": {
+          "stop_loss": 67,
+          "take_profit": 65,
+          "trailing_stop": 92
+        },
+        "universe_same_exposure": {
+          "total_return": 2.9526,
+          "cagr": 0.1874,
+          "max_drawdown": 0.2319,
+          "four_months": {
+            "median": 0.0638,
+            "p_ge_20": 0.0411,
+            "p_ge_10": 0.3741,
+            "p_lt_0": 0.2041,
+            "p_le_m10": 0.0216,
+            "p05": -0.0705,
+            "worst": -0.1957
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.3713,
+          "cagr": 0.1139,
+          "max_drawdown": 0.2306,
+          "four_months": {
+            "median": 0.0418,
+            "p_ge_20": 0.003,
+            "p_ge_10": 0.2126,
+            "p_lt_0": 0.2227,
+            "p_le_m10": 0.0256,
+            "p05": -0.065,
+            "worst": -0.1948
+          }
+        }
+      },
+      "w1": {
+        "total_return": 2.2921,
+        "cagr": 0.1605,
+        "max_drawdown": 0.28,
+        "four_months": {
+          "median": 0.0649,
+          "p_ge_20": 0.1199,
+          "p_ge_10": 0.3842,
+          "p_lt_0": 0.2849,
+          "p_le_m10": 0.1023,
+          "p05": -0.1484,
+          "worst": -0.2058
+        },
+        "sharpe": 0.9024,
+        "exposure": 0.7762,
+        "trades": 458,
+        "win_rate": 0.5546,
+        "by_exit_reason": {
+          "stop_loss": 122,
+          "swap_out": 180,
+          "take_profit": 85,
+          "trailing_stop": 71
+        },
+        "universe_same_exposure": {
+          "total_return": 3.5283,
+          "cagr": 0.2077,
+          "max_drawdown": 0.2536,
+          "four_months": {
+            "median": 0.0706,
+            "p_ge_20": 0.0883,
+            "p_ge_10": 0.4107,
+            "p_lt_0": 0.2061,
+            "p_le_m10": 0.0271,
+            "p05": -0.0782,
+            "worst": -0.2148
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.582,
+          "cagr": 0.1258,
+          "max_drawdown": 0.2523,
+          "four_months": {
+            "median": 0.0461,
+            "p_ge_20": 0.007,
+            "p_ge_10": 0.2618,
+            "p_lt_0": 0.2237,
+            "p_le_m10": 0.0356,
+            "p05": -0.0721,
+            "worst": -0.2138
+          }
+        }
+      },
+      "v4-draft": {
+        "total_return": 2.908,
+        "cagr": 0.1857,
+        "max_drawdown": 0.2684,
+        "four_months": {
+          "median": 0.0751,
+          "p_ge_20": 0.1575,
+          "p_ge_10": 0.4122,
+          "p_lt_0": 0.2683,
+          "p_le_m10": 0.0838,
+          "p05": -0.1475,
+          "worst": -0.237
+        },
+        "sharpe": 1.0039,
+        "exposure": 0.7769,
+        "trades": 458,
+        "win_rate": 0.5895,
+        "by_exit_reason": {
+          "stop_loss": 109,
+          "swap_out": 179,
+          "take_profit": 89,
+          "trailing_stop": 81
+        },
+        "universe_same_exposure": {
+          "total_return": 3.534,
+          "cagr": 0.2079,
+          "max_drawdown": 0.2538,
+          "four_months": {
+            "median": 0.0706,
+            "p_ge_20": 0.0883,
+            "p_ge_10": 0.4117,
+            "p_lt_0": 0.2061,
+            "p_le_m10": 0.0276,
+            "p05": -0.0783,
+            "worst": -0.215
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.584,
+          "cagr": 0.1259,
+          "max_drawdown": 0.2525,
+          "four_months": {
+            "median": 0.0462,
+            "p_ge_20": 0.0075,
+            "p_ge_10": 0.2618,
+            "p_lt_0": 0.2242,
+            "p_le_m10": 0.0356,
+            "p05": -0.0722,
+            "worst": -0.2139
+          }
+        }
+      },
+      "v4-draft (local signals)": {
+        "total_return": 2.8213,
+        "cagr": 0.1824,
+        "max_drawdown": 0.2396,
+        "four_months": {
+          "median": 0.0701,
+          "p_ge_20": 0.1053,
+          "p_ge_10": 0.3872,
+          "p_lt_0": 0.2382,
+          "p_le_m10": 0.0717,
+          "p05": -0.1277,
+          "worst": -0.2017
+        },
+        "sharpe": 0.9927,
+        "exposure": 0.794,
+        "trades": 455,
+        "win_rate": 0.5495,
+        "by_exit_reason": {
+          "stop_loss": 110,
+          "swap_out": 177,
+          "take_profit": 79,
+          "trailing_stop": 89
+        },
+        "universe_same_exposure": {
+          "total_return": 3.6762,
+          "cagr": 0.2126,
+          "max_drawdown": 0.2587,
+          "four_months": {
+            "median": 0.0722,
+            "p_ge_20": 0.0993,
+            "p_ge_10": 0.4193,
+            "p_lt_0": 0.2066,
+            "p_le_m10": 0.0316,
+            "p05": -0.0801,
+            "worst": -0.2193
+          }
+        },
+        "index_same_exposure": {
+          "total_return": 1.6344,
+          "cagr": 0.1287,
+          "max_drawdown": 0.2574,
+          "four_months": {
+            "median": 0.0471,
+            "p_ge_20": 0.0085,
+            "p_ge_10": 0.2678,
+            "p_lt_0": 0.2247,
+            "p_le_m10": 0.0356,
+            "p05": -0.0738,
+            "worst": -0.2182
+          }
+        }
+      }
+    },
+    "universe_full": {
+      "total_return": 5.7292,
+      "cagr": 0.269,
+      "max_drawdown": 0.3159,
+      "four_months": {
+        "median": 0.0909,
+        "p_ge_20": 0.2071,
+        "p_ge_10": 0.4774,
+        "p_lt_0": 0.2106,
+        "p_le_m10": 0.0527,
+        "p05": -0.102,
+        "worst": -0.2702
+      }
+    },
+    "index_full": {
+      "total_return": 2.3073,
+      "cagr": 0.1612,
+      "max_drawdown": 0.3144,
+      "four_months": {
+        "median": 0.0587,
+        "p_ge_20": 0.0441,
+        "p_ge_10": 0.3531,
+        "p_lt_0": 0.2277,
+        "p_le_m10": 0.0441,
+        "p05": -0.0937,
+        "worst": -0.2688
+      }
+    }
+  }
+}

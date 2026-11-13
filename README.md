@@ -98,6 +98,7 @@ python -m trader backtest --years 8                     # 過去データで仮�
 python -m trader backtest --rules rules/candidates/x.yaml --name x
 python -m trader yearly config/rules.yaml rules/candidates/x.yaml --name y   # 暦年ごとに比較 (指数50/50つき)
 python -m trader phases config/rules.yaml rules/candidates/x.yaml --name z   # 採用の基準 (12通りの区切り・同じ持ち高の指数)
+python -m trader phases config/rules.yaml rules/candidates/x.yaml --until 2018-10-31 --years 23 --name z   # 古い期間だけで確かめる
 python -m trader forward                                # 決めた日以降の実データで記録 (フォワードテスト)
 python -m pytest -q
 ```
