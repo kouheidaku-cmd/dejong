@@ -507,7 +507,8 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
     return out
 
 
-def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int, name: str) -> dict:
+def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int, name: str,
+               until: date | None = None) -> dict:
     """採用の基準の計算: 1年の区切りを1月〜12月始まりの12通りに変えて、同じ持ち高の指数と比べる。
 
     区切りごとに、丸1年ある期間をそれぞれ独立に100万円から走らせる。「同じ持ち高の指数」は、指数 50/50 を
@@ -521,6 +522,8 @@ def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int
     base = [df for t, df in all_frames.items() if t in universe]
     warm = min(df.index[0] for df in base) + pd.Timedelta(days=380)
     last = max(df.index[-1] for df in base)
+    if until:  # この日までのデータで評価 (古い期間だけを切り出して確かめるとき)
+        last = min(last, pd.Timestamp(until))
     kw = _run_kw(settings)
     year = pd.DateOffset(years=1)
 
@@ -663,6 +666,7 @@ def main(argv: list[str] | None = None) -> None:
     s = sub.add_parser("phases", help="採用の基準: 12通りの年の区切りで、同じ持ち高の指数・現行ルールと比べる")
     s.add_argument("rules", type=Path, nargs="+", help="ルールファイル (最初が現行)")
     s.add_argument("--years", type=int, default=9)
+    s.add_argument("--until", type=date.fromisoformat, help="この日までのデータで評価")
     s.add_argument("--name", required=True, help="出力先 reports/backtest/<name>")
     s = sub.add_parser("yearly", help="暦年ごとに独立して走らせ、指数 50/50 と比べる")
     s.add_argument("rules", type=Path, nargs="+", help="比較するルールファイル")
@@ -692,7 +696,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "forward":
         out = cmd_forward(root, CachedData(data, root / "data" / "cache"))
     elif args.cmd == "phases":
-        out = cmd_phases(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.name)
+        out = cmd_phases(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.name, args.until)
     elif args.cmd == "yearly":
         out = cmd_yearly(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.until, args.name)
     elif args.cmd == "screen":
