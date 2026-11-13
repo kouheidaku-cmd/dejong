@@ -7,4 +7,7 @@
 - 金額は円換算で扱う (米国株の取得単価だけはドル建て)
 - 人間が管理するファイル: `config/strategy.md`, `config/settings.yaml`, `config/rules.yaml`, `config/universe.yaml`
 - リポジトリ直下に `STOP` ファイルを置くと全注文が止まる (緊急停止)
+- `surge/` は別の売買システム (集中モメンタム、米国株5銘柄)。運用は `.claude/skills/surge-trade/`、説明は `surge/README.md`。
+  口座の記録 (`state/`) は共有で surge は読むだけ。ルールの数字は `surge/config.yaml` (検証とセットなので、人の了承なしに変えない)。
+  日次ルーチンと surge の注文案を同じ日に両方出さない (どちらで運用するかは人が決める)
 - テスト: `python -m pytest -q` (ネットワーク不要)
