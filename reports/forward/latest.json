@@ -1,138 +1,138 @@
 {
   "start": "2026-10-21",
-  "until": "2026-11-06",
+  "until": "2026-11-13",
   "rules": {
     "s4-combined": {
       "label": "v2 (2026-10-22〜24 の実際の口座のルール)",
-      "return": -0.0679,
+      "return": -0.0351,
       "max_drawdown": 0.069,
-      "trades": 3,
+      "trades": 5,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 1,
           "avg_cost": 84390.8053,
-          "close": 83570.0121,
-          "unrealized_pct": -0.0097
+          "close": 83755.3158,
+          "unrealized_pct": -0.0075
         },
         {
           "ticker": "7974.T",
           "qty": 13,
           "avg_cost": 8639.631,
-          "close": 8178.0,
-          "unrealized_pct": -0.0534
+          "close": 8773.0,
+          "unrealized_pct": 0.0154
         },
         {
           "ticker": "8001.T",
           "qty": 52,
           "avg_cost": 2315.8135,
-          "close": 2241.0,
-          "unrealized_pct": -0.0323
+          "close": 2412.0,
+          "unrealized_pct": 0.0415
         },
         {
           "ticker": "6758.T",
           "qty": 29,
           "avg_cost": 4002.999,
-          "close": 4142.0,
-          "unrealized_pct": 0.0347
-        },
-        {
-          "ticker": "9432.T",
-          "qty": 681,
-          "avg_cost": 176.4763,
-          "close": 160.2,
-          "unrealized_pct": -0.0922
-        },
-        {
-          "ticker": "6098.T",
-          "qty": 6,
-          "avg_cost": 19024.005,
-          "close": 17000.0,
-          "unrealized_pct": -0.1064
+          "close": 4353.0,
+          "unrealized_pct": 0.0874
         },
         {
           "ticker": "XOM",
           "qty": 4,
           "avg_cost": 28136.9777,
-          "close": 26124.1927,
-          "unrealized_pct": -0.0715
+          "close": 27273.0757,
+          "unrealized_pct": -0.0307
         },
         {
           "ticker": "V",
           "qty": 1,
           "avg_cost": 67800.5524,
-          "close": 66566.5292,
-          "unrealized_pct": -0.0182
+          "close": 68068.3816,
+          "unrealized_pct": 0.004
+        },
+        {
+          "ticker": "ABBV",
+          "qty": 2,
+          "avg_cost": 46559.0354,
+          "close": 47167.9211,
+          "unrealized_pct": 0.0131
+        },
+        {
+          "ticker": "MA",
+          "qty": 1,
+          "avg_cost": 104054.3136,
+          "close": 105707.7516,
+          "unrealized_pct": 0.0159
         }
       ]
     },
     "v3-earnings-blackout": {
       "label": "採用中 (2026-10-24 から実際の口座のルール v3。採用は 10/24 なので 10/21〜23 の分は後付け)",
-      "return": -0.0679,
+      "return": -0.0351,
       "max_drawdown": 0.069,
-      "trades": 3,
+      "trades": 5,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 1,
           "avg_cost": 84390.8053,
-          "close": 83570.0121,
-          "unrealized_pct": -0.0097
+          "close": 83755.3158,
+          "unrealized_pct": -0.0075
         },
         {
           "ticker": "7974.T",
           "qty": 13,
           "avg_cost": 8639.631,
-          "close": 8178.0,
-          "unrealized_pct": -0.0534
+          "close": 8773.0,
+          "unrealized_pct": 0.0154
         },
         {
           "ticker": "8001.T",
           "qty": 52,
           "avg_cost": 2315.8135,
-          "close": 2241.0,
-          "unrealized_pct": -0.0323
+          "close": 2412.0,
+          "unrealized_pct": 0.0415
         },
         {
           "ticker": "6758.T",
           "qty": 29,
           "avg_cost": 4002.999,
-          "close": 4142.0,
-          "unrealized_pct": 0.0347
-        },
-        {
-          "ticker": "9432.T",
-          "qty": 681,
-          "avg_cost": 176.4763,
-          "close": 160.2,
-          "unrealized_pct": -0.0922
-        },
-        {
-          "ticker": "6098.T",
-          "qty": 6,
-          "avg_cost": 19024.005,
-          "close": 17000.0,
-          "unrealized_pct": -0.1064
+          "close": 4353.0,
+          "unrealized_pct": 0.0874
         },
         {
           "ticker": "XOM",
           "qty": 4,
           "avg_cost": 28136.9777,
-          "close": 26124.1927,
-          "unrealized_pct": -0.0715
+          "close": 27273.0757,
+          "unrealized_pct": -0.0307
         },
         {
           "ticker": "V",
           "qty": 1,
           "avg_cost": 67800.5524,
-          "close": 66566.5292,
-          "unrealized_pct": -0.0182
+          "close": 68068.3816,
+          "unrealized_pct": 0.004
+        },
+        {
+          "ticker": "ABBV",
+          "qty": 2,
+          "avg_cost": 46559.0354,
+          "close": 47167.9211,
+          "unrealized_pct": 0.0131
+        },
+        {
+          "ticker": "MA",
+          "qty": 1,
+          "avg_cost": 104054.3136,
+          "close": 105707.7516,
+          "unrealized_pct": 0.0159
         }
       ]
     },
     "momentum-12-1": {
       "label": "参考 (通算リターンは最大だが、下落幅の基準が未達)",
-      "return": -0.0916,
+      "return": -0.0271,
       "max_drawdown": 0.0916,
       "trades": 0,
       "open_positions": [
@@ -140,170 +140,241 @@
           "ticker": "6981.T",
           "qty": 19,
           "avg_cost": 6411.405,
-          "close": 4882.0,
-          "unrealized_pct": -0.2385
+          "close": 5177.0,
+          "unrealized_pct": -0.1925
         },
         {
           "ticker": "AMD",
           "qty": 1,
           "avg_cost": 80607.7475,
-          "close": 70722.9038,
-          "unrealized_pct": -0.1226
+          "close": 85382.8421,
+          "unrealized_pct": 0.0592
         },
         {
           "ticker": "6098.T",
           "qty": 6,
           "avg_cost": 18833.815,
-          "close": 17000.0,
-          "unrealized_pct": -0.0974
+          "close": 17560.0,
+          "unrealized_pct": -0.0676
         },
         {
           "ticker": "8035.T",
           "qty": 13,
           "avg_cost": 9673.664,
-          "close": 8263.0,
-          "unrealized_pct": -0.1458
+          "close": 9461.0,
+          "unrealized_pct": -0.022
         },
         {
           "ticker": "8316.T",
           "qty": 38,
           "avg_cost": 3123.12,
-          "close": 3008.0,
-          "unrealized_pct": -0.0369
+          "close": 3275.0,
+          "unrealized_pct": 0.0486
         },
         {
           "ticker": "MRK",
           "qty": 5,
           "avg_cost": 23488.9581,
-          "close": 23109.681,
-          "unrealized_pct": -0.0161
+          "close": 23623.1291,
+          "unrealized_pct": 0.0057
         },
         {
           "ticker": "8306.T",
           "qty": 36,
           "avg_cost": 3337.334,
-          "close": 3224.0,
-          "unrealized_pct": -0.034
+          "close": 3475.0,
+          "unrealized_pct": 0.0413
         },
         {
           "ticker": "CSCO",
           "qty": 7,
           "avg_cost": 16638.9316,
-          "close": 14781.1872,
-          "unrealized_pct": -0.1117
+          "close": 15290.4449,
+          "unrealized_pct": -0.081
         }
       ]
     },
     "v1": {
       "label": "以前のルール (比較用)",
-      "return": -0.1143,
+      "return": -0.0934,
       "max_drawdown": 0.1143,
-      "trades": 6,
+      "trades": 7,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 2,
           "avg_cost": 84390.8053,
-          "close": 83570.0121,
-          "unrealized_pct": -0.0097
-        },
-        {
-          "ticker": "6098.T",
-          "qty": 9,
-          "avg_cost": 19024.005,
-          "close": 17000.0,
-          "unrealized_pct": -0.1064
+          "close": 83755.3158,
+          "unrealized_pct": -0.0075
         },
         {
           "ticker": "ABBV",
           "qty": 4,
           "avg_cost": 46124.847,
-          "close": 45880.7423,
-          "unrealized_pct": -0.0053
+          "close": 47167.9211,
+          "unrealized_pct": 0.0226
         },
         {
           "ticker": "4502.T",
           "qty": 27,
           "avg_cost": 6847.841,
-          "close": 6560.0,
-          "unrealized_pct": -0.042
+          "close": 6926.0,
+          "unrealized_pct": 0.0114
         },
         {
           "ticker": "MRK",
           "qty": 7,
           "avg_cost": 24094.3334,
-          "close": 23109.681,
-          "unrealized_pct": -0.0409
+          "close": 23623.1291,
+          "unrealized_pct": -0.0196
+        },
+        {
+          "ticker": "V",
+          "qty": 2,
+          "avg_cost": 67186.0942,
+          "close": 68068.3816,
+          "unrealized_pct": 0.0131
         }
       ]
     },
     "swap-gap20": {
       "label": "参考 (v3 + 弱い保有の入れ替え。リターンは大きく上がったが下落の基準が未達。2026-10-24 から追加)",
-      "return": -0.0679,
+      "return": -0.0351,
       "max_drawdown": 0.069,
-      "trades": 3,
+      "trades": 5,
       "open_positions": [
         {
           "ticker": "MSFT",
           "qty": 1,
           "avg_cost": 84390.8053,
-          "close": 83570.0121,
-          "unrealized_pct": -0.0097
+          "close": 83755.3158,
+          "unrealized_pct": -0.0075
         },
         {
           "ticker": "7974.T",
           "qty": 13,
           "avg_cost": 8639.631,
-          "close": 8178.0,
-          "unrealized_pct": -0.0534
+          "close": 8773.0,
+          "unrealized_pct": 0.0154
         },
         {
           "ticker": "8001.T",
           "qty": 52,
           "avg_cost": 2315.8135,
-          "close": 2241.0,
-          "unrealized_pct": -0.0323
+          "close": 2412.0,
+          "unrealized_pct": 0.0415
         },
         {
           "ticker": "6758.T",
           "qty": 29,
           "avg_cost": 4002.999,
-          "close": 4142.0,
-          "unrealized_pct": 0.0347
-        },
-        {
-          "ticker": "9432.T",
-          "qty": 681,
-          "avg_cost": 176.4763,
-          "close": 160.2,
-          "unrealized_pct": -0.0922
-        },
-        {
-          "ticker": "6098.T",
-          "qty": 6,
-          "avg_cost": 19024.005,
-          "close": 17000.0,
-          "unrealized_pct": -0.1064
+          "close": 4353.0,
+          "unrealized_pct": 0.0874
         },
         {
           "ticker": "XOM",
           "qty": 4,
           "avg_cost": 28136.9777,
-          "close": 26124.1927,
-          "unrealized_pct": -0.0715
+          "close": 27273.0757,
+          "unrealized_pct": -0.0307
         },
         {
           "ticker": "V",
           "qty": 1,
           "avg_cost": 67800.5524,
-          "close": 66566.5292,
-          "unrealized_pct": -0.0182
+          "close": 68068.3816,
+          "unrealized_pct": 0.004
+        },
+        {
+          "ticker": "ABBV",
+          "qty": 2,
+          "avg_cost": 46559.0354,
+          "close": 47167.9211,
+          "unrealized_pct": 0.0131
+        },
+        {
+          "ticker": "MA",
+          "qty": 1,
+          "avg_cost": 104054.3136,
+          "close": 105707.7516,
+          "unrealized_pct": 0.0159
+        }
+      ]
+    },
+    "dip15-trend": {
+      "label": "参考 (v3 + AI 半導体の押し目買いの別枠。リターンは増えたが下落の基準が未達。2026-11-10 から追加なので 10/21〜11/10 の分は後付け)",
+      "return": -0.0869,
+      "max_drawdown": 0.121,
+      "trades": 9,
+      "open_positions": [
+        {
+          "ticker": "MSFT",
+          "qty": 1,
+          "avg_cost": 84390.8053,
+          "close": 83755.3158,
+          "unrealized_pct": -0.0075
+        },
+        {
+          "ticker": "7974.T",
+          "qty": 13,
+          "avg_cost": 8639.631,
+          "close": 8773.0,
+          "unrealized_pct": 0.0154
+        },
+        {
+          "ticker": "8001.T",
+          "qty": 52,
+          "avg_cost": 2315.8135,
+          "close": 2412.0,
+          "unrealized_pct": 0.0415
+        },
+        {
+          "ticker": "6758.T",
+          "qty": 29,
+          "avg_cost": 4002.999,
+          "close": 4353.0,
+          "unrealized_pct": 0.0874
+        },
+        {
+          "ticker": "XOM",
+          "qty": 3,
+          "avg_cost": 28136.9777,
+          "close": 27273.0757,
+          "unrealized_pct": -0.0307
+        },
+        {
+          "ticker": "V",
+          "qty": 1,
+          "avg_cost": 67800.5524,
+          "close": 68068.3816,
+          "unrealized_pct": 0.004
+        },
+        {
+          "ticker": "ABBV",
+          "qty": 2,
+          "avg_cost": 46559.0354,
+          "close": 47167.9211,
+          "unrealized_pct": 0.0131
+        },
+        {
+          "ticker": "MA",
+          "qty": 1,
+          "avg_cost": 104054.3136,
+          "close": 105707.7516,
+          "unrealized_pct": 0.0159
+        },
+        {
+          "ticker": "6857.T",
+          "qty": 2,
+          "avg_cost": 30800.77,
+          "close": 30610.0,
+          "unrealized_pct": -0.0062
         }
       ]
     }
   },
   "index_50_50": {
-    "return": -0.0542,
-    "max_drawdown": 0.0542
+    "return": -0.0371,
+    "max_drawdown": 0.0824
   }
 }
