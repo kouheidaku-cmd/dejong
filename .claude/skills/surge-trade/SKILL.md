@@ -18,7 +18,7 @@ description: 集中モメンタム型の売買システム surge の売買ルー
 - `surge/config.yaml` の `params` は検証とセット。変えたければレポートで提案し、人の了承を得てから
   `python -m surge backtest` と `python -m surge robust` で確かめる
 - リポジトリ直下に `STOP` があれば注文案は出ない。回避しない
-- 既存の daily-trade と同じ口座を見ている。両方の注文案を同じ日に出さない (どちらで運用するかは人が決める)
+- **2026-11-14 から、実際の口座は surge で運用している (人の決定)。** daily-trade・weekly-research の注文案は出さない
 
 ## 手順
 
@@ -62,10 +62,15 @@ description: 集中モメンタム型の売買システム surge の売買ルー
    python -m surge --no-fetch status     # 目標までの進み具合 (reports/surge/journal.csv にも1行残る)
    ```
    `reports/surge/<日付>/report.md` に、注文案の表、見送った銘柄と理由 (出典つき)、status の要点、確認してほしいことを書く。
+   週次のときは、以前のルール (v3 と候補) のフォワードテストも更新する (2027年1月下旬の見直しで使う。注文案には使わない):
    ```bash
-   git add reports/surge && git commit -m "surge: <日付> (weekly|daily)" && git push
+   python -m trader forward          # 週次だけ。reports/forward/ が更新される
+   ```
+   ```bash
+   git add reports/surge reports/forward && git commit -m "surge: <日付> (weekly|daily)" && git push
    ```
 
 ## 見直し
+- **株 + 現金が 324,000円 (開始の 405,316円から -20%) を割ったら、注文案を出すのをやめて人に相談する** (2026-11-14 に提案した線。`STOP` を置くかどうかは人が決める)
 - 月に1回、`python -m surge backtest` を走らせて、実際の成績 (`reports/surge/journal.csv`) が検証の幅に収まっているかを見る
 - 4か月で -17% より悪い / 最高値から -40% より悪い → 検証の「悪い方5%」「最大下落」を超えている。注文案を止めて (`STOP`)、人と相談する
