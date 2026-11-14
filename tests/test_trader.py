@@ -621,3 +621,126 @@ def test_atr_stop_scales_with_volatility():
     assert rules.exit_check({**row, "close": 93.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=0.02) == ("stop_loss", 1.0)
     assert rules.exit_check({**row, "close": 93.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=0.05) is None  # 値動きが大きい銘柄は幅 15%
     assert rules.exit_check({**row, "close": 91.0}, 100.0, 100.0, 5, False, r, entry_atr_pct=None) == ("stop_loss", 1.0)  # ATR がなければ -8%
+
+
+# ---------------------------------------------------------------- 2026-11-14 の見直し (仮) で足した部分
+
+def _signal_inputs():
+    wave = 2 * np.sin(np.arange(320))  # RSI が100に張り付かない程度の揺れ
+    hist = {"UP": bars(np.linspace(100, 160, 320) + wave, start="2018-01-01"),
+            "UP2": bars(np.linspace(100, 130, 320) + wave, start="2018-01-01")}
+    prices = {t: float(df["Close"].iloc[-1]) for t, df in hist.items()}
+    rule_set = {**RULES, "entry": {"require_trend": True, "max_rsi": 101}}
+    return hist, prices, rule_set, hist["UP"].index[-1].date()
+
+
+def test_suggested_qty_fits_cash_floor():
+    hist, prices, rule_set, day = _signal_inputs()
+    watch = [{"ticker": "UP"}, {"ticker": "UP2"}]
+    # 目標は総資産の 20% = 20万円ずつ。現金 30万円、下限 5万円 → 1位は目標どおり、2位は残りで買える分だけ
+    held = {"qty": 100, "avg_cost": 7000.0, "currency": "JPY", "opened": day.isoformat(), "took_profit": False}
+    pf = Portfolio(cash=300_000, positions={"OTHER": held})
+    hist2 = {**hist, "OTHER": bars(np.full(320, 7000.0), start="2018-01-01")}
+    prices2 = {**prices, "OTHER": 7000.0}
+    sig = cli.rule_signals(pf, hist2, prices2, FX, 1_000_000, watch, rule_set, SETTINGS, day)
+    e = {x["ticker"]: x for x in sig["entries"]}
+    assert e["UP"]["ok"] and e["UP2"]["ok"]
+    unit = {t: prices[t] * 150 * (1 + SETTINGS["risk"]["price_buffer"]) for t in ("UP", "UP2")}
+    assert e["UP"]["suggested_qty"] == e["UP"]["target_qty"] == int(200_000 // (prices["UP"] * 150))
+    left = 300_000 - 0.05 * 1_000_000 - e["UP"]["suggested_qty"] * unit["UP"]
+    assert e["UP2"]["suggested_qty"] == int(left // unit["UP2"]) < e["UP2"]["target_qty"]
+    # この株数なら、リスクチェックの「買付後の現金 5%」で拒否されない
+    orders = [{"ticker": t, "side": "buy", "qty": e[t]["suggested_qty"], "rationale": "x"} for t in ("UP", "UP2")]
+    res = check_orders(orders, pf, prices2, FX, {"UP", "UP2"}, SETTINGS)
+    assert [r for _, r in res] == [None, None]
+
+
+def test_missed_in_universe_lists_rule_passes_outside_watchlist():
+    hist, prices, rule_set, day = _signal_inputs()
+    outside = {"UP2": hist.pop("UP2"), "DOWN": bars(np.linspace(200, 100, 320), start="2018-01-01")}
+    sig = cli.rule_signals(Portfolio(cash=1_000_000), hist, prices, FX, 1_000_000, [{"ticker": "UP"}], rule_set,
+                           SETTINGS, day, outside=outside)
+    assert [m["ticker"] for m in sig["missed_in_universe"]] == ["UP2"]   # 買い条件を満たすのにウォッチリストにない
+    assert [x["ticker"] for x in sig["entries"]] == ["UP"]               # 買い候補そのものは今までどおりウォッチリストだけ
+    assert "missed_in_universe" not in cli.rule_signals(Portfolio(cash=1_000_000), hist, prices, FX, 1_000_000,
+                                                        [{"ticker": "UP"}], rule_set, SETTINGS, day)
+
+
+def test_daily_swap_signal_matches_backtest_rule():
+    hist, prices, rule_set, day = _signal_inputs()
+    opened = (pd.Timestamp(day) - pd.Timedelta(days=60)).date().isoformat()
+    pos = {"qty": 10, "avg_cost": 120.0, "currency": "USD", "opened": opened, "took_profit": False}
+    one = {**rule_set, "exit": {"stop_loss": 0.5}, "sizing": {"max_positions": 1, "target_weight": 0.5, "rank_by": "ret_60d"}}
+    pf = Portfolio(cash=0, positions={"UP2": pos})
+    args = (pf, hist, prices, FX, 1_000_000, [{"ticker": "UP"}, {"ticker": "UP2"}])
+    assert "swap" not in cli.rule_signals(*args, one, SETTINGS, day)                 # swap のないルールでは出ない
+    gap = cli.rule_signals(*args, {**one, "swap": {"min_gap": 0.01, "min_hold_days": 28}}, SETTINGS, day)["swap"]
+    assert gap["sell"] == "UP2" and gap["buy"] == "UP" and gap["sell_qty"] == 10 and gap["gap"] > 0.01
+    proceeds = 10 * prices["UP2"] * 150 * 0.97
+    assert gap["buy_qty"] == int((proceeds - 0.05 * 1_000_000) // (prices["UP"] * 150 * 1.03))   # 売った代金から現金の下限を引いた範囲
+    assert cli.rule_signals(*args, {**one, "swap": {"min_gap": 0.9, "min_hold_days": 28}}, SETTINGS, day)["swap"] is None
+    assert cli.rule_signals(*args, {**one, "swap": {"min_gap": 0.01, "min_hold_days": 90}}, SETTINGS, day)["swap"] is None
+
+
+def test_daily_atr_stop_uses_entry_day_atr():
+    from trader import rules
+    n = 320
+    calm = np.linspace(100, 130, n) + 2 * np.sin(np.arange(n))
+    df = bars(calm, start="2018-01-01")
+    df["High"], df["Low"] = df["Close"] * 1.03, df["Close"] * 0.97          # 1日の値幅 約6% の銘柄
+    df.iloc[-1, df.columns.get_loc("Close")] = 115.0                        # 取得 130 から -11.5%
+    day = df.index[-1].date()
+    opened = df.index[-5].date().isoformat()
+    pos = {"qty": 10, "avg_cost": 130.0, "currency": "USD", "opened": opened, "took_profit": False}
+    pf = Portfolio(cash=0, positions={"VOL": pos})
+    base = {**RULES, "exit": {"stop_loss": 0.08}}
+    atr = {**RULES, "exit": {"stop_loss": 0.08, "stop_atr_mult": 3}}
+    args = (pf, {"VOL": df}, {"VOL": 115.0}, FX, 1_000_000, [])
+    fixed = cli.rule_signals(*args, base, SETTINGS, day)["exits"][0]
+    wide = cli.rule_signals(*args, atr, SETTINGS, day)["exits"][0]
+    assert fixed["signal"] == "stop_loss" and fixed["stop_pct"] == 0.08
+    assert wide["signal"] is None and wide["stop_pct"] == pytest.approx(3 * rules.features(df)["atr14_pct"].iloc[-6], abs=1e-4)
+
+
+def test_phases_until_limits_period(tmp_path):
+    root = make_root(tmp_path, "paper")
+    n = 1500
+    idx_frames = {t: bars(np.linspace(100, 300, n) + 3 * np.sin(np.arange(n)), start="2015-01-01")
+                  for t in ("7203.T", "MSFT", "^N225", "^GSPC")}
+    idx_frames["JPY=X"] = bars(np.full(n, 150.0), start="2015-01-01")
+    (root / "config" / "universe.yaml").write_text(yaml.safe_dump({"tickers": ["7203.T", "MSFT"]}))
+    rp = [root / "config" / "rules.yaml"]
+    full = cli.cmd_phases(root, FakeData(idx_frames), rp, 6, "full")
+    cut = cli.cmd_phases(root, FakeData(idx_frames), rp, 6, "cut", until=date(2018, 12, 31))
+    assert cut["until"] == "2018-12-31" and full["until"] > cut["until"]
+
+
+def test_unfinished_bar_is_dropped():
+    from trader.data import drop_unfinished_bar
+    df = bars([1, 2], start="2026-11-12")                          # 11/12 (木) と 11/13 (金)
+    during_us = pd.Timestamp("2026-11-13 16:30", tz="UTC")         # NY 11:30 (取引時間中) = 東京 14日 1:30
+    routine = pd.Timestamp("2026-11-13 07:19", tz="UTC")           # 東京 16:19 (定期実行の時刻)
+    assert len(drop_unfinished_bar(df, "MSFT", during_us)) == 1
+    assert len(drop_unfinished_bar(df, "6758.T", during_us)) == 2
+    assert len(drop_unfinished_bar(df, "6758.T", routine)) == 2 and len(drop_unfinished_bar(df, "JPY=X", during_us)) == 2
+    assert len(drop_unfinished_bar(df, "6758.T", pd.Timestamp("2026-11-13 02:00", tz="UTC"))) == 1   # 東京 11:00
+
+
+def test_backtest_local_signals_ignore_fx_moves():
+    """判定を現地通貨で行うと、為替だけで動いた分では損切りにならない (日次のシグナルと同じ)。"""
+    from trader import backtest
+    n = 400
+    local = bars(np.linspace(100, 140, n) + 0.5 * np.sin(np.arange(n)), start="2018-01-01")
+    rate = pd.Series(np.concatenate([np.full(300, 150.0), np.linspace(150, 120, 100)]), index=local.index)  # 後半に 20% の円高
+    jpy = local.copy()
+    for col in ("Open", "High", "Low", "Close"):
+        jpy[col] = local[col] * rate
+    rule_set = {**RULES, "entry": {"require_trend": True, "max_rsi": 101},
+                "exit": {"stop_loss": 0.08}, "sizing": {"max_positions": 1, "target_weight": 0.9, "rank_by": "ret_60d"}}
+    start, end = local.index[220].date(), local.index[-1].date()
+    in_jpy = backtest.run({"US": jpy}, rule_set, start, end, slippage_bps=0)
+    in_local = backtest.run({"US": jpy}, rule_set, start, end, slippage_bps=0, signal_frames={"US": local})
+    assert any(t["exit_reason"] == "stop_loss" for t in in_jpy["trades"])       # 円換算では円高で -8% に当たる
+    assert in_local["trades"] == [] and in_local["open_positions"]              # ドル建てでは上がり続けているので持ったまま
+    # 評価は円のまま: 円高の分だけ資産は減っている
+    assert in_local["equity_curve"]["equity"].iloc[-1] < in_local["equity_curve"]["equity"].max()

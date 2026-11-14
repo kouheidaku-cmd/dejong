@@ -1,0 +1,28 @@
+# surge の母集団 (日米の大型株)。group は「同じ値動きをしやすい仲間」で、同じ group の同時保有数を制限するのに使う。
+# 注意: これは「今の」大型株の一覧なので、過去の検証には後知恵の偏り (生き残り・勝ち残り) が入る。
+#       その偏りの大きさは `python -m surge backtest` が母集団の均等保有と比べて表示する。
+indices: {USD: "^GSPC", JPY: "^N225"}
+fx: {USD: "JPY=X"}
+groups:
+  semis: [NVDA, AVGO, AMD, INTC, QCOM, TXN, MU, AMAT, LRCX, KLAC, ASML, TSM, ARM, MRVL, ADI, NXPI, MCHP, "ON",
+          8035.T, 6857.T, 6920.T, 7735.T, 6146.T, 6723.T, 6526.T, 285A.T, 4063.T]
+  hardware: [AAPL, DELL, SMCI, ANET, CSCO, IBM, 6758.T, 6501.T, 6702.T, 6701.T, 6981.T, 6762.T, 6971.T, 6752.T, 7751.T, 7741.T, 6861.T]
+  software: [MSFT, ORCL, CRM, ADBE, NOW, INTU, PANW, CRWD, SNPS, CDNS, PLTR, WDAY, DDOG, SNOW, NET, ZS, FTNT, APP, 4307.T, 6532.T]
+  internet: [GOOGL, META, AMZN, NFLX, SHOP, UBER, ABNB, BKNG, MELI, PDD, 6098.T, 4689.T, 4755.T, 4385.T, 2413.T, 3092.T, 9984.T]
+  autos: [TSLA, 7203.T, 7267.T, 6902.T, 7269.T, 7270.T, 7201.T, 5108.T]
+  banks: [JPM, BAC, WFC, C, GS, MS, SCHW, 8306.T, 8316.T, 8411.T, 8308.T, 8309.T, 7186.T, 7182.T, 8604.T]
+  fin_other: [BLK, AXP, V, MA, PYPL, BRK-B, SPGI, CB, PGR, KKR, BX, COIN, HOOD, 8766.T, 8725.T, 8630.T, 8750.T, 8591.T, 6178.T]
+  pharma: [LLY, JNJ, MRK, ABBV, PFE, AMGN, GILD, VRTX, REGN, BMY, 4502.T, 4568.T, 4519.T, 4503.T, 4578.T]
+  health: [UNH, TMO, ABT, DHR, ISRG, MDT, CVS, BSX, SYK, 4543.T, 7733.T, 4901.T]
+  staples: [WMT, COST, PG, KO, PEP, PM, MO, MDLZ, CL, 4452.T, 4911.T, 2914.T, 2502.T, 2802.T, 3382.T, 8267.T]
+  consumer: [HD, LOW, MCD, SBUX, NKE, TGT, DIS, CMCSA, CMG, LULU, TJX, 9983.T, 9843.T, 4661.T, 7453.T, 7936.T, 3099.T]
+  games: [7974.T, 7832.T, 9766.T, 9697.T, 3659.T]
+  energy: [XOM, CVX, COP, SLB, EOG, 1605.T, 5020.T]
+  industrial: [CAT, DE, BA, GE, RTX, LMT, HON, UNP, UPS, FDX, MMM, AXON, 6367.T, 6954.T, 6273.T, 6301.T, 6326.T, 6503.T, 6594.T, 6506.T, 6645.T,
+               7011.T, 7012.T, 7013.T, 6361.T, 7003.T]
+  power: [GEV, ETN, VRT, PWR, CEG, VST, NEE, SO, DUK, 9501.T, 9503.T, 5803.T, 5801.T, 5802.T]
+  materials: [LIN, FCX, NEM, 5401.T, 4004.T]
+  trading: [8058.T, 8001.T, 8031.T, 8002.T, 8053.T]
+  telecom: [T, VZ, TMUS, 9432.T, 9433.T, 9434.T]
+  realestate_rail: [8801.T, 8802.T, 9020.T, 9022.T]
+  shipping: [9101.T, 9104.T, 9107.T]

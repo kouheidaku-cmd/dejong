@@ -28,6 +28,8 @@ description: 週1回の注目株リサーチ。母集団のスクリーニング
    ```
    `config/universe.yaml` の銘柄をモメンタム中心のスコアで並べたもの (全件は `reports/weekly/<年-W週>/screen.json`)。
    あくまで候補出し。`trend_ok` やRSIの過熱感も見る。
+   直近の日次 `snapshot.json` の `rule_signals.missed_in_universe` (買い条件を満たしているのにウォッチリストにない銘柄) も候補に加える。
+   検証 (バックテスト) は母集団の全部から順位の高い順に買うので、ここに載った銘柄を調べずに放っておくと、検証と実際の売買がずれる
 
 3. **調査** — 上位候補・現ウォッチリスト・保有銘柄 (`python -m trader status`) について WebSearch で調べる:
    - 直近のニュース、決算内容、会社のガイダンス修正

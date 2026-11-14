@@ -41,6 +41,21 @@ Claude が分析して注文案を出し、人が楽天証券のアプリで発�
 `trader/risk.py` がコードとして強制する主なルール: 1銘柄25%まで / 買付後に現金5%以上 /
  ウォッチリスト外は買えない / 空売り不可 / 1日5件まで / 理由必須 / 二重発注防止。
 
+## もうひとつの売買システム: surge
+
+`surge/` は、上の仕組みとは別に一から作った集中モメンタム型のシステム (米国の大型株の上位5銘柄に集中、週1回入れ替え)。
+「4か月で +20%」を狙うためのもので、リスクは大きい (過去21年の検証で、4か月で +20% 以上は 21%、マイナスは 31%、最大下落 37%)。
+ルール・数字・リスクは `surge/README.md`、検証は `reports/surge/2026-11-13-validation.md`、運用は `/surge-trade` スキル。
+
+```bash
+python -m surge plan       # 注文案 (土日は週次の入れ替え、平日は高値から -25% の確認だけ)
+python -m surge status     # 保有・順位・目標までの進み具合
+python -m surge backtest   # 過去21年の仮想売買
+```
+
+口座の記録 (`state/`) は共有で、surge は読むだけ (約定の記録は今までどおり `python -m trader record`)。
+**同じ口座を見ているので、日次ルーチン (daily-trade) と surge の両方の注文案に従わないこと。** どちらで運用するかは人が決める。
+
 ## ディレクトリ
 
 ```
@@ -64,6 +79,8 @@ reports/rules/    ルール検証のレポート
 reports/forward/  フォワードテストの記録 (config/forward.yaml のルール)
 rules/candidates/ ルールの改善案
 trader/           Python パッケージ
+surge/            もうひとつの売買システム (コード・母集団・設定)
+reports/surge/    surge の注文案・検証
 .claude/skills/   daily-trade, weekly-research, sync-account, improve-rules
 ```
 
@@ -81,6 +98,7 @@ python -m trader backtest --years 8                     # 過去データで仮�
 python -m trader backtest --rules rules/candidates/x.yaml --name x
 python -m trader yearly config/rules.yaml rules/candidates/x.yaml --name y   # 暦年ごとに比較 (指数50/50つき)
 python -m trader phases config/rules.yaml rules/candidates/x.yaml --name z   # 採用の基準 (12通りの区切り・同じ持ち高の指数)
+python -m trader phases config/rules.yaml rules/candidates/x.yaml --until 2018-10-31 --years 23 --name z   # 古い期間だけで確かめる
 python -m trader forward                                # 決めた日以降の実データで記録 (フォワードテスト)
 python -m pytest -q
 ```

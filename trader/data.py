@@ -39,6 +39,8 @@ class YahooData:
         out = {}
         for t in tickers:
             df = _select(raw, t)
+            if df is not None:
+                df = drop_unfinished_bar(df, t)
             if df is not None and not df.empty:
                 out[t] = df
         return out
@@ -61,6 +63,24 @@ class YahooData:
                 idx = idx.tz_convert("Asia/Tokyo" if t.endswith(".T") else "America/New_York")
             out[t] = sorted({d.date() for d in idx})
         return out
+
+
+# 終値が確定したとみなす現地時刻。これより前に取った「今日の足」は取引の途中の値なので使わない
+_CLOSE = {"JP": ("Asia/Tokyo", 15, 50), "US": ("America/New_York", 16, 20)}
+
+
+def drop_unfinished_bar(df: pd.DataFrame, ticker: str, now: pd.Timestamp | None = None) -> pd.DataFrame:
+    """取引時間中に取得すると、最後の行が「今日の途中の値」になる。その行を落とす (為替は対象外)。
+
+    定期実行 (平日 16:19 JST) では日米とも引けた後なので何も落ちない。夜に手で prep を走らせたときなどに、
+    米国株の途中の値で売買シグナルが出るのを防ぐ。"""
+    if df.empty or ticker.endswith("=X"):
+        return df
+    tz, hh, mm = _CLOSE["JP" if ticker.endswith(".T") or ticker == "^N225" else "US"]
+    now = (now or pd.Timestamp.now(tz="UTC")).tz_convert(tz)
+    if df.index[-1].date() == now.date() and (now.hour, now.minute) < (hh, mm):
+        return df.iloc[:-1]
+    return df
 
 
 def _select(raw: pd.DataFrame, ticker: str) -> pd.DataFrame | None:

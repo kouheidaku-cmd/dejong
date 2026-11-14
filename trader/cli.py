@@ -64,7 +64,9 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
     pf = Portfolio.load(p.portfolio)
 
     tickers = {w["ticker"] for w in watchlist} | set(pf.positions) | {o["ticker"] for o in pf.pending}
-    hist = data.history(sorted(tickers), settings["history_days"])
+    universe = [t for t in config.load_universe(root) if t not in tickers]  # ウォッチリスト外の母集団 (検証との違いを見るため)
+    hist = data.history(sorted(tickers | set(universe)), settings["history_days"])
+    outside = {t: hist.pop(t) for t in universe if t in hist}
     fx = fx_rates(data, tickers, settings)
 
     events = get_broker(pf, settings).settle(hist, fx, day)
@@ -124,8 +126,8 @@ def cmd_prep(root: Path, data: MarketData, day: date) -> dict:
             for w in watchlist
         ],
         "rule_signals": rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day,
-                                     market_regimes(data, hist, rule_set, settings, settings["history_days"]),
-                                     earnings_for(data, hist, rule_set)),
+                                     market_regimes(data, {**hist, **outside}, rule_set, settings, settings["history_days"]),
+                                     earnings_for(data, hist, rule_set), outside=outside),
         "risk_limits": settings["risk"],
     }
     out = p.daily(day)
@@ -151,11 +153,15 @@ def earnings_for(data: MarketData, tickers, rule_set: dict) -> dict[str, list]:
     return data.earnings_dates(sorted(tickers))
 
 
-def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None, earnings=None) -> dict:
+def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, day, market=None, earnings=None,
+                 outside=None) -> dict:
     """config/rules.yaml のルールを今日の終値に当てはめた結果。日次の判断はこれを基準にする。
 
     別枠 (sleeves) があるときは、保有はその枠の売りルールで判定し、買い候補は本体 → 別枠の順に並べる
     (別枠の候補には sleeve が付く。枠の空きは sleeve_slots)。
+    suggested_qty は、目標の金額と「売りの代金を足した現金から下限を引いた残り」の小さい方 (順位の高い候補から使う)。
+    outside: ウォッチリストにない母集団の日足。渡すと、本体の買い条件を満たす銘柄を missed_in_universe に出す
+    (検証は母集団の全部から買うが、実際に買えるのはウォッチリストだけ、という違いを見えるようにする)。
     """
     sets = rules.rule_sets(rule_set)
     by_name = {name: rs for name, rs, _ in sets}
@@ -174,18 +180,28 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
         opened = pd.Timestamp(pos.get("opened") or f.index[-1])
         ref = pos.get("rule_ref") or pos["avg_cost"]  # 損切り・利確の基準価格 (既存保有は起点日の価格)
         peak = max(f.loc[f.index >= opened, "close"].max(), ref) if (f.index >= opened).any() else ref
+        # ATR 損切り (exit.stop_atr_mult) のルールでは、買う前の最後の日 (シグナルの日) の ATR% で幅を決める。検証と同じ
+        before = f.loc[f.index < opened, "atr14_pct"].dropna()
+        entry_atr = float(before.iloc[-1]) if len(before) else None
         sig = rules.exit_check(f.iloc[-1].to_dict(), ref, peak, (pd.Timestamp(day) - opened).days,
-                               pos.get("took_profit", False), by_name[sleeve_of(t)])
+                               pos.get("took_profit", False), by_name[sleeve_of(t)], entry_atr_pct=entry_atr)
+        stop = rules.stop_pct(by_name[sleeve_of(t)], entry_atr)
         exits.append({
             "ticker": t, "signal": sig[0] if sig else None,
             "sell_qty": rules.sell_qty(pos["qty"], sig[1]) if sig else 0,
             "return_from_cost": round(prices[t] / pos["avg_cost"] - 1, 4),
+            "stop_pct": round(stop, 4) if stop else None,
             "rule_ref": ref,
             "return_from_ref": round(prices[t] / ref - 1, 4),
             "drawdown_from_peak": round(prices[t] / peak - 1, 4),
             **({"sleeve": sleeve_of(t)} if has_sleeves else {}),
         })
     leaving = {e["ticker"] for e in exits if e["signal"] and e["sell_qty"] == pf.qty(e["ticker"])}
+    risk = settings.get("risk", {})
+    buf = risk.get("price_buffer", 0.0)  # リスクチェックと同じ見積り (買いは高め、売りは安め)
+    budget = pf.cash - risk.get("min_cash_pct", 0.0) * equity + sum(
+        e["sell_qty"] * prices[e["ticker"]] * fx[pf.positions[e["ticker"]]["currency"]] * (1 - buf)
+        for e in exits if e.get("sell_qty"))
     entries, slots = [], {}
     for name, rs, tickers in sets:
         sz = rs["sizing"]
@@ -211,12 +227,63 @@ def rule_signals(pf, hist, prices, fx, equity, watchlist, rule_set, settings, da
                           "rank_value": round(row.get(sz["rank_by"]) or 0, 4),
                           "suggested_qty": int(sz["target_weight"] * equity // unit) if unit else 0,
                           **({"sleeve": name} if name else {})})
-        entries += sorted(found, key=lambda e: (not e["ok"], -e["rank_value"]))
+        found.sort(key=lambda e: (not e["ok"], -e["rank_value"]))
+        for e in [e for e in found if e["ok"]][:max(slots[name], 0)]:  # 枠に入る候補だけ、現金で買える株数に直す
+            cost = prices[e["ticker"]] * fx[config.currency(e["ticker"], settings)] * (1 + buf)
+            e["target_qty"] = e["suggested_qty"]
+            e["suggested_qty"] = max(min(e["target_qty"], int(budget // cost)), 0) if cost else 0
+            budget -= e["suggested_qty"] * cost
+        entries += found
     market_ok = {config.currency(t, settings): bool(m.iloc[-1]) for t, m in (market or {}).items() if m.notna().iloc[-1]}
+    missed = []
+    main = by_name[None]
+    swap = _swap_signal(pf, hist, prices, fx, equity, main, settings, day, slots[None], entries,
+                        {e["ticker"] for e in exits if e["signal"]}, sleeve_of, budget) if main.get("swap") else None
+    for t, df in (outside or {}).items():  # 決算日は取っていないので、決算前かどうかは未確認
+        f = rules.features(df)
+        if market and t in market:
+            f = rules.attach_market(f, market[t])
+        row = f.iloc[-1].to_dict()
+        if not rules.entry_check(row, main):
+            missed.append({"ticker": t, "rank_value": round(row.get(main["sizing"]["rank_by"]) or 0, 4)})
+    missed.sort(key=lambda e: -e["rank_value"])
     return {"rules_version": rule_set.get("version"), "market_uptrend": market_ok,
             "open_slots": max(slots[None], 0),
             **({"sleeve_slots": {n: max(v, 0) for n, v in slots.items() if n}} if has_sleeves else {}),
-            "exits": exits, "entries": entries}
+            "exits": exits, "entries": entries,
+            **({"swap": swap} if main.get("swap") else {}),
+            **({"missed_in_universe": missed[:10]} if outside is not None else {})}
+
+
+def _swap_signal(pf, hist, prices, fx, equity, rule_set, settings, day, open_slots, entries, selling, sleeve_of, budget):
+    """入れ替え (rules の swap) の日次シグナル。検証 (backtest._swap_orders) と同じ判定:
+    本体の枠が埋まっているとき、買い条件を満たす候補1位と、一番弱い保有の順位づけの値の差が min_gap 以上なら1組だけ入れ替える。"""
+    sw, sz = rule_set["swap"], rule_set["sizing"]
+    best = next((e for e in entries if e["ok"] and "sleeve" not in e), None)
+    if open_slots > 0 or best is None:
+        return None
+    rank_by = sz.get("rank_by", "ret_60d")
+    held = []
+    for t, pos in pf.positions.items():
+        if sleeve_of(t) is not None or t in selling or t not in hist:
+            continue
+        v = rules.features(hist[t]).iloc[-1].get(rank_by)
+        opened = pd.Timestamp(pos.get("opened") or day)
+        if v is None or v != v or (pd.Timestamp(day) - opened).days < sw.get("min_hold_days", 0):
+            continue
+        held.append((float(v), t))
+    if not held:
+        return None
+    weak_v, weak_t = min(held)
+    if best["rank_value"] - weak_v < sw["min_gap"] or (sw.get("only_negative") and weak_v >= 0):
+        return None
+    buf = settings.get("risk", {}).get("price_buffer", 0.0)
+    unit = prices[best["ticker"]] * fx[config.currency(best["ticker"], settings)]
+    budget += pf.qty(weak_t) * prices[weak_t] * fx[pf.positions[weak_t]["currency"]] * (1 - buf)
+    qty = max(min(int(sz["target_weight"] * equity // unit), int(budget // (unit * (1 + buf)))), 0)
+    return {"sell": weak_t, "sell_qty": pf.qty(weak_t), "sell_rank_value": round(weak_v, 4),
+            "buy": best["ticker"], "buy_qty": qty, "buy_rank_value": best["rank_value"],
+            "gap": round(best["rank_value"] - weak_v, 4)}
 
 
 def cmd_submit(root: Path, data: MarketData, day: date, orders_path: Path, force: bool) -> dict:
@@ -427,12 +494,14 @@ def _earnings_coverage(earnings: dict[str, list], frames: dict) -> dict:
             "latest_first_date": max(firsts.values()) if firsts else None, "first_dates": firsts}
 
 
-def _load_frames(root: Path, data: MarketData, tickers, days: int):
+def _load_frames(root: Path, data: MarketData, tickers, days: int, with_local: bool = False):
+    """円換算した日足と settings。with_local なら、現地通貨のままの日足も返す (判定を現地通貨で行う検証用)。"""
     settings = config.load_settings(root)
     frames = data.history(tickers, days)
     fx_syms = {c: settings["fx_tickers"][c] for c in {config.currency(t, settings) for t in frames} - {settings["base_currency"]}}
     fx_hist = data.history(sorted(fx_syms.values()), days)
-    return backtest.to_base_currency(frames, {c: fx_hist[s]["Close"] for c, s in fx_syms.items()}, settings), settings
+    base = backtest.to_base_currency(frames, {c: fx_hist[s]["Close"] for c, s in fx_syms.items()}, settings)
+    return (base, settings, frames) if with_local else (base, settings)
 
 
 def index_blend_curve(data: MarketData, days: int, start: pd.Timestamp, end: pd.Timestamp) -> pd.Series:
@@ -507,7 +576,8 @@ def cmd_yearly(root: Path, data: MarketData, rules_paths: list[Path], years: int
     return out
 
 
-def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int, name: str) -> dict:
+def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int, name: str,
+               until: date | None = None) -> dict:
     """採用の基準の計算: 1年の区切りを1月〜12月始まりの12通りに変えて、同じ持ち高の指数と比べる。
 
     区切りごとに、丸1年ある期間をそれぞれ独立に100万円から走らせる。「同じ持ち高の指数」は、指数 50/50 を
@@ -521,6 +591,8 @@ def cmd_phases(root: Path, data: MarketData, rules_paths: list[Path], years: int
     base = [df for t, df in all_frames.items() if t in universe]
     warm = min(df.index[0] for df in base) + pd.Timedelta(days=380)
     last = max(df.index[-1] for df in base)
+    if until:  # この日までのデータで評価 (古い期間だけを切り出して確かめるとき)
+        last = min(last, pd.Timestamp(until))
     kw = _run_kw(settings)
     year = pd.DateOffset(years=1)
 
@@ -663,6 +735,7 @@ def main(argv: list[str] | None = None) -> None:
     s = sub.add_parser("phases", help="採用の基準: 12通りの年の区切りで、同じ持ち高の指数・現行ルールと比べる")
     s.add_argument("rules", type=Path, nargs="+", help="ルールファイル (最初が現行)")
     s.add_argument("--years", type=int, default=9)
+    s.add_argument("--until", type=date.fromisoformat, help="この日までのデータで評価")
     s.add_argument("--name", required=True, help="出力先 reports/backtest/<name>")
     s = sub.add_parser("yearly", help="暦年ごとに独立して走らせ、指数 50/50 と比べる")
     s.add_argument("rules", type=Path, nargs="+", help="比較するルールファイル")
@@ -692,7 +765,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "forward":
         out = cmd_forward(root, CachedData(data, root / "data" / "cache"))
     elif args.cmd == "phases":
-        out = cmd_phases(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.name)
+        out = cmd_phases(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.name, args.until)
     elif args.cmd == "yearly":
         out = cmd_yearly(root, CachedData(data, root / "data" / "cache"), args.rules, args.years, args.until, args.name)
     elif args.cmd == "screen":
