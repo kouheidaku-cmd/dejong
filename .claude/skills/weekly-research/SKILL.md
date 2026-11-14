@@ -5,8 +5,11 @@ description: 週1回の注目株リサーチ。母集団のスクリーニング
 
 # 週次リサーチ
 
-> **2026-11-14 から、実際の口座は surge で運用している (人の決定、`config/rules_changelog.md`)。このスキルの注文案は出さない。**
-> 人が「v3 に戻す」と決めるまで、日次・週次の定期実行は surge-trade スキルが行う。v3 と候補の成績は、週次の `python -m trader forward` で記録を続ける。
+> **2026-11-14 から、実際の口座は surge で運用している (人の決定、`config/rules_changelog.md`)。**
+> **このスキルが呼ばれたら (定期実行を含む)、下の手順は実行せず、代わりに `.claude/skills/surge-trade/SKILL.md` の週次の手順を実行する。**
+> `config/watchlist.yaml` は書き換えない。フォワードテスト (`python -m trader forward`) は surge-trade の週次の手順に入っている。
+> 記録の commit / push と最後の通知は、呼び出し元の指示どおりに行う (通知の中身は surge の注文案と、株 + 現金・目標までの進み具合)。
+> 人が「v3 に戻す」と決めたら、この注記を消す。
 
 週末 (土曜か日曜) に実行する。ここで作るウォッチリストと投資仮説が、翌週の日次売買の前提になる。
 
