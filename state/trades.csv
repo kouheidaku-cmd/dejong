@@ -36,3 +36,7 @@ date,id,ticker,side,qty,type,limit_price,status,price,currency,fx,commission,rea
 2026-11-09,,ABBV,buy,1,,,filled,291.97,USD,158.14999389648438,0.0,,
 2026-11-09,,PG,buy,1,,,filled,166.0,USD,158.15199279785156,0.0,,
 2026-11-09,,KO,buy,2,,,filled,95.82,USD,158.15199279785156,0.0,,
+2026-11-16,,6758.T,sell,12,,,filled,4366.0,JPY,1.0,0.0,3828.0,
+2026-11-16,,6098.T,sell,2,,,filled,17410.0,JPY,1.0,0.0,-1180.0,
+2026-11-16,,8001.T,sell,20,,,filled,2419.0,JPY,1.0,0.0,1660.0,
+2026-11-16,,9434.T,sell,200,,,filled,241.4,JPY,1.0,0.0,3580.0,
