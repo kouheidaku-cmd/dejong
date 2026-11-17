@@ -744,3 +744,32 @@ def test_backtest_local_signals_ignore_fx_moves():
     assert in_local["trades"] == [] and in_local["open_positions"]              # ドル建てでは上がり続けているので持ったまま
     # 評価は円のまま: 円高の分だけ資産は減っている
     assert in_local["equity_curve"]["equity"].iloc[-1] < in_local["equity_curve"]["equity"].max()
+
+
+def test_fills_batch_cashsync_and_outstanding(tmp_path):
+    import json as _json
+    root = make_root(tmp_path, "manual", sync={"cash_jpy": 200000, "positions": {"KO": {"qty": 2, "avg_cost": 95.0}}})
+    plan_dir = root / "reports" / "surge" / "2026-11-14"
+    plan_dir.mkdir(parents=True)
+    plan_dir.joinpath("plan.json").write_text(_json.dumps({"date": "2026-11-14", "orders": [
+        {"ticker": "AMGN", "side": "buy", "qty": 1, "when": "今夜"},
+        {"ticker": "KO", "side": "buy", "qty": 3, "when": "今夜"},
+    ]}))
+    assert len(cli.outstanding_orders(root)["open"]) == 2
+
+    src = root / "fills.yaml"
+    src.write_text(yaml.safe_dump({"date": "2026-11-17", "fills": [
+        {"ticker": "AMGN", "side": "buy", "qty": 1, "price": 300.0, "fx": 155.0},
+    ]}))
+    out = cli.cmd_fills(root, FakeData({}), src)
+    assert out["recorded"][0]["ticker"] == "AMGN" and out["cash"] == 200000 - 300 * 155
+    assert out["outstanding"]["open"] == [{"ticker": "KO", "side": "buy", "qty": 3, "when": "今夜"}]
+
+    src.write_text(yaml.safe_dump({"date": "2026-11-18", "cash_jpy": 105000, "fills": [
+        {"ticker": "KO", "side": "buy", "qty": 3, "price": 96.0, "fx": 155.0},
+    ]}))
+    out = cli.cmd_fills(root, FakeData({}), src)
+    assert out["cash"]["cash_after"] == 105000 and out["outstanding"]["open"] == []
+    pf = Portfolio.load(root / "state" / "portfolio.json")
+    assert pf.qty("KO") == 5 and pf.cash == 105000
+    assert "cash_adjust" in (root / "state" / "trades.csv").read_text()

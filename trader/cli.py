@@ -6,6 +6,9 @@
   python -m trader record ...           manual: 人が発注して約定した1件を記録
   python -m trader sync FILE            manual: 証券口座の保有一覧で記録を上書き
   python -m trader cashflow -20000      入金 (+) / 出金 (-) を記録
+  python -m trader fills FILE           約定をまとめて記録 (スクショ1枚分)。cash_jpy があれば現金も合わせる
+  python -m trader cashsync 41234       記録上の現金を総合サマリーの預り金に合わせる
+  python -m trader outstanding          直近の surge の注文案のうち、約定がまだ記録されていないもの
   python -m trader status               現在の口座状況
   python -m trader screen               週次: 母集団をスクリーニング
   python -m trader backtest             config/rules.yaml のルールを過去の日足で仮想売買
@@ -339,6 +342,77 @@ def cmd_record(root: Path, data: MarketData, day: date, ticker: str, side: str, 
     pf.save(p.portfolio)
     append_journal(p.journal, [event])
     return {"event": event, "cash": round(pf.cash), "warning": "現金がマイナスです。sync で実際の残高に合わせてください" if pf.cash < 0 else None}
+
+
+def outstanding_orders(root: Path) -> dict:
+    """直近の surge の注文案のうち、まだ約定が記録されていないもの (trades.csv の filled と株数で突き合わせる)。"""
+    import csv
+    plans = sorted((root / "reports" / "surge").glob("*/plan.json"))
+    plan = None
+    for path in reversed(plans):
+        d = json.loads(path.read_text(encoding="utf-8"))
+        if d.get("orders"):
+            plan = d
+            break
+    if plan is None:
+        return {"plan_date": None, "open": []}
+    filled: dict[tuple[str, str], int] = {}
+    journal = Paths(root).journal
+    if journal.exists():
+        with open(journal, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r.get("status") == "filled" and (r.get("date") or "") >= plan["date"]:
+                    k = (r["ticker"], r["side"])
+                    filled[k] = filled.get(k, 0) + int(float(r.get("qty") or 0))
+    open_ = []
+    for o in plan["orders"]:
+        k = (o["ticker"], o["side"])
+        done = min(filled.get(k, 0), int(o["qty"]))
+        filled[k] = filled.get(k, 0) - done
+        if done < int(o["qty"]):
+            open_.append({"ticker": o["ticker"], "side": o["side"], "qty": int(o["qty"]) - done, "when": o.get("when")})
+    return {"plan_date": plan["date"], "open": open_}
+
+
+def cmd_fills(root: Path, data: MarketData, source: Path) -> dict:
+    """約定照会のスクショ1枚分などをまとめて記録する。cash_jpy があれば最後に現金を実際の残高に合わせる。
+
+    source (YAML):
+      date: 2026-11-17                 # 各約定の date の既定値
+      fills:
+        - {ticker: AMGN, side: buy, qty: 1, price: 312.5, fx: 155.2}
+      cash_jpy: 41234                  # 任意。総合サマリーの預り金 (円 + 外貨の円換算)
+    """
+    spec = config.load_yaml(source)
+    default_day = spec.get("date")
+    results = []
+    for f in spec.get("fills") or []:
+        day = date.fromisoformat(str(f.get("date") or default_day))
+        out = cmd_record(root, data, day, str(f["ticker"]), f["side"], int(f["qty"]), float(f["price"]),
+                         float(f["fx"]) if f.get("fx") else None, float(f.get("fee", 0.0)),
+                         bool(f.get("take_profit", False)))
+        e = out["event"]
+        results.append({"date": e["date"], "ticker": e["ticker"], "side": e["side"], "qty": e["qty"],
+                        "price": e["price"], "fx": round(e["fx"], 2), "realized_pnl": e["realized_pnl"]})
+    cash = None
+    if spec.get("cash_jpy") is not None:
+        cash = cmd_cashsync(root, date.fromisoformat(str(default_day)), float(spec["cash_jpy"]),
+                            f"総合サマリーの預り金に合わせる ({source.name})")
+    pf = Portfolio.load(Paths(root).portfolio)
+    return {"recorded": results, "cash": cash or round(pf.cash), "outstanding": outstanding_orders(root),
+            "warning": "現金がマイナスです。総合サマリーの預り金を cash_jpy に入れてください" if pf.cash < 0 else None}
+
+
+def cmd_cashsync(root: Path, day: date, actual: float, note: str = "総合サマリーの預り金に合わせる") -> dict:
+    """記録上の現金を実際の預り金に合わせる (推定為替などのずれの補正)。入出金ではないので最高値は動かさない。"""
+    p = Paths(root)
+    pf = Portfolio.load(p.portfolio)
+    diff = actual - pf.cash
+    pf.cash = actual
+    pf.save(p.portfolio)
+    append_journal(p.journal, [{"date": day.isoformat(), "ticker": "CASH", "side": "adjust", "qty": 0,
+                                "status": "cash_adjust", "price": round(diff, 2), "currency": "JPY", "rationale": note}])
+    return {"cash_before": round(actual - diff), "cash_after": round(actual), "diff": round(diff)}
 
 
 def cmd_cashflow(root: Path, day: date, amount: float, note: str) -> dict:
@@ -717,6 +791,11 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--fee", type=float, default=0.0, help="手数料 (円)")
     s.add_argument("--take-profit", action="store_true", help="ルールの利確シグナルによる一部売りのとき")
     s.add_argument("--sleeve", help="別枠 (rules.yaml の sleeves) のシグナルで買ったときの枠の名前 (例: dip)")
+    s = sub.add_parser("fills", help="約定をまとめて記録 (YAML)。cash_jpy があれば現金も合わせる")
+    s.add_argument("source", type=Path)
+    s = sub.add_parser("cashsync", help="記録上の現金を、総合サマリーの預り金 (円) に合わせる")
+    s.add_argument("amount", type=float)
+    sub.add_parser("outstanding", help="直近の surge の注文案のうち、約定が記録されていないもの")
     s = sub.add_parser("cashflow", help="入金 (+金額) / 出金 (-金額) を記録")
     s.add_argument("amount", type=float, help="円。出金はマイナス (例: -20000)")
     s.add_argument("--note", default="", help="メモ")
@@ -756,6 +835,12 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "record":
         out = cmd_record(root, data, day, args.ticker, args.side, args.qty, args.price, args.fx, args.fee, args.take_profit,
                          args.sleeve)
+    elif args.cmd == "fills":
+        out = cmd_fills(root, data, args.source)
+    elif args.cmd == "cashsync":
+        out = cmd_cashsync(root, day, args.amount)
+    elif args.cmd == "outstanding":
+        out = outstanding_orders(root)
     elif args.cmd == "cashflow":
         out = cmd_cashflow(root, day, args.amount, args.note)
     elif args.cmd == "sync":

@@ -58,6 +58,18 @@ python -m surge backtest   # 過去21年の仮想売買
 (定期実行そのものの指示文は以前のまま。書き換えは、その定期実行が投稿している会話から行う)。
 上の日次ルーチン (daily-trade) と週次リサーチの注文案は出さない。v3 と候補はフォワードテストで記録を続け、2027年1月下旬に見直す。
 
+## 人がやること (早見表)
+
+| いつ | やること |
+|---|---|
+| 通知が来たとき | 注文案の表どおりに楽天アプリで発注 (米国株はその夜、日本株は翌朝の寄付き)。平日は「やることがある日」だけ通知が来る |
+| 約定したあと | **約定照会のスクショ**を「dejong 定期実行 (日次・週次)」のセッションに送る。総合サマリーのスクショも一緒だと、現金のずれ (為替の推定) もその場で直る |
+| 発注しなかったとき | 「やってない」と送る |
+| 入金・出金したとき | 「〇円出金した」と送る |
+| 止めたいとき | 「止めて」と送る (`STOP` ファイルで全注文案が止まる) |
+
+送る言葉はこれだけでよい。記録のコマンド (`trader fills` など) は Claude が実行する。
+
 ## ディレクトリ
 
 ```
@@ -94,6 +106,9 @@ python -m trader prep                                  # 日次の準備
 python -m trader submit reports/daily/<日付>/orders.json
 python -m trader record MSFT sell 1 530.5 --fx 151.2   # 約定を1件記録 (別枠の買いは --sleeve dip を付ける)
 python -m trader sync state/sync/<日付>.yaml            # 保有一覧で上書き
+python -m trader fills state/fills/<日付>.yaml          # 約定をまとめて記録 (cash_jpy があれば現金も合わせる)
+python -m trader cashsync 41234                        # 現金を総合サマリーの預り金に合わせる
+python -m trader outstanding                           # 直近の surge の注文案のうち未記録のもの
 python -m trader status
 python -m trader screen                                 # 週次スクリーニング
 python -m trader backtest --years 8                     # 過去データで仮想売買 (学習/検証に分割)
