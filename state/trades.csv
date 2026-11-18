@@ -44,3 +44,5 @@ date,id,ticker,side,qty,type,limit_price,status,price,currency,fx,commission,rea
 2026-11-16,,PG,sell,1,,,filled,172.62,USD,159.26,0.0,1054.3,
 2026-11-16,,TXN,buy,2,,,filled,294.47,USD,159.26,0.0,,
 2026-11-16,,ANET,buy,2,,,filled,188.14,USD,159.26,0.0,,
+2026-11-17,,AMGN,buy,1,,,filled,456.87,USD,159.74,0.0,,
+2026-11-17,,KO,buy,3,,,filled,98.79,USD,159.74,0.0,,

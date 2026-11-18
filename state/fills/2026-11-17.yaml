@@ -1,0 +1,4 @@
+date: 2026-11-17
+fills:
+  - {ticker: AMGN, side: buy, qty: 1, price: 456.87, fx: 159.74}
+  - {ticker: KO, side: buy, qty: 3, price: 98.79, fx: 159.74}
