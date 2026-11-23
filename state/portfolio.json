@@ -1,5 +1,5 @@
 {
-  "cash": 52842.6118778198,
+  "cash": 205098.3778131836,
   "positions": {
     "ABBV": {
       "qty": 1,
@@ -14,22 +14,6 @@
       "avg_cost": 97.602,
       "currency": "USD",
       "opened": "2026-11-09",
-      "took_profit": false,
-      "account": "nisa_growth"
-    },
-    "TXN": {
-      "qty": 2,
-      "avg_cost": 294.47,
-      "currency": "USD",
-      "opened": "2026-11-16",
-      "took_profit": false,
-      "account": "nisa_growth"
-    },
-    "ANET": {
-      "qty": 2,
-      "avg_cost": 188.14,
-      "currency": "USD",
-      "opened": "2026-11-16",
       "took_profit": false,
       "account": "nisa_growth"
     },

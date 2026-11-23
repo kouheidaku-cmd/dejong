@@ -1,0 +1,4 @@
+date: 2026-11-23
+fills:
+  - {ticker: ANET, side: sell, qty: 2, price: 186.93}
+  - {ticker: TXN, side: sell, qty: 2, price: 290.57}
